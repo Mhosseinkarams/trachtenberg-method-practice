@@ -9,19 +9,20 @@ test('basic navigation and practice', async ({ page }) => {
   // Check title
   await expect(page.locator('h1')).toContainText('Fast Math Trainer');
 
-  // Select a rule
-  await page.click('text=Multiplication by 11');
+  // Select a new rule: Square Root
+  await page.click('h3:has-text("Square Root (Perfect)")');
 
   // Check if practice area is visible
   await expect(page.locator('text=How it works')).toBeVisible();
 
   // Screenshot
-  await page.screenshot({ path: 'screenshot-practice.png' });
+  await page.screenshot({ path: 'screenshot-sqrt.png' });
 
   // Back to methods
   await page.click('text=Back to methods');
   await expect(page.locator('text=Master Rapid Calculation')).toBeVisible();
 
-  // Screenshot
-  await page.screenshot({ path: 'screenshot-home.png' });
+  // Select a new rule: Rapid Addition
+  await page.click('h3:has-text("Rapid Addition")');
+  await page.screenshot({ path: 'screenshot-addition.png' });
 });

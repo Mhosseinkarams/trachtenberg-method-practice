@@ -70,5 +70,58 @@ export const rules: Rule[] = [
       const b = Math.floor(Math.random() * 5) + 6; // 6-10
       return { question: `${a} x ${b}`, answer: a * b };
     }
+  },
+  {
+    id: 'vedic-squaring-general',
+    name: 'General Squaring',
+    method: 'Vedic',
+    description: 'Duplex method.',
+    explanation: 'To square any number: use the duplex (D). For a single digit a, D=a^2. For two digits ab, D=2ab.',
+    example: '23^2 = D(2) | D(23) | D(3) = 4 | 12 | 9 = 529',
+    generateProblem: () => {
+      const num = Math.floor(Math.random() * 89) + 11; // 11-99
+      return { question: `${num}^2`, answer: num * num };
+    }
+  },
+  {
+    id: 'vedic-sqrt-perfect',
+    name: 'Square Root (Perfect)',
+    method: 'Vedic',
+    description: 'Observation method.',
+    explanation: 'Look at the last digit to find the possible last digit of the root. Ignore last two digits and find the nearest square below the remaining number.',
+    example: 'sqrt(1225): ends in 5, so root ends in 5. 12 is between 3^2 and 4^2. So tens digit is 3. Answer 35.',
+    generateProblem: () => {
+      const root = Math.floor(Math.random() * 90) + 10; // 10-99
+      const num = root * root;
+      return { question: `√${num}`, answer: root };
+    }
+  },
+  {
+    id: 'tracht-addition',
+    name: 'Rapid Addition',
+    method: 'Trachtenberg',
+    description: 'The L-R column method.',
+    explanation: 'Add columns from left to right, then adjust for carries.',
+    example: '456 + 123 = (4+1) (5+2) (6+3) = 579',
+    generateProblem: () => {
+      const a = Math.floor(Math.random() * 900) + 100;
+      const b = Math.floor(Math.random() * 900) + 100;
+      return { question: `${a} + ${b}`, answer: a + b };
+    }
+  },
+  {
+    id: 'vedic-complementary-addition',
+    name: 'Complementary Addition',
+    method: 'Vedic',
+    description: 'Completing the whole.',
+    explanation: 'Look for numbers that add up to 10, 100, etc. to simplify addition.',
+    example: '48 + 32 = 40 + 30 + (8 + 2) = 70 + 10 = 80',
+    generateProblem: () => {
+      const base = (Math.floor(Math.random() * 8) + 1) * 10;
+      const diff = Math.floor(Math.random() * 9) + 1;
+      const a = base + diff;
+      const b = (10 - diff) + Math.floor(Math.random() * 5) * 10;
+      return { question: `${a} + ${b}`, answer: a + b };
+    }
   }
 ];
