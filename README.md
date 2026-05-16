@@ -1,47 +1,43 @@
-# Fast Math Trainer - Multi-Platform
+# Fast Math Trainer - Unified Python Platform
 
-A comprehensive mental math training application supporting Trachtenberg and Vedic methods.
+A comprehensive mental math training application supporting Trachtenberg and Vedic methods. This repository has been unified to use Python for all platforms.
 
 ## Project Structure
 
-- `web-app/`: The core web application built with React and Vite.
-- `windows-app/`: Windows desktop application using Electron.
-- `android-app/`: Android mobile application using Capacitor.
-- `windows-app-cpp/`: CLI-based C++ implementation for Windows.
-
-## Binary Artifacts
-
-- **Windows EXE**: `windows-app-cpp/FastMathTrainer.exe`
-- **Android APK**: `android-app/android/app/build/outputs/apk/debug/app-debug.apk`
+- `app/`: **Core source code** (Flet-based UI and Math Logic).
+- `web-app/`: Build instructions for the Web platform.
+- `windows-app/`: Build instructions for the Windows desktop platform.
+- `android-app/`: Build instructions for the Android mobile platform.
+- `windows-cli-app/`: Command-line interface version of the trainer.
 
 ## Features
 
 - **Trachtenberg System**: Multiplication by 11, 12, 5, and Rapid Addition.
 - **Vedic Mathematics**: Squaring (ending in 5, general method), Square Root (perfect squares), and Complementary Addition.
-- **Multi-platform support**: Native-like experience on Web, Desktop (Electron & C++), and Mobile (Android).
+- **Multi-platform support**: Unified codebase for Web, Desktop, and Mobile using Flet.
 
 ## Getting Started
 
-### Web App
+To run the application locally on any platform, ensure you have Python and Flet installed:
+
 ```bash
-cd web-app
-npm install
-npm run dev
+pip install -r requirements.txt
 ```
 
-### Windows C++ App
-Build with MinGW:
+Then, run the main app:
 ```bash
-cd windows-app-cpp
-make
+flet run app/main.py
 ```
 
-### Android App
-Build APK:
+Or run the CLI version:
 ```bash
-cd android-app
-npm install
-npm run build
-npx cap sync
-cd android && ./gradlew assembleDebug
+python windows-cli-app/main.py
 ```
+
+## Building for Specific Platforms
+
+For detailed instructions on how to generate `.exe`, `.apk`, or web output, please refer to the `README.md` file within each respective directory:
+
+- **Android APK**: See [android-app/README.md](android-app/README.md)
+- **Windows EXE**: See [windows-app/README.md](windows-app/README.md)
+- **Web App**: See [web-app/README.md](web-app/README.md)
