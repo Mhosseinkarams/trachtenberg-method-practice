@@ -1,52 +1,27 @@
-# Fast Math Trainer
+# Fast Math Trainer - Web App
 
-A web application for practicing mental math shortcuts from the Trachtenberg and Vedic systems.
+This is the web version of the Fast Math Trainer, written in Python using Flet.
 
-## Features
+## How to get web output
 
-- **Trachtenberg System**: Practice rules for multiplying by 11, 12, and 5.
-- **Vedic Mathematics**: Practice squaring numbers ending in 5 and multiplication near base 10.
-- **Practice Mode**: Interactive problem solving with real-time feedback and score tracking.
-- **Theory Section**: Detailed explanations and examples for every technique.
-- **Responsive Design**: Clean UI built with React and Tailwind CSS.
+To build the web application, you need to have Python and the Flet CLI installed.
 
-## Getting Started
+1. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Installation
+2. **Build Web:**
+   Run the following command from the root directory, pointing to the `app/` folder:
+   ```bash
+   flet build web app/
+   ```
 
+The resulting web static files will be generated in the `build/web` directory.
+
+## Development
+
+To run the app as a web app in development mode:
 ```bash
-npm install
+flet run app/main.py --web
 ```
-
-### Development
-
-```bash
-npm run dev
-```
-
-### Testing
-
-Run unit tests:
-```bash
-npx vitest run
-```
-
-Run end-to-end tests:
-```bash
-npx playwright test
-```
-
-### Build
-
-```bash
-npm run build
-```
-
-## Technologies Used
-
-- React 19
-- TypeScript
-- Vite
-- Tailwind CSS
-- Vitest
-- Playwright
