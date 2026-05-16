@@ -1,0 +1,49 @@
+name: Jules On-Demand
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, edited]
+
+jobs:
+  jules:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@jules')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@jules')) ||
+      (github.event_name == 'issues' && contains(github.event.issue.body, '@jules'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract prompt
+        id: extract_prompt
+        env:
+          BODY: ${{ github.event.comment.body || github.event.issue.body }}
+        run: |
+          # Use a random delimiter to prevent conflicts with the prompt content
+          DELIMITER=$(openssl rand -hex 8)
+          PROMPT=$(python3 -c "import re, os; m = re.search(r'@jules\s+(.*)', os.environ.get('BODY', ''), re.S | re.I); print(m.group(1).strip() if m else '')")
+          if [[ -z "$PROMPT" ]]; then
+             echo "No prompt found after @jules"
+             exit 1
+          fi
+          echo "PROMPT<<$DELIMITER" >> $GITHUB_OUTPUT
+          echo "$PROMPT" >> $GITHUB_OUTPUT
+          echo "$DELIMITER" >> $GITHUB_OUTPUT
+
+      - name: Invoke Jules
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          prompt: ${{ steps.extract_prompt.outputs.PROMPT }}
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
