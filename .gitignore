@@ -1,0 +1,9 @@
+node_modules
+dist
+test-results
+*.log
+.last-run.json
+.vite
+android/
+release
+*.exe
