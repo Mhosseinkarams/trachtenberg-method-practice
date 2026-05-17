@@ -207,14 +207,15 @@ class FastMathApp:
 
         theory_card = ft.Container(
             content=ft.Column([
-                ft.Text("Theory", size=24, weight=ft.FontWeight.BOLD),
+                ft.Text("Theory & Shortcuts", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.INDIGO_700),
                 ft.Text(self.selected_rule.explanation, size=16),
-                ft.Text("Example", size=20, weight=ft.FontWeight.BOLD),
+                ft.Text("Example", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800),
                 ft.Container(
-                    content=ft.Text(self.selected_rule.example, font_family="monospace"),
-                    padding=10,
+                    content=ft.Text(self.selected_rule.example, font_family="monospace", size=14),
+                    padding=15,
                     bgcolor=ft.Colors.GREY_100,
-                    border_radius=5
+                    border_radius=10,
+                    border=ft.Border.all(1, ft.Colors.GREY_300)
                 )
             ], spacing=15),
             padding=30,
