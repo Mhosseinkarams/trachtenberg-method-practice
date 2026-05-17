@@ -25,6 +25,7 @@ class FastMathApp:
         self.setup_ui()
 
     def setup_ui(self, update: bool = True):
+        self.page.scroll = ft.ScrollMode.AUTO
         self.header = ft.Container(
             content=ft.Column([
                 ft.Text("Fast Math Trainer", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.INDIGO_900),
@@ -34,8 +35,8 @@ class FastMathApp:
             alignment=ft.Alignment.CENTER
         )
 
-        self.main_content = ft.Column(expand=True)
-        self.show_rule_selector(update=False)
+        self.main_content = ft.Column()
+        self.show_categories(update=False)
 
         self.page.add(
             ft.Column([
@@ -43,43 +44,77 @@ class FastMathApp:
                 self.main_content,
                 ft.Divider(),
                 ft.Text("© 2024 Fast Math Trainer. Built with Flet.", size=12, color=ft.Colors.GREY_400, text_align=ft.TextAlign.CENTER)
-            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, expand=True)
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
         )
         if update:
             self.page.update()
 
-    def show_rule_selector(self, update: bool = True):
+    def show_categories(self, update: bool = True):
         self.main_content.controls.clear()
 
-        sections = [
-            ("Trachtenberg System", rules_by_method["Trachtenberg"]),
-            ("Vedic Mathematics", rules_by_method["Vedic"])
+        categories = [
+            ("Trachtenberg System", "Advanced mental multiplication and addition.", ft.Colors.BLUE_700),
+            ("Vedic Mathematics", "Ancient Indian techniques for rapid calculation.", ft.Colors.ORANGE_700)
         ]
 
-        grid = ft.Column(spacing=20)
-
-        for title, rule_list in sections:
-            grid.controls.append(ft.Text(title, size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800))
-
-            rule_grid = ft.ResponsiveRow(spacing=10)
-            for rule in rule_list:
-                rule_grid.controls.append(
-                    ft.Container(
-                        content=ft.Column([
-                            ft.Text(rule.name, weight=ft.FontWeight.BOLD, size=18),
-                            ft.Text(rule.description, size=14, color=ft.Colors.GREY_600),
-                        ]),
-                        padding=20,
-                        bgcolor=ft.Colors.WHITE,
-                        border_radius=10,
-                        border=ft.Border.all(1, ft.Colors.GREY_200),
-                        on_click=lambda e, r=rule: self.select_rule(r),
-                        col={"sm": 12, "md": 6, "lg": 4},
-                        ink=True
-                    )
+        category_grid = ft.ResponsiveRow(spacing=20)
+        for name, desc, color in categories:
+            method_key = "Trachtenberg" if "Trachtenberg" in name else "Vedic"
+            category_grid.controls.append(
+                ft.Container(
+                    content=ft.Column([
+                        ft.Icon(ft.Icons.CALCULATE, size=40, color=color),
+                        ft.Text(name, size=24, weight=ft.FontWeight.BOLD),
+                        ft.Text(desc, size=16, color=ft.Colors.GREY_600),
+                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                    padding=40,
+                    bgcolor=ft.Colors.WHITE,
+                    border_radius=15,
+                    border=ft.Border.all(1, ft.Colors.GREY_200),
+                    on_click=lambda e, m=method_key: self.show_rule_selector(m),
+                    col={"sm": 12, "md": 6},
+                    ink=True
                 )
-            grid.controls.append(rule_grid)
+            )
 
+        self.main_content.controls.append(category_grid)
+        if update:
+            self.page.update()
+
+    def show_rule_selector(self, method: str, update: bool = True):
+        self.main_content.controls.clear()
+
+        back_button = ft.TextButton(
+            "Back to Categories",
+            icon=ft.Icons.ARROW_BACK,
+            on_click=lambda _: self.show_categories()
+        )
+
+        rule_list = rules_by_method[method]
+
+        grid = ft.Column(spacing=20)
+        grid.controls.append(ft.Text(f"{method} Methods", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800))
+
+        rule_grid = ft.ResponsiveRow(spacing=10)
+        for rule in rule_list:
+            rule_grid.controls.append(
+                ft.Container(
+                    content=ft.Column([
+                        ft.Text(rule.name, weight=ft.FontWeight.BOLD, size=18),
+                        ft.Text(rule.description, size=14, color=ft.Colors.GREY_600),
+                    ]),
+                    padding=20,
+                    bgcolor=ft.Colors.WHITE,
+                    border_radius=10,
+                    border=ft.Border.all(1, ft.Colors.GREY_200),
+                    on_click=lambda e, r=rule: self.select_rule(r),
+                    col={"sm": 12, "md": 6, "lg": 4},
+                    ink=True
+                )
+            )
+        grid.controls.append(rule_grid)
+
+        self.main_content.controls.append(back_button)
         self.main_content.controls.append(grid)
         if update:
             self.page.update()
@@ -110,7 +145,7 @@ class FastMathApp:
 
         def go_back(e):
             self.timer_running = False
-            self.show_rule_selector()
+            self.show_rule_selector(self.selected_rule.method)
 
         back_button = ft.TextButton(
             "Back to methods",
@@ -130,8 +165,8 @@ class FastMathApp:
         self.score_text = ft.Text(f"Score: 0/0", size=16)
         self.streak_text = ft.Text(f"Streak: 0", size=16, color=ft.Colors.ORANGE_800, weight=ft.FontWeight.BOLD)
         self.timer_text = ft.Text(f"Time: 00:00", size=16)
-        self.check_button = ft.ElevatedButton(text="Check Answer", on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE)
-        self.next_button = ft.ElevatedButton(text="Next Problem", on_click=self.next_problem, width=400, bgcolor=ft.Colors.GREEN_600, color=ft.Colors.WHITE, visible=False)
+        self.check_button = ft.ElevatedButton(content=ft.Text("Check Answer"), on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE)
+        self.next_button = ft.ElevatedButton(content=ft.Text("Next Problem"), on_click=self.next_problem, width=400, bgcolor=ft.Colors.GREEN_600, color=ft.Colors.WHITE, visible=False)
 
         self.practice_card = ft.Container(
             content=ft.Column([
@@ -193,7 +228,12 @@ class FastMathApp:
         self.page.run_task(self.next_problem)
 
     async def next_problem(self, e=None):
-        self.current_problem = self.selected_rule.generate_problem()
+        try:
+            self.current_problem = self.selected_rule.generate_problem()
+        except Exception as ex:
+            print(f"Error generating problem: {ex}")
+            self.current_problem = {"question": "Error", "answer": 0}
+
         self.problem_text.value = self.current_problem["question"]
         self.answer_input.value = ""
         self.answer_input.disabled = False
