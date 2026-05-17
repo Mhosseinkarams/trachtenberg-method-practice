@@ -33,7 +33,7 @@ jobs:
           pip install flet
       - name: Build Web
         run: |
-          flet publish app/main.py --distpath dist
+          flet build web app/ --output build/web --yes
       - name: List Build Directory
         run: |
           if (Test-Path build) { ls -R build } else { echo "Build directory not found" }

@@ -75,6 +75,36 @@ def test_all_rules():
                 elif rule.id == 'vedic-subtraction-base':
                     parts = problem['question'].split(' - ')
                     assert problem['answer'] == int(parts[0]) - int(parts[1])
+                elif rule.id == 'vedic-vertically-crosswise':
+                    parts = problem['question'].split(' x ')
+                    assert problem['answer'] == int(parts[0]) * int(parts[1])
+                elif rule.id == 'vedic-square-near-base':
+                    num = int(problem['question'].replace('²', ''))
+                    assert problem['answer'] == num * num
+                elif rule.id == 'tracht-13':
+                    num = int(problem['question'].split('x ')[1])
+                    assert problem['answer'] == 13 * num
+                elif rule.id == 'tracht-general':
+                    parts = problem['question'].split(' x ')
+                    assert problem['answer'] == int(parts[0]) * int(parts[1])
+                elif rule.id == 'tracht-division':
+                    parts = problem['question'].split(' ÷ ')
+                    assert problem['answer'] == int(parts[0]) // int(parts[1])
+                elif rule.id == 'tracht-sqrt':
+                    num = int(problem['question'].replace('√', ''))
+                    assert problem['answer'] * problem['answer'] == num
+                elif rule.id == 'vedic-div-9':
+                    parts = problem['question'].split(' ÷ ')
+                    assert problem['answer'] == int(parts[0]) // int(parts[1])
+                elif rule.id == 'vedic-series-9':
+                    parts = problem['question'].split(' x ')
+                    assert problem['answer'] == int(parts[0]) * int(parts[1])
+                elif rule.id == 'vedic-ekadhikena':
+                    parts = problem['question'].split(' x ')
+                    assert problem['answer'] == int(parts[0]) * int(parts[1])
+                elif rule.id == 'vedic-cubing':
+                    num = int(problem['question'].replace('³', ''))
+                    assert problem['answer'] == num ** 3
 
             print("PASSED")
         except Exception as e:
