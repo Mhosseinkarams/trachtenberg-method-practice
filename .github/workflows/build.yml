@@ -16,6 +16,7 @@ on:
 
 env:
   PYTHONUTF8: 1
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-web:
@@ -88,8 +89,12 @@ jobs:
       - name: Build Windows
         run: |
           flet build windows app/
-      - name: Upload Windows EXE
+      - name: List Build Directory
+        run: |
+          ls -R build
+        shell: pwsh
+      - name: Upload Windows Distribution
         uses: actions/upload-artifact@v4
         with:
-          name: windows-exe
-          path: build/windows/*.exe
+          name: windows-app
+          path: build/windows
