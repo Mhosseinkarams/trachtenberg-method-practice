@@ -1,5 +1,16 @@
 import flet as ft
-from math_logic import rules, rules_by_method
+import sys
+import os
+
+# Add the current directory to sys.path to ensure math_logic can be imported
+# regardless of whether the script is run from the root or the app/ directory.
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from math_logic import rules, rules_by_method
+except ImportError:
+    # Fallback for some environments
+    from app.math_logic import rules, rules_by_method
 
 class FastMathApp:
     def __init__(self, page: ft.Page):
@@ -15,9 +26,10 @@ class FastMathApp:
         self.score = 0
         self.total = 0
 
-        self.setup_ui()
+    async def initialize(self):
+        await self.setup_ui()
 
-    def setup_ui(self):
+    async def setup_ui(self):
         self.header = ft.Container(
             content=ft.Column([
                 ft.Text("Fast Math Trainer", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.INDIGO_900),
@@ -28,7 +40,7 @@ class FastMathApp:
         )
 
         self.main_content = ft.Column(expand=True)
-        self.show_rule_selector(update=False)
+        await self.show_rule_selector(update=False)
 
         self.page.add(
             ft.Column([
@@ -39,7 +51,7 @@ class FastMathApp:
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, expand=True)
         )
 
-    def show_rule_selector(self, update=True):
+    async def show_rule_selector(self, update=True):
         self.main_content.controls.clear()
 
         sections = [
@@ -54,6 +66,9 @@ class FastMathApp:
 
             rule_grid = ft.ResponsiveRow(spacing=10)
             for rule in rule_list:
+                async def rule_clicked(e, r=rule):
+                    await self.select_rule(r)
+
                 rule_grid.controls.append(
                     ft.Container(
                         content=ft.Column([
@@ -64,7 +79,7 @@ class FastMathApp:
                         bgcolor=ft.Colors.WHITE,
                         border_radius=10,
                         border=ft.Border.all(1, ft.Colors.GREY_200),
-                        on_click=lambda e, r=rule: self.select_rule(r),
+                        on_click=rule_clicked,
                         col={"sm": 12, "md": 6, "lg": 4},
                         ink=True
                     )
@@ -75,31 +90,48 @@ class FastMathApp:
         if update:
             self.page.update()
 
-    def select_rule(self, rule):
+    async def select_rule(self, rule):
         self.selected_rule = rule
         self.score = 0
         self.total = 0
-        self.show_practice_area()
+        await self.show_practice_area()
 
-    def show_practice_area(self):
+    async def show_practice_area(self):
         self.main_content.controls.clear()
+
+        async def back_clicked(e):
+            await self.show_rule_selector()
 
         back_button = ft.TextButton(
             "Back to methods",
             icon=ft.Icons.ARROW_BACK,
-            on_click=lambda _: self.show_rule_selector()
+            on_click=back_clicked
         )
 
         self.problem_text = ft.Text("", size=48, weight=ft.FontWeight.BOLD)
+
+        async def check_submitted(e):
+            await self.check_answer(e)
+
         self.answer_input = ft.TextField(
             label="Enter answer",
             text_align=ft.TextAlign.CENTER,
-            on_submit=self.check_answer,
+            on_submit=check_submitted,
             keyboard_type=ft.KeyboardType.NUMBER
         )
         self.feedback_text = ft.Text("", size=18, weight=ft.FontWeight.BOLD)
         self.score_text = ft.Text(f"Score: 0/0", size=16)
-        self.submit_button = ft.ElevatedButton("Check Answer", on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE)
+
+        async def check_clicked(e):
+            await self.check_answer(e)
+
+        self.submit_button = ft.ElevatedButton(
+            text="Check Answer",
+            on_click=check_clicked,
+            width=400,
+            bgcolor=ft.Colors.INDIGO_600,
+            color=ft.Colors.WHITE
+        )
 
         practice_card = ft.Container(
             content=ft.Column([
@@ -121,7 +153,7 @@ class FastMathApp:
 
         theory_card = ft.Container(
             content=ft.Column([
-                ft.Text("Theory", size=24, weight=ft.FontWeight.BOLD),
+                ft.Text("Method Theory", size=24, weight=ft.FontWeight.BOLD),
                 ft.Text(self.selected_rule.explanation, size=16),
                 ft.Text("Example", size=20, weight=ft.FontWeight.BOLD),
                 ft.Container(
@@ -145,9 +177,10 @@ class FastMathApp:
             ])
         )
 
-        self.next_problem()
+        self.page.update()
+        await self.next_problem()
 
-    def next_problem(self, update=True):
+    async def next_problem(self, update=True):
         self.current_problem = self.selected_rule.generate_problem()
         self.problem_text.value = self.current_problem["question"]
         self.answer_input.value = ""
@@ -155,13 +188,18 @@ class FastMathApp:
         self.current_problem_answered = False
         self.submit_button.text = "Check Answer"
         self.submit_button.bgcolor = ft.Colors.INDIGO_600
-        self.answer_input.focus()
+        try:
+            if self.answer_input.page:
+                await self.answer_input.focus()
+        except Exception:
+            pass
+
         if update:
             self.page.update()
 
-    def check_answer(self, e):
+    async def check_answer(self, e):
         if self.current_problem_answered:
-            self.next_problem()
+            await self.next_problem()
             return
 
         if not self.answer_input.value:
@@ -174,6 +212,10 @@ class FastMathApp:
 
         self.current_problem_answered = True
         self.total += 1
+
+        # Update text and colors
+        self.submit_button.text = "Next Problem"
+
         if user_val == self.current_problem["answer"]:
             self.score += 1
             self.feedback_text.value = "Correct!"
@@ -184,12 +226,12 @@ class FastMathApp:
             self.feedback_text.color = ft.Colors.RED_600
             self.submit_button.bgcolor = ft.Colors.ORANGE_600
 
-        self.submit_button.text = "Next Problem"
         self.score_text.value = f"Score: {self.score}/{self.total}"
         self.page.update()
 
-def main(page: ft.Page):
-    FastMathApp(page)
+async def main(page: ft.Page):
+    app = FastMathApp(page)
+    await app.initialize()
 
 if __name__ == "__main__":
     ft.app(target=main)
