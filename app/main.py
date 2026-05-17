@@ -21,6 +21,8 @@ class FastMathApp:
         self.streak = 0
         self.start_time = None
         self.timer_running = False
+        self.timer_id = 0
+        self.mode = "Learn" # Default mode
 
         self.setup_ui()
 
@@ -53,19 +55,19 @@ class FastMathApp:
         self.main_content.controls.clear()
 
         categories = [
-            ("Trachtenberg System", "Advanced mental multiplication and addition.", ft.Colors.BLUE_700),
-            ("Vedic Mathematics", "Ancient Indian techniques for rapid calculation.", ft.Colors.ORANGE_700)
+            ("Trachtenberg System", "Advanced mental multiplication and addition.", ft.Colors.BLUE_700, ft.Icons.GRID_VIEW),
+            ("Vedic Mathematics", "Ancient Indian techniques for rapid calculation.", ft.Colors.ORANGE_700, ft.Icons.PSYCHOLOGY)
         ]
 
         category_grid = ft.ResponsiveRow(spacing=20)
-        for name, desc, color in categories:
+        for name, desc, color, icon in categories:
             method_key = "Trachtenberg" if "Trachtenberg" in name else "Vedic"
             category_grid.controls.append(
                 ft.Container(
                     content=ft.Column([
-                        ft.Icon(ft.Icons.CALCULATE, size=40, color=color),
+                        ft.Icon(icon, size=40, color=color),
                         ft.Text(name, size=24, weight=ft.FontWeight.BOLD),
-                        ft.Text(desc, size=16, color=ft.Colors.GREY_600),
+                        ft.Text(desc, size=16, color=ft.Colors.GREY_600, text_align=ft.TextAlign.CENTER),
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                     padding=40,
                     bgcolor=ft.Colors.WHITE,
@@ -121,31 +123,106 @@ class FastMathApp:
 
     def select_rule(self, rule):
         self.selected_rule = rule
+        self.show_mode_selection()
+
+    def show_mode_selection(self, update: bool = True):
+        self.main_content.controls.clear()
+
+        back_button = ft.TextButton(
+            "Back to methods",
+            icon=ft.Icons.ARROW_BACK,
+            on_click=lambda _: self.show_rule_selector(self.selected_rule.method)
+        )
+
+        cards = ft.ResponsiveRow([
+            ft.Container(
+                content=ft.Column([
+                    ft.Icon(ft.Icons.SCHOOL, size=40, color=ft.Colors.BLUE_600),
+                    ft.Text("Learn", size=24, weight=ft.FontWeight.BOLD),
+                    ft.Text("Study the theory and see examples.", size=16, color=ft.Colors.GREY_600),
+                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                padding=40, bgcolor=ft.Colors.WHITE, border_radius=15, col={"sm": 12, "md": 6},
+                on_click=lambda _: self.start_session("Learn"), ink=True
+            ),
+            ft.Container(
+                content=ft.Column([
+                    ft.Icon(ft.Icons.TIMER, size=40, color=ft.Colors.ORANGE_600),
+                    ft.Text("Practice", size=24, weight=ft.FontWeight.BOLD),
+                    ft.Text("Test your speed and accuracy.", size=16, color=ft.Colors.GREY_600),
+                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                padding=40, bgcolor=ft.Colors.WHITE, border_radius=15, col={"sm": 12, "md": 6},
+                on_click=lambda _: self.start_session("Practice"), ink=True
+            )
+        ], spacing=20)
+
+        self.main_content.controls.append(back_button)
+        self.main_content.controls.append(ft.Text(f"Target: {self.selected_rule.name}", size=20, weight=ft.FontWeight.BOLD))
+        self.main_content.controls.append(cards)
+        if update:
+            self.page.update()
+
+    def start_session(self, mode):
+        self.mode = mode
         self.score = 0
         self.total = 0
         self.streak = 0
         self.start_time = time.time()
+
+        # Increment timer_id to invalidate any previous timer tasks
+        self.timer_id += 1
+        self.timer_running = True
+
         # Initialize UI first to ensure timer_text exists before starting the timer task
         self.show_practice_area()
-        if not self.timer_running:
-            self.timer_running = True
-            self.page.run_task(self.update_timer)
+        self.page.run_task(self.update_timer, self.timer_id)
 
-    async def update_timer(self):
-        while self.timer_running:
-            if self.start_time:
-                elapsed = int(time.time() - self.start_time)
-                mins, secs = divmod(elapsed, 60)
-                self.timer_text.value = f"Time: {mins:02d}:{secs:02d}"
-                self.timer_text.update()
+    async def update_timer(self, tid):
+        while self.timer_running and self.timer_id == tid:
+            if self.start_time and hasattr(self, "timer_text"):
+                try:
+                    elapsed = int(time.time() - self.start_time)
+                    mins, secs = divmod(elapsed, 60)
+                    self.timer_text.value = f"Time: {mins:02d}:{secs:02d}"
+                    self.timer_text.update()
+                except Exception:
+                    # Handle cases where timer_text might be briefly unavailable during transitions
+                    pass
             await asyncio.sleep(1)
 
     def show_practice_area(self, update: bool = True):
         self.main_content.controls.clear()
 
+        config_panel = ft.Column(visible=False)
+        if self.mode == "Practice" and self.selected_rule.id in ['tracht-addition', 'vedic-complementary-addition', 'vedic-subtraction-base']:
+            self.num_operands_slider = ft.Slider(min=2, max=5, divisions=3, label="{value} numbers", value=2)
+            self.num_digits_dropdown = ft.Dropdown(
+                label="Digits per number",
+                options=[
+                    ft.dropdown.Option("0", "Random"),
+                    ft.dropdown.Option("1", "1"),
+                    ft.dropdown.Option("2", "2"),
+                    ft.dropdown.Option("3", "3"),
+                    ft.dropdown.Option("4", "4"),
+                    ft.dropdown.Option("5", "5"),
+                    ft.dropdown.Option("6", "6"),
+                ],
+                value="3"
+            )
+
+            config_panel.controls.extend([
+                ft.Text("Customization Panel", weight=ft.FontWeight.BOLD),
+                ft.Row([
+                    ft.Column([ft.Text("Count"), self.num_operands_slider]) if self.selected_rule.id != 'vedic-subtraction-base' else ft.Column(),
+                    self.num_digits_dropdown
+                ], alignment=ft.MainAxisAlignment.START),
+                ft.ElevatedButton("Apply & Restart", on_click=lambda _: self.page.run_task(self.next_problem)),
+                ft.Divider()
+            ])
+            config_panel.visible = True
+
         def go_back(e):
             self.timer_running = False
-            self.show_rule_selector(self.selected_rule.method)
+            self.show_mode_selection()
 
         back_button = ft.TextButton(
             "Back to methods",
@@ -199,14 +276,15 @@ class FastMathApp:
 
         theory_card = ft.Container(
             content=ft.Column([
-                ft.Text("Theory", size=24, weight=ft.FontWeight.BOLD),
+                ft.Text("Theory & Shortcuts", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.INDIGO_700),
                 ft.Text(self.selected_rule.explanation, size=16),
-                ft.Text("Example", size=20, weight=ft.FontWeight.BOLD),
+                ft.Text("Example", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800),
                 ft.Container(
-                    content=ft.Text(self.selected_rule.example, font_family="monospace"),
-                    padding=10,
+                    content=ft.Text(self.selected_rule.example, font_family="monospace", size=14),
+                    padding=15,
                     bgcolor=ft.Colors.GREY_100,
-                    border_radius=5
+                    border_radius=10,
+                    border=ft.Border.all(1, ft.Colors.GREY_300)
                 )
             ], spacing=15),
             padding=30,
@@ -216,6 +294,9 @@ class FastMathApp:
         )
 
         self.main_content.controls.append(back_button)
+        if config_panel.visible:
+            self.main_content.controls.append(config_panel)
+
         self.main_content.controls.append(
             ft.ResponsiveRow([
                 ft.Column([self.practice_card], col={"lg": 6}),
@@ -229,7 +310,13 @@ class FastMathApp:
 
     async def next_problem(self, e=None):
         try:
-            self.current_problem = self.selected_rule.generate_problem()
+            kwargs = {}
+            if hasattr(self, 'num_operands_slider'):
+                kwargs['num_operands'] = int(self.num_operands_slider.value)
+            if hasattr(self, 'num_digits_dropdown'):
+                kwargs['num_digits'] = int(self.num_digits_dropdown.value)
+
+            self.current_problem = self.selected_rule.generate_problem(**kwargs)
         except Exception as ex:
             print(f"Error generating problem: {ex}")
             self.current_problem = {"question": "Error", "answer": 0}
