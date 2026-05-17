@@ -1,4 +1,5 @@
 import random
+import math
 
 class Rule:
     def __init__(self, id, name, description, method, explanation, example, generate_problem_fn):
