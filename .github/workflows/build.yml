@@ -1,14 +1,22 @@
 name: Build Fast Math Trainer
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to build'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - web
+          - android
+          - windows
+          - all
 
 jobs:
   build-web:
+    if: github.event.inputs.platform == 'web' || github.event.inputs.platform == 'all'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,6 +37,7 @@ jobs:
           path: build/web
 
   build-android:
+    if: github.event.inputs.platform == 'android' || github.event.inputs.platform == 'all'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -58,6 +67,7 @@ jobs:
           path: build/apk/*.apk
 
   build-windows:
+    if: github.event.inputs.platform == 'windows' || github.event.inputs.platform == 'all'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
