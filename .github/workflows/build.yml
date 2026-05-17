@@ -14,6 +14,9 @@ on:
           - windows
           - all
 
+env:
+  PYTHONUTF8: 1
+
 jobs:
   build-web:
     if: github.event.inputs.platform == 'web' || github.event.inputs.platform == 'all'
