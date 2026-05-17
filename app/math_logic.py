@@ -55,9 +55,26 @@ def gen_tracht_addition():
     b = random.randint(100, 999)
     return {"question": f"{a} + {b}", "answer": a + b}
 
+def gen_tracht_6():
+    num = random.randint(100, 9099)
+    return {"question": f"6 x {num}", "answer": 6 * num}
+
+def gen_tracht_7():
+    num = random.randint(100, 9099)
+    return {"question": f"7 x {num}", "answer": 7 * num}
+
+def gen_tracht_8():
+    num = random.randint(100, 909)
+    return {"question": f"8 x {num}", "answer": 8 * num}
+
 def gen_tracht_9():
     num = random.randint(100, 9099)
     return {"question": f"9 x {num}", "answer": 9 * num}
+
+def gen_vedic_base_1000():
+    a = random.randint(990, 999)
+    b = random.randint(990, 999)
+    return {"question": f"{a} x {b}", "answer": a * b}
 
 def gen_vedic_complementary_addition():
     base = random.randint(1, 8) * 10
@@ -149,6 +166,33 @@ rules = [
         gen_tracht_addition
     ),
     Rule(
+        'tracht-6',
+        'Multiplication by 6',
+        'Add half the neighbor rule.',
+        'Trachtenberg',
+        'To multiply by 6: Add half of the neighbor to each digit. If the digit is odd, add 5.',
+        '6 x 422 = (4+1) (2+1) (2+0) = 2532',
+        gen_tracht_6
+    ),
+    Rule(
+        'tracht-7',
+        'Multiplication by 7',
+        'Double the digit and add half the neighbor.',
+        'Trachtenberg',
+        'To multiply by 7: Double each digit and add half of the neighbor. If the digit is odd, add 5.',
+        '7 x 242 = (2*2+2) (2*4+1) (2*2+0) = 1694',
+        gen_tracht_7
+    ),
+    Rule(
+        'tracht-8',
+        'Multiplication by 8',
+        'Double the complement and add neighbor.',
+        'Trachtenberg',
+        'To multiply by 8: 1. Rightmost: (10 - digit) * 2. 2. Middle: (9 - digit) * 2 + half neighbor. 3. Leftmost: neighbor - 2.',
+        '8 x 432 = (4-2) ( (9-3)*2+1 ) ( (9-2)*2+0 ) ( (10-2)*2 ) = 3456',
+        gen_tracht_8
+    ),
+    Rule(
         'tracht-9',
         'Multiplication by 9',
         'Subtract from 10, then from 9.',
@@ -156,6 +200,15 @@ rules = [
         'To multiply by 9: 1. Subtract the right-most digit from 10. 2. For other digits, subtract from 9 and add the neighbor. 3. For the leading zero, subtract 1 from the neighbor.',
         '9 x 432: (10-2=8), (9-3+2=8), (9-4+3=8), (4-1=3) = 3888',
         gen_tracht_9
+    ),
+    Rule(
+        'vedic-base-1000',
+        'Multiplication near base 1000',
+        'Nikhilam Sutra (Base 1000).',
+        'Vedic',
+        'Multiply numbers close to 1000. Find deficiencies, multiply them for the right part (3 digits), add crosswise for the left part.',
+        '998 x 997: Deficiencies 2 and 3. 2*3=006. 998-3=995. Answer 995006.',
+        gen_vedic_base_1000
     ),
     Rule(
         'vedic-complementary-addition',

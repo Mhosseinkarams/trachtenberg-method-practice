@@ -30,6 +30,15 @@ def test_all_rules():
                 elif rule.id == 'tracht-5':
                     num = int(problem['question'].split('x ')[1])
                     assert problem['answer'] == 5 * num
+                elif rule.id == 'tracht-6':
+                    num = int(problem['question'].split('x ')[1])
+                    assert problem['answer'] == 6 * num
+                elif rule.id == 'tracht-7':
+                    num = int(problem['question'].split('x ')[1])
+                    assert problem['answer'] == 7 * num
+                elif rule.id == 'tracht-8':
+                    num = int(problem['question'].split('x ')[1])
+                    assert problem['answer'] == 8 * num
                 elif rule.id == 'tracht-9':
                     num = int(problem['question'].split('x ')[1])
                     assert problem['answer'] == 9 * num
@@ -40,6 +49,9 @@ def test_all_rules():
                     parts = problem['question'].split(' x ')
                     assert problem['answer'] == int(parts[0]) * int(parts[1])
                 elif rule.id == 'vedic-base-100':
+                    parts = problem['question'].split(' x ')
+                    assert problem['answer'] == int(parts[0]) * int(parts[1])
+                elif rule.id == 'vedic-base-1000':
                     parts = problem['question'].split(' x ')
                     assert problem['answer'] == int(parts[0]) * int(parts[1])
                 elif rule.id == 'vedic-squaring-general':

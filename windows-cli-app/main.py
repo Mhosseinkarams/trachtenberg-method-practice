@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 # Add parent directory to path to import math_logic
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -53,15 +54,20 @@ def main():
         rule = all_display_rules[choice - 1]
         score = 0
         total = 0
+        streak = 0
+        start_time = time.time()
 
         while True:
             p = rule.generate_problem()
             while True:
                 clear_screen()
+                elapsed = int(time.time() - start_time)
+                mins, secs = divmod(elapsed, 60)
+
                 print(f"{BOLD}Method: {BLUE}{rule.name}{END}")
                 print(f"{BOLD}Theory: {END}{rule.description}")
-                print(f"{BOLD}Score:  {GREEN}{score}{END}/{total}")
-                print("-" * 31)
+                print(f"{BOLD}Score:  {GREEN}{score}{END}/{total}  {BOLD}Streak: {END}{streak}  {BOLD}Time: {END}{mins:02d}:{secs:02d}")
+                print("-" * 50)
 
                 print(f"\n  {BOLD}{p['question']} = ?{END} ")
 
@@ -89,8 +95,10 @@ def main():
             if user_answer == p['answer']:
                 print(f"\n{BOLD}{GREEN}Correct!{END}")
                 score += 1
+                streak += 1
             else:
                 print(f"\n{BOLD}{RED}Wrong.{END} The answer was {BOLD}{p['answer']}{END}")
+                streak = 0
 
             input("\nPress Enter to continue...")
 
