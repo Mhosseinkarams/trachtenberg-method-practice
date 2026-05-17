@@ -71,8 +71,8 @@ rules = [
         'Multiplication by 12',
         'Double the digit and add the neighbor.',
         'Trachtenberg',
-        'To multiply by 12: Double each digit in turn and add its neighbor.',
-        '12 x 413 = (2*4+1) (2*1+3) (2*3) = 4956',
+        'To multiply by 12: Double each digit in turn and add its neighbor. The first digit of the answer is the first digit of the multiplicand (plus carry).',
+        '12 x 413: \n1. 2*3 = 6\n2. 2*1 + 3 = 5\n3. 2*4 + 1 = 9\n4. First digit 4\nAnswer: 4956',
         gen_tracht_12
     ),
     Rule(

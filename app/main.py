@@ -11,6 +11,7 @@ class FastMathApp:
 
         self.selected_rule = None
         self.current_problem = None
+        self.current_problem_answered = False
         self.score = 0
         self.total = 0
 
@@ -98,6 +99,7 @@ class FastMathApp:
         )
         self.feedback_text = ft.Text("", size=18, weight=ft.FontWeight.BOLD)
         self.score_text = ft.Text(f"Score: 0/0", size=16)
+        self.submit_button = ft.ElevatedButton("Check Answer", on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE)
 
         practice_card = ft.Container(
             content=ft.Column([
@@ -108,7 +110,7 @@ class FastMathApp:
                     ft.Text("= ?", size=20, color=ft.Colors.GREY_400),
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                 self.answer_input,
-                ft.ElevatedButton("Check Answer", on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE),
+                self.submit_button,
                 self.feedback_text,
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=20),
             padding=30,
@@ -150,11 +152,18 @@ class FastMathApp:
         self.problem_text.value = self.current_problem["question"]
         self.answer_input.value = ""
         self.feedback_text.value = ""
+        self.current_problem_answered = False
+        self.submit_button.text = "Check Answer"
+        self.submit_button.bgcolor = ft.Colors.INDIGO_600
         self.answer_input.focus()
         if update:
             self.page.update()
 
     def check_answer(self, e):
+        if self.current_problem_answered:
+            self.next_problem()
+            return
+
         if not self.answer_input.value:
             return
 
@@ -163,17 +172,19 @@ class FastMathApp:
         except ValueError:
             return
 
+        self.current_problem_answered = True
         self.total += 1
         if user_val == self.current_problem["answer"]:
             self.score += 1
             self.feedback_text.value = "Correct!"
             self.feedback_text.color = ft.Colors.GREEN_600
-            # In a real app we'd use a timer, but for simplicity:
-            self.next_problem(update=False)
+            self.submit_button.bgcolor = ft.Colors.GREEN_600
         else:
             self.feedback_text.value = f"Wrong. The answer was {self.current_problem['answer']}"
             self.feedback_text.color = ft.Colors.RED_600
+            self.submit_button.bgcolor = ft.Colors.ORANGE_600
 
+        self.submit_button.text = "Next Problem"
         self.score_text.value = f"Score: {self.score}/{self.total}"
         self.page.update()
 

@@ -5,11 +5,28 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'app'))
 
 from math_logic import (
+    rules,
     gen_tracht_11, gen_tracht_12, gen_tracht_5,
     gen_vedic_square_5, gen_vedic_base_10,
     gen_vedic_squaring_general, gen_vedic_sqrt_perfect,
     gen_tracht_addition, gen_vedic_complementary_addition
 )
+
+def test_rules_consistency():
+    assert len(rules) > 0
+    for rule in rules:
+        assert rule.id
+        assert rule.name
+        assert rule.description
+        assert rule.method in ["Trachtenberg", "Vedic"]
+        assert rule.explanation
+        assert rule.example
+
+        # Test problem generation for each rule
+        p = rule.generate_problem()
+        assert "question" in p
+        assert "answer" in p
+        assert isinstance(p["answer"], (int, float))
 
 def test_gen_tracht_11():
     for _ in range(100):
