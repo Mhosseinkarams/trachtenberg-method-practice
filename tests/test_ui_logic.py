@@ -36,23 +36,71 @@ async def test_category_selection():
     # or check the content if it's set.
 
 @pytest.mark.asyncio
-async def test_rule_selection_starts_timer():
+async def test_rule_selection_shows_modes():
     page = MagicMock(spec=ft.Page)
     page.controls = []
     app = FastMathApp(page)
 
-    # Mock a Rule object
     rule = MagicMock()
     rule.method = "Trachtenberg"
     rule.name = "Test Rule"
-    rule.generate_problem.return_value = {"question": "2+2", "answer": 4}
 
     app.select_rule(rule)
 
     assert app.selected_rule == rule
+    # Should show mode selection cards
+    assert len(app.main_content.controls) > 0
+    # Find mode selection text
+    found = False
+    for control in app.main_content.controls:
+        if isinstance(control, ft.Text) and "Target:" in control.value:
+            found = True
+            break
+    assert found
+
+@pytest.mark.asyncio
+async def test_start_session_starts_timer():
+    page = MagicMock(spec=ft.Page)
+    page.controls = []
+    app = FastMathApp(page)
+
+    rule = MagicMock()
+    rule.method = "Trachtenberg"
+    rule.name = "Test Rule"
+    rule.id = "test-rule"
+    rule.generate_problem.return_value = {"question": "2+2", "answer": 4}
+    app.selected_rule = rule
+
+    app.start_session("Practice")
+
+    assert app.mode == "Practice"
     assert app.timer_running is True
     assert app.timer_id == 1
     page.run_task.assert_any_call(app.update_timer, 1)
+
+@pytest.mark.asyncio
+async def test_customization_panel_visibility():
+    page = MagicMock(spec=ft.Page)
+    page.controls = []
+    app = FastMathApp(page)
+
+    rule = MagicMock()
+    rule.id = "tracht-addition"
+    app.selected_rule = rule
+    app.mode = "Practice"
+
+    app.show_practice_area()
+
+    # Check if config_panel was added
+    found_config = False
+    for control in app.main_content.controls:
+        if isinstance(control, ft.Column) and control.visible:
+            # Look for "Customization Panel" text
+            for sub in control.controls:
+                if isinstance(sub, ft.Text) and "Customization Panel" in sub.value:
+                    found_config = True
+                    break
+    assert found_config
 
 if __name__ == "__main__":
     pytest.main([__file__])

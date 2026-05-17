@@ -11,132 +11,148 @@ class Rule:
         self.example = example
         self.generate_problem_fn = generate_problem_fn
 
-    def generate_problem(self):
-        return self.generate_problem_fn()
+    def generate_problem(self, **kwargs):
+        return self.generate_problem_fn(**kwargs)
 
-def gen_tracht_11():
+def gen_tracht_11(**kwargs):
     num = random.randint(100, 9099)
     return {"question": f"11 x {num}", "answer": 11 * num}
 
-def gen_tracht_12():
+def gen_tracht_12(**kwargs):
     num = random.randint(100, 9099)
     return {"question": f"12 x {num}", "answer": 12 * num}
 
-def gen_tracht_5():
+def gen_tracht_5(**kwargs):
     num = random.randint(100, 9099)
     return {"question": f"5 x {num}", "answer": 5 * num}
 
-def gen_vedic_square_5():
+def gen_vedic_square_5(**kwargs):
     base = random.randint(1, 12)
     num = base * 10 + 5
     return {"question": f"{num}²", "answer": num * num}
 
-def gen_vedic_base_10():
+def gen_vedic_base_10(**kwargs):
     a = random.randint(7, 13)
     b = random.randint(7, 13)
     return {"question": f"{a} x {b}", "answer": a * b}
 
-def gen_vedic_base_100():
+def gen_vedic_base_100(**kwargs):
     a = random.randint(90, 110)
     b = random.randint(90, 110)
     return {"question": f"{a} x {b}", "answer": a * b}
 
-def gen_vedic_squaring_general():
+def gen_vedic_squaring_general(**kwargs):
     num = random.randint(11, 99)
     return {"question": f"{num}²", "answer": num * num}
 
-def gen_vedic_sqrt_perfect():
+def gen_vedic_sqrt_perfect(**kwargs):
     root = random.randint(10, 99)
     num = root * root
     return {"question": f"√{num}", "answer": root}
 
-def gen_tracht_addition():
-    a = random.randint(100, 999)
-    b = random.randint(100, 999)
-    return {"question": f"{a} + {b}", "answer": a + b}
+def gen_tracht_addition(num_operands=2, num_digits=3, **kwargs):
+    operands = []
+    for _ in range(num_operands):
+        if num_digits == 0: # 0 means random
+            d = random.randint(1, 6)
+        else:
+            d = num_digits
+        operands.append(random.randint(10**(d-1), 10**d - 1))
 
-def gen_tracht_6():
+    question = " + ".join(map(str, operands))
+    answer = sum(operands)
+    return {"question": question, "answer": answer}
+
+def gen_tracht_6(**kwargs):
     num = random.randint(100, 9099)
     return {"question": f"6 x {num}", "answer": 6 * num}
 
-def gen_tracht_7():
+def gen_tracht_7(**kwargs):
     num = random.randint(100, 9099)
     return {"question": f"7 x {num}", "answer": 7 * num}
 
-def gen_tracht_8():
+def gen_tracht_8(**kwargs):
     num = random.randint(100, 9099)
     return {"question": f"8 x {num}", "answer": 8 * num}
 
-def gen_tracht_9():
+def gen_tracht_9(**kwargs):
     num = random.randint(100, 9099)
     return {"question": f"9 x {num}", "answer": 9 * num}
 
-def gen_tracht_4():
+def gen_tracht_4(**kwargs):
     num = random.randint(100, 9099)
     return {"question": f"4 x {num}", "answer": 4 * num}
 
-def gen_tracht_3():
+def gen_tracht_3(**kwargs):
     num = random.randint(100, 9099)
     return {"question": f"3 x {num}", "answer": 3 * num}
 
-def gen_vedic_base_1000():
+def gen_vedic_base_1000(**kwargs):
     a = random.randint(990, 1010)
     b = random.randint(990, 1010)
     return {"question": f"{a} x {b}", "answer": a * b}
 
-def gen_vedic_complementary_addition():
+def gen_vedic_complementary_addition(num_operands=2, num_digits=3, **kwargs):
+    if num_operands > 2 or num_digits != 3:
+        # Fallback to general addition if customized beyond its "complementary" definition
+        return gen_tracht_addition(num_operands=num_operands, num_digits=num_digits)
+
     base = random.randint(1, 8) * 10
     diff = random.randint(1, 9)
     a = base + diff
     b = (10 - diff) + random.randint(0, 4) * 10
     return {"question": f"{a} + {b}", "answer": a + b}
 
-def gen_vedic_subtraction_base():
-    base = 10 ** random.randint(1, 3)
-    num = random.randint(1, base - 1)
+def gen_vedic_subtraction_base(num_digits=3, **kwargs):
+    if num_digits == 0:
+        d = random.randint(1, 6)
+    else:
+        d = num_digits
+    base = 10 ** d
+    num = random.randint(10**(d-1), base - 1)
     return {"question": f"{base} - {num}", "answer": base - num}
 
-def gen_vedic_vertically_crosswise():
+def gen_vedic_vertically_crosswise(**kwargs):
     a = random.randint(11, 99)
     b = random.randint(11, 99)
     return {"question": f"{a} x {b}", "answer": a * b}
 
-def gen_vedic_square_near_base():
+def gen_vedic_square_near_base(**kwargs):
     base = 10 ** random.randint(1, 2)
     diff = random.randint(-5, 5)
     if diff == 0: diff = 1
     num = base + diff
     return {"question": f"{num}²", "answer": num * num}
 
-def gen_tracht_13():
+def gen_tracht_13(**kwargs):
     num = random.randint(100, 9099)
     return {"question": f"13 x {num}", "answer": 13 * num}
 
-def gen_tracht_general():
+def gen_tracht_general(**kwargs):
     a = random.randint(11, 99)
     b = random.randint(11, 99)
     return {"question": f"{a} x {b}", "answer": a * b}
 
-def gen_tracht_division():
+def gen_tracht_division(**kwargs):
     divisor = random.randint(2, 12)
     quotient = random.randint(10, 99)
     num = divisor * quotient
     return {"question": f"{num} ÷ {divisor}", "answer": quotient}
 
-def gen_tracht_sqrt():
+def gen_tracht_sqrt(**kwargs):
     root = random.randint(10, 40)
     num = root * root
     return {"question": f"√{num}", "answer": root}
 
-def gen_vedic_div_9():
+def gen_vedic_div_9(**kwargs):
     num = random.randint(10, 89)
     return {"question": f"{num} ÷ 9", "answer": num // 9}
 
-def gen_vedic_series_9():
+def gen_vedic_series_9(**kwargs):
     num = random.randint(11, 99)
     return {"question": f"{num} x 99", "answer": num * 99}
 
-def gen_vedic_ekadhikena():
+def gen_vedic_ekadhikena(**kwargs):
     base = random.randint(1, 9) * 10
     d1 = random.randint(1, 9)
     d2 = 10 - d1
@@ -144,7 +160,7 @@ def gen_vedic_ekadhikena():
     b = base + d2
     return {"question": f"{a} x {b}", "answer": a * b}
 
-def gen_vedic_cubing():
+def gen_vedic_cubing(**kwargs):
     base = 10
     diff = random.randint(1, 3)
     num = base + diff
@@ -220,7 +236,7 @@ rules = [
         'Observation method.',
         'Vedic',
         'Look at the last digit to find the possible last digit of the root. Ignore last two digits and find the nearest square below the remaining number.\n\nCheck: Result squared should equal original number.',
-        'sqrt(1225): ends in 5, so root ends in 100 5. 12 is between 3^2 and 4^2. So tens digit is 3. Answer 35.',
+        'sqrt(1225): ends in 5, so root ends in 5. 12 is between 3^2 and 4^2. So tens digit is 3. Answer 35.',
         gen_vedic_sqrt_perfect
     ),
     Rule(
