@@ -2,9 +2,9 @@ import flet as ft
 import time
 import asyncio
 try:
-    from math_logic import rules
+    from math_logic import rules, rules_by_method
 except ImportError:
-    from app.math_logic import rules
+    from app.math_logic import rules, rules_by_method
 
 class FastMathApp:
     def __init__(self, page: ft.Page):
@@ -24,7 +24,7 @@ class FastMathApp:
 
         self.setup_ui()
 
-    def setup_ui(self):
+    def setup_ui(self, update: bool = True):
         self.header = ft.Container(
             content=ft.Column([
                 ft.Text("Fast Math Trainer", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.INDIGO_900),
@@ -35,7 +35,7 @@ class FastMathApp:
         )
 
         self.main_content = ft.Column(expand=True)
-        self.show_rule_selector()
+        self.show_rule_selector(update=False)
 
         self.page.add(
             ft.Column([
@@ -45,16 +45,15 @@ class FastMathApp:
                 ft.Text("© 2024 Fast Math Trainer. Built with Flet.", size=12, color=ft.Colors.GREY_400, text_align=ft.TextAlign.CENTER)
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, expand=True)
         )
+        if update:
+            self.page.update()
 
-    def show_rule_selector(self):
+    def show_rule_selector(self, update: bool = True):
         self.main_content.controls.clear()
 
-        tracht_rules = [r for r in rules if r.method == "Trachtenberg"]
-        vedic_rules = [r for r in rules if r.method == "Vedic"]
-
         sections = [
-            ("Trachtenberg System", tracht_rules),
-            ("Vedic Mathematics", vedic_rules)
+            ("Trachtenberg System", rules_by_method["Trachtenberg"]),
+            ("Vedic Mathematics", rules_by_method["Vedic"])
         ]
 
         grid = ft.Column(spacing=20)
@@ -82,7 +81,8 @@ class FastMathApp:
             grid.controls.append(rule_grid)
 
         self.main_content.controls.append(grid)
-        self.page.update()
+        if update:
+            self.page.update()
 
     def select_rule(self, rule):
         self.selected_rule = rule
@@ -103,7 +103,7 @@ class FastMathApp:
                 self.page.update()
             await asyncio.sleep(1)
 
-    def show_practice_area(self):
+    def show_practice_area(self, update: bool = True):
         self.main_content.controls.clear()
 
         def go_back(e):
@@ -186,6 +186,8 @@ class FastMathApp:
             ])
         )
 
+        if update:
+            self.page.update()
         self.page.run_task(self.next_problem)
 
     async def next_problem(self, e=None):

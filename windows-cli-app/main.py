@@ -4,7 +4,7 @@ import time
 
 # Add parent directory to path to import math_logic
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from app.math_logic import rules
+from app.math_logic import rules, rules_by_method
 
 # ANSI colors
 GREEN = '\033[92m'
@@ -24,8 +24,8 @@ def main():
         print(f"{BOLD}{BLUE}==============================={END}")
         print("Select a method to practice:\n")
 
-        tracht_rules = [r for r in rules if r.method == "Trachtenberg"]
-        vedic_rules = [r for r in rules if r.method == "Vedic"]
+        tracht_rules = rules_by_method["Trachtenberg"]
+        vedic_rules = rules_by_method["Vedic"]
 
         all_display_rules = tracht_rules + vedic_rules
 
