@@ -19,7 +19,7 @@ def gen_tracht_11():
     return {"question": f"11 x {num}", "answer": 11 * num}
 
 def gen_tracht_12():
-    num = random.randint(10, 909)
+    num = random.randint(100, 9099)
     return {"question": f"12 x {num}", "answer": 12 * num}
 
 def gen_tracht_5():
@@ -32,13 +32,13 @@ def gen_vedic_square_5():
     return {"question": f"{num}²", "answer": num * num}
 
 def gen_vedic_base_10():
-    a = random.randint(6, 10)
-    b = random.randint(6, 10)
+    a = random.randint(7, 13)
+    b = random.randint(7, 13)
     return {"question": f"{a} x {b}", "answer": a * b}
 
 def gen_vedic_base_100():
-    a = random.randint(90, 99)
-    b = random.randint(90, 99)
+    a = random.randint(90, 110)
+    b = random.randint(90, 110)
     return {"question": f"{a} x {b}", "answer": a * b}
 
 def gen_vedic_squaring_general():
@@ -64,7 +64,7 @@ def gen_tracht_7():
     return {"question": f"7 x {num}", "answer": 7 * num}
 
 def gen_tracht_8():
-    num = random.randint(100, 909)
+    num = random.randint(100, 9099)
     return {"question": f"8 x {num}", "answer": 8 * num}
 
 def gen_tracht_9():
@@ -72,8 +72,8 @@ def gen_tracht_9():
     return {"question": f"9 x {num}", "answer": 9 * num}
 
 def gen_vedic_base_1000():
-    a = random.randint(990, 999)
-    b = random.randint(990, 999)
+    a = random.randint(990, 1010)
+    b = random.randint(990, 1010)
     return {"question": f"{a} x {b}", "answer": a * b}
 
 def gen_vedic_complementary_addition():
@@ -188,8 +188,8 @@ rules = [
         'Multiplication by 8',
         'Double the complement and add neighbor.',
         'Trachtenberg',
-        'To multiply by 8: 1. Rightmost: (10 - digit) * 2. 2. Middle: (9 - digit) * 2 + half neighbor. 3. Leftmost: neighbor - 2.',
-        '8 x 432 = (4-2) ( (9-3)*2+1 ) ( (9-2)*2+0 ) ( (10-2)*2 ) = 3456',
+        'To multiply by 8: 1. Rightmost: (10 - digit) * 2. 2. Middle: (9 - digit) * 2 + neighbor. 3. Leftmost: neighbor - 2.',
+        '8 x 432: (10-2)*2=16; (9-3)*2+2+1=15; (9-4)*2+3+1=14; 4-2+1=3. Ans: 3456',
         gen_tracht_8
     ),
     Rule(
@@ -220,3 +220,8 @@ rules = [
         gen_vedic_complementary_addition
     )
 ]
+
+rules_by_method = {
+    "Trachtenberg": [r for r in rules if r.method == "Trachtenberg"],
+    "Vedic": [r for r in rules if r.method == "Vedic"]
+}
