@@ -66,6 +66,15 @@ def test_all_rules():
                 elif rule.id == 'vedic-complementary-addition':
                     parts = problem['question'].split(' + ')
                     assert problem['answer'] == int(parts[0]) + int(parts[1])
+                elif rule.id == 'tracht-4':
+                    num = int(problem['question'].split('x ')[1])
+                    assert problem['answer'] == 4 * num
+                elif rule.id == 'tracht-3':
+                    num = int(problem['question'].split('x ')[1])
+                    assert problem['answer'] == 3 * num
+                elif rule.id == 'vedic-subtraction-base':
+                    parts = problem['question'].split(' - ')
+                    assert problem['answer'] == int(parts[0]) - int(parts[1])
 
             print("PASSED")
         except Exception as e:

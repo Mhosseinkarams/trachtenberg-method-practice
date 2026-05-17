@@ -90,9 +90,11 @@ class FastMathApp:
         self.total = 0
         self.streak = 0
         self.start_time = time.time()
-        self.timer_running = True
+        # Initialize UI first to ensure timer_text exists before starting the timer task
         self.show_practice_area()
-        self.page.run_task(self.update_timer)
+        if not self.timer_running:
+            self.timer_running = True
+            self.page.run_task(self.update_timer)
 
     async def update_timer(self):
         while self.timer_running:
@@ -100,7 +102,7 @@ class FastMathApp:
                 elapsed = int(time.time() - self.start_time)
                 mins, secs = divmod(elapsed, 60)
                 self.timer_text.value = f"Time: {mins:02d}:{secs:02d}"
-                self.page.update()
+                self.timer_text.update()
             await asyncio.sleep(1)
 
     def show_practice_area(self, update: bool = True):
@@ -128,8 +130,8 @@ class FastMathApp:
         self.score_text = ft.Text(f"Score: 0/0", size=16)
         self.streak_text = ft.Text(f"Streak: 0", size=16, color=ft.Colors.ORANGE_800, weight=ft.FontWeight.BOLD)
         self.timer_text = ft.Text(f"Time: 00:00", size=16)
-        self.check_button = ft.ElevatedButton("Check Answer", on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE)
-        self.next_button = ft.ElevatedButton("Next Problem", on_click=self.next_problem, width=400, bgcolor=ft.Colors.GREEN_600, color=ft.Colors.WHITE, visible=False)
+        self.check_button = ft.Button("Check Answer", on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE)
+        self.next_button = ft.Button("Next Problem", on_click=self.next_problem, width=400, bgcolor=ft.Colors.GREEN_600, color=ft.Colors.WHITE, visible=False)
 
         self.practice_card = ft.Container(
             content=ft.Column([
@@ -199,11 +201,9 @@ class FastMathApp:
         self.check_button.visible = True
         self.next_button.visible = False
         self.practice_card.bgcolor = ft.Colors.WHITE
-        try:
-            await self.answer_input.focus_async()
-        except AttributeError:
-            self.answer_input.focus()
         self.page.update()
+        # In Flet 0.85.1, TextField.focus() is a coroutine and must be awaited
+        await self.answer_input.focus()
 
     async def handle_submit(self, e):
         if self.check_button.visible:
@@ -238,14 +238,13 @@ class FastMathApp:
         self.answer_input.disabled = True
         self.check_button.visible = False
         self.next_button.visible = True
-        try:
-            await self.next_button.focus_async()
-        except AttributeError:
-            self.next_button.focus()
         self.page.update()
+        # In Flet 0.85.1, Button.focus() is a coroutine and must be awaited
+        await self.next_button.focus()
 
 def main(page: ft.Page):
     FastMathApp(page)
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    # ft.app() is deprecated in Flet 0.85.1; ft.run() is the recommended alternative
+    ft.run(main)

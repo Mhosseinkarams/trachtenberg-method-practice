@@ -71,6 +71,14 @@ def gen_tracht_9():
     num = random.randint(100, 9099)
     return {"question": f"9 x {num}", "answer": 9 * num}
 
+def gen_tracht_4():
+    num = random.randint(100, 9099)
+    return {"question": f"4 x {num}", "answer": 4 * num}
+
+def gen_tracht_3():
+    num = random.randint(100, 9099)
+    return {"question": f"3 x {num}", "answer": 3 * num}
+
 def gen_vedic_base_1000():
     a = random.randint(990, 1010)
     b = random.randint(990, 1010)
@@ -82,6 +90,11 @@ def gen_vedic_complementary_addition():
     a = base + diff
     b = (10 - diff) + random.randint(0, 4) * 10
     return {"question": f"{a} + {b}", "answer": a + b}
+
+def gen_vedic_subtraction_base():
+    base = 10 ** random.randint(1, 3)
+    num = random.randint(1, base - 1)
+    return {"question": f"{base} - {num}", "answer": base - num}
 
 rules = [
     Rule(
@@ -218,6 +231,33 @@ rules = [
         'Look for numbers that add up to 10, 100, etc. to simplify addition.',
         '48 + 32 = 40 + 30 + (8 + 2) = 70 + 10 = 80',
         gen_vedic_complementary_addition
+    ),
+    Rule(
+        'tracht-4',
+        'Multiplication by 4',
+        'Subtract from 9 and add half of neighbor.',
+        'Trachtenberg',
+        'To multiply by 4: 1. Subtract the right-most digit from 10, add 5 if the digit is odd. 2. For other digits, subtract from 9, add half the neighbor, and add 5 if the digit is odd. 3. Leading zero: half the neighbor minus 1.',
+        '4 x 426: (10-6=4), (9-2+3=10, 1 carry), (9-4+1+1=7), (2-1=1). Answer 1704',
+        gen_tracht_4
+    ),
+    Rule(
+        'tracht-3',
+        'Multiplication by 3',
+        'Two-times the complement and add half neighbor.',
+        'Trachtenberg',
+        'To multiply by 3: 1. Rightmost: Subtract from 10, double, add 5 if odd. 2. Middle: Subtract from 9, double, add half the neighbor, add 5 if odd. 3. Leftmost: Half the neighbor minus 2.',
+        '3 x 422: (10-2)*2=16; (9-2)*2+1+1=16; (9-4)*2+1+1=12; 2-2+1=1. Ans: 1266',
+        gen_tracht_3
+    ),
+    Rule(
+        'vedic-subtraction-base',
+        'Subtraction from Base',
+        'All from 9 and the last from 10.',
+        'Vedic',
+        'To subtract a number from a power of 10: Subtract each digit from 9, and the last (non-zero) digit from 10.',
+        '1000 - 456 = (9-4) (9-5) (10-6) = 544',
+        gen_vedic_subtraction_base
     )
 ]
 
