@@ -7,7 +7,7 @@ class FastMathApp:
         self.page.title = "Fast Math Trainer"
         self.page.theme_mode = ft.ThemeMode.LIGHT
         self.page.padding = 20
-        self.page.bgcolor = ft.Colors.GREY_50
+        self.page.bgcolor = ft.colors.GRAY_50
 
         self.selected_rule = None
         self.current_problem = None
@@ -19,11 +19,11 @@ class FastMathApp:
     def setup_ui(self):
         self.header = ft.Container(
             content=ft.Column([
-                ft.Text("Fast Math Trainer", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.INDIGO_900),
-                ft.Text("Master Rapid Calculation", size=16, color=ft.Colors.GREY_600),
+                ft.Text("Fast Math Trainer", size=32, weight=ft.FontWeight.BOLD, color=ft.colors.INDIGO_900),
+                ft.Text("Master Rapid Calculation", size=16, color=ft.colors.GREY_600),
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-            margin=ft.Margin.only(bottom=20),
-            alignment=ft.Alignment.CENTER
+            margin=ft.margin.only(bottom=20),
+            alignment=ft.alignment.center
         )
 
         self.main_content = ft.Column(expand=True)
@@ -34,7 +34,7 @@ class FastMathApp:
                 self.header,
                 self.main_content,
                 ft.Divider(),
-                ft.Text("© 2024 Fast Math Trainer. Built with Flet.", size=12, color=ft.Colors.GREY_400, text_align=ft.TextAlign.CENTER)
+                ft.Text("© 2024 Fast Math Trainer. Built with Flet.", size=12, color=ft.colors.GREY_400, text_align=ft.TextAlign.CENTER)
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, expand=True)
         )
 
@@ -52,7 +52,7 @@ class FastMathApp:
         grid = ft.Column(spacing=20)
 
         for title, rule_list in sections:
-            grid.controls.append(ft.Text(title, size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800))
+            grid.controls.append(ft.Text(title, size=24, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_800))
 
             rule_grid = ft.ResponsiveRow(spacing=10)
             for rule in rule_list:
@@ -60,12 +60,12 @@ class FastMathApp:
                     ft.Container(
                         content=ft.Column([
                             ft.Text(rule.name, weight=ft.FontWeight.BOLD, size=18),
-                            ft.Text(rule.description, size=14, color=ft.Colors.GREY_600),
+                            ft.Text(rule.description, size=14, color=ft.colors.GREY_600),
                         ]),
                         padding=20,
-                        bgcolor=ft.Colors.WHITE,
+                        bgcolor=ft.colors.WHITE,
                         border_radius=10,
-                        border=ft.Border.all(1, ft.Colors.GREY_200),
+                        border=ft.border.all(1, ft.colors.GREY_200),
                         on_click=lambda e, r=rule: self.select_rule(r),
                         col={"sm": 12, "md": 6, "lg": 4},
                         ink=True
@@ -87,7 +87,7 @@ class FastMathApp:
 
         back_button = ft.TextButton(
             "Back to methods",
-            icon=ft.Icons.ARROW_BACK,
+            icon=ft.icons.ARROW_BACK,
             on_click=lambda _: self.show_rule_selector()
         )
 
@@ -95,14 +95,11 @@ class FastMathApp:
         self.answer_input = ft.TextField(
             label="Enter answer",
             text_align=ft.TextAlign.CENTER,
-            on_submit=self.handle_submit,
-            keyboard_type=ft.KeyboardType.NUMBER,
-            autofocus=True
+            on_submit=self.check_answer,
+            keyboard_type=ft.KeyboardType.NUMBER
         )
         self.feedback_text = ft.Text("", size=18, weight=ft.FontWeight.BOLD)
         self.score_text = ft.Text(f"Score: 0/0", size=16)
-        self.check_button = ft.ElevatedButton("Check Answer", on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE)
-        self.next_button = ft.ElevatedButton("Next Problem", on_click=lambda _: self.next_problem(), width=400, bgcolor=ft.Colors.GREEN_600, color=ft.Colors.WHITE, visible=False)
 
         practice_card = ft.Container(
             content=ft.Column([
@@ -110,17 +107,16 @@ class FastMathApp:
                 ft.Divider(),
                 ft.Column([
                     self.problem_text,
-                    ft.Text("= ?", size=20, color=ft.Colors.GREY_400),
+                    ft.Text("= ?", size=20, color=ft.colors.GREY_400),
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                 self.answer_input,
-                self.check_button,
-                self.next_button,
+                ft.ElevatedButton("Check Answer", on_click=self.check_answer, width=400, bgcolor=ft.colors.INDIGO_600, color=ft.colors.WHITE),
                 self.feedback_text,
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=20),
             padding=30,
-            bgcolor=ft.Colors.WHITE,
+            bgcolor=ft.colors.WHITE,
             border_radius=15,
-            shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.GREY_300)
+            shadow=ft.BoxShadow(blur_radius=10, color=ft.colors.GREY_300)
         )
 
         theory_card = ft.Container(
@@ -131,14 +127,14 @@ class FastMathApp:
                 ft.Container(
                     content=ft.Text(self.selected_rule.example, font_family="monospace"),
                     padding=10,
-                    bgcolor=ft.Colors.GREY_100,
+                    bgcolor=ft.colors.GREY_100,
                     border_radius=5
                 )
             ], spacing=15),
             padding=30,
-            bgcolor=ft.Colors.WHITE,
+            bgcolor=ft.colors.WHITE,
             border_radius=15,
-            border=ft.Border.all(1, ft.Colors.GREY_200)
+            border=ft.border.all(1, ft.colors.GREY_200)
         )
 
         self.main_content.controls.append(back_button)
@@ -155,18 +151,9 @@ class FastMathApp:
         self.current_problem = self.selected_rule.generate_problem()
         self.problem_text.value = self.current_problem["question"]
         self.answer_input.value = ""
-        self.answer_input.disabled = False
         self.feedback_text.value = ""
-        self.check_button.visible = True
-        self.next_button.visible = False
         self.answer_input.focus()
         self.page.update()
-
-    def handle_submit(self, e):
-        if self.check_button.visible:
-            self.check_answer(e)
-        else:
-            self.next_problem()
 
     def check_answer(self, e):
         if not self.answer_input.value:
@@ -181,16 +168,18 @@ class FastMathApp:
         if user_val == self.current_problem["answer"]:
             self.score += 1
             self.feedback_text.value = "Correct!"
-            self.feedback_text.color = ft.Colors.GREEN_600
+            self.feedback_text.color = ft.colors.GREEN_600
+            self.page.update()
+
+            # Show "Correct!" briefly before moving to the next problem
+            import time
+            time.sleep(0.8)
+            self.next_problem()
         else:
             self.feedback_text.value = f"Wrong. The answer was {self.current_problem['answer']}"
-            self.feedback_text.color = ft.Colors.RED_600
+            self.feedback_text.color = ft.colors.RED_600
 
         self.score_text.value = f"Score: {self.score}/{self.total}"
-        self.answer_input.disabled = True
-        self.check_button.visible = False
-        self.next_button.visible = True
-        self.next_button.focus()
         self.page.update()
 
 def main(page: ft.Page):

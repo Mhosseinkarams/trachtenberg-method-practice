@@ -36,11 +36,6 @@ def gen_vedic_base_10():
     b = random.randint(6, 10)
     return {"question": f"{a} x {b}", "answer": a * b}
 
-def gen_vedic_base_100():
-    a = random.randint(90, 99)
-    b = random.randint(90, 99)
-    return {"question": f"{a} x {b}", "answer": a * b}
-
 def gen_vedic_squaring_general():
     num = random.randint(11, 99)
     return {"question": f"{num}²", "answer": num * num}
@@ -54,10 +49,6 @@ def gen_tracht_addition():
     a = random.randint(100, 999)
     b = random.randint(100, 999)
     return {"question": f"{a} + {b}", "answer": a + b}
-
-def gen_tracht_9():
-    num = random.randint(100, 9099)
-    return {"question": f"9 x {num}", "answer": 9 * num}
 
 def gen_vedic_complementary_addition():
     base = random.randint(1, 8) * 10
@@ -113,15 +104,6 @@ rules = [
         gen_vedic_base_10
     ),
     Rule(
-        'vedic-base-100',
-        'Multiplication near base 100',
-        'Nikhilam Sutra.',
-        'Vedic',
-        'Multiply numbers close to 100. Find the deficiencies, multiply them for the right part (2 digits), add crosswise for the left part.',
-        '97 x 96: Deficiencies 3 and 4. 3*4=12. 97-4=93. Answer 9312.',
-        gen_vedic_base_100
-    ),
-    Rule(
         'vedic-squaring-general',
         'General Squaring',
         'Duplex method.',
@@ -147,15 +129,6 @@ rules = [
         'Add columns from left to right, then adjust for carries.',
         '456 + 123 = (4+1) (5+2) (6+3) = 579',
         gen_tracht_addition
-    ),
-    Rule(
-        'tracht-9',
-        'Multiplication by 9',
-        'Subtract from 10, then from 9.',
-        'Trachtenberg',
-        'To multiply by 9: 1. Subtract the right-most digit from 10. 2. For other digits, subtract from 9 and add the neighbor. 3. For the leading zero, subtract 1 from the neighbor.',
-        '9 x 432: (10-2=8), (9-3+2=8), (9-4+3=8), (4-1=3) = 3888',
-        gen_tracht_9
     ),
     Rule(
         'vedic-complementary-addition',
