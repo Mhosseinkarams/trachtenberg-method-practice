@@ -130,8 +130,8 @@ class FastMathApp:
         self.score_text = ft.Text(f"Score: 0/0", size=16)
         self.streak_text = ft.Text(f"Streak: 0", size=16, color=ft.Colors.ORANGE_800, weight=ft.FontWeight.BOLD)
         self.timer_text = ft.Text(f"Time: 00:00", size=16)
-        self.check_button = ft.Button("Check Answer", on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE)
-        self.next_button = ft.Button("Next Problem", on_click=self.next_problem, width=400, bgcolor=ft.Colors.GREEN_600, color=ft.Colors.WHITE, visible=False)
+        self.check_button = ft.ElevatedButton(text="Check Answer", on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE)
+        self.next_button = ft.ElevatedButton(text="Next Problem", on_click=self.next_problem, width=400, bgcolor=ft.Colors.GREEN_600, color=ft.Colors.WHITE, visible=False)
 
         self.practice_card = ft.Container(
             content=ft.Column([
@@ -246,5 +246,4 @@ def main(page: ft.Page):
     FastMathApp(page)
 
 if __name__ == "__main__":
-    # ft.app() is deprecated in Flet 0.85.1; ft.run() is the recommended alternative
-    ft.run(main)
+    ft.app(target=main)
