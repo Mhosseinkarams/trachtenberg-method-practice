@@ -1,0 +1,65 @@
+@@ -0,0 +1,64 @@
+name: Build and Output Fast Math Trainer
+
+on:
+  push:
+    branches: [ main, unified-python-app-migration ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - platform: android
+            os: ubuntu-latest
+            output_dir: build/apk
+            output_file: "*.apk"
+          - platform: windows
+            os: windows-latest
+            output_dir: build/windows
+            output_file: "**/*"
+          - platform: web
+            os: ubuntu-latest
+            output_dir: build/web
+            output_file: "**/*"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flet
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Build App
+        run: |
+          flet build ${{ matrix.platform }} app/
+
+      - name: Prepare outputs folder
+        shell: bash
+        run: |
+          mkdir -p outputs/${{ matrix.platform }}
+          if [ "${{ matrix.platform }}" = "web" ] || [ "${{ matrix.platform }}" = "windows" ]; then
+            cp -r ${{ matrix.output_dir }}/* outputs/${{ matrix.platform }}/
+          else
+            cp ${{ matrix.output_dir }}/${{ matrix.output_file }} outputs/${{ matrix.platform }}/
+          fi
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fast-math-trainer-${{ matrix.platform }}
+          path: outputs/${{ matrix.platform }}
