@@ -21,6 +21,7 @@ class FastMathApp:
         self.streak = 0
         self.start_time = None
         self.timer_running = False
+        self.timer_id = 0
 
         self.setup_ui()
 
@@ -53,19 +54,19 @@ class FastMathApp:
         self.main_content.controls.clear()
 
         categories = [
-            ("Trachtenberg System", "Advanced mental multiplication and addition.", ft.Colors.BLUE_700),
-            ("Vedic Mathematics", "Ancient Indian techniques for rapid calculation.", ft.Colors.ORANGE_700)
+            ("Trachtenberg System", "Advanced mental multiplication and addition.", ft.Colors.BLUE_700, ft.Icons.GRID_VIEW),
+            ("Vedic Mathematics", "Ancient Indian techniques for rapid calculation.", ft.Colors.ORANGE_700, ft.Icons.PSYCHOLOGY)
         ]
 
         category_grid = ft.ResponsiveRow(spacing=20)
-        for name, desc, color in categories:
+        for name, desc, color, icon in categories:
             method_key = "Trachtenberg" if "Trachtenberg" in name else "Vedic"
             category_grid.controls.append(
                 ft.Container(
                     content=ft.Column([
-                        ft.Icon(ft.Icons.CALCULATE, size=40, color=color),
+                        ft.Icon(icon, size=40, color=color),
                         ft.Text(name, size=24, weight=ft.FontWeight.BOLD),
-                        ft.Text(desc, size=16, color=ft.Colors.GREY_600),
+                        ft.Text(desc, size=16, color=ft.Colors.GREY_600, text_align=ft.TextAlign.CENTER),
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                     padding=40,
                     bgcolor=ft.Colors.WHITE,
@@ -125,19 +126,26 @@ class FastMathApp:
         self.total = 0
         self.streak = 0
         self.start_time = time.time()
+
+        # Increment timer_id to invalidate any previous timer tasks
+        self.timer_id += 1
+        self.timer_running = True
+
         # Initialize UI first to ensure timer_text exists before starting the timer task
         self.show_practice_area()
-        if not self.timer_running:
-            self.timer_running = True
-            self.page.run_task(self.update_timer)
+        self.page.run_task(self.update_timer, self.timer_id)
 
-    async def update_timer(self):
-        while self.timer_running:
-            if self.start_time:
-                elapsed = int(time.time() - self.start_time)
-                mins, secs = divmod(elapsed, 60)
-                self.timer_text.value = f"Time: {mins:02d}:{secs:02d}"
-                self.timer_text.update()
+    async def update_timer(self, tid):
+        while self.timer_running and self.timer_id == tid:
+            if self.start_time and hasattr(self, "timer_text"):
+                try:
+                    elapsed = int(time.time() - self.start_time)
+                    mins, secs = divmod(elapsed, 60)
+                    self.timer_text.value = f"Time: {mins:02d}:{secs:02d}"
+                    self.timer_text.update()
+                except Exception:
+                    # Handle cases where timer_text might be briefly unavailable during transitions
+                    pass
             await asyncio.sleep(1)
 
     def show_practice_area(self, update: bool = True):

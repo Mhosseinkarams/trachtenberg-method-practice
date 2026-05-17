@@ -75,6 +75,15 @@ def test_all_rules():
                 elif rule.id == 'vedic-subtraction-base':
                     parts = problem['question'].split(' - ')
                     assert problem['answer'] == int(parts[0]) - int(parts[1])
+                elif rule.id == 'vedic-vertically-crosswise':
+                    parts = problem['question'].split(' x ')
+                    assert problem['answer'] == int(parts[0]) * int(parts[1])
+                elif rule.id == 'vedic-square-near-base':
+                    num = int(problem['question'].replace('²', ''))
+                    assert problem['answer'] == num * num
+                elif rule.id == 'tracht-13':
+                    num = int(problem['question'].split('x ')[1])
+                    assert problem['answer'] == 13 * num
 
             print("PASSED")
         except Exception as e:

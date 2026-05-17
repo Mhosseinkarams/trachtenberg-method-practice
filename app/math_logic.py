@@ -96,6 +96,22 @@ def gen_vedic_subtraction_base():
     num = random.randint(1, base - 1)
     return {"question": f"{base} - {num}", "answer": base - num}
 
+def gen_vedic_vertically_crosswise():
+    a = random.randint(11, 99)
+    b = random.randint(11, 99)
+    return {"question": f"{a} x {b}", "answer": a * b}
+
+def gen_vedic_square_near_base():
+    base = 10 ** random.randint(1, 2)
+    diff = random.randint(-5, 5)
+    if diff == 0: diff = 1
+    num = base + diff
+    return {"question": f"{num}²", "answer": num * num}
+
+def gen_tracht_13():
+    num = random.randint(100, 9099)
+    return {"question": f"13 x {num}", "answer": 13 * num}
+
 rules = [
     Rule(
         'tracht-11',
@@ -258,6 +274,33 @@ rules = [
         'To subtract a number from a power of 10: Subtract each digit from 9, and the last (non-zero) digit from 10.',
         '1000 - 456 = (9-4) (9-5) (10-6) = 544',
         gen_vedic_subtraction_base
+    ),
+    Rule(
+        'vedic-vertically-crosswise',
+        'Vertically and Crosswise',
+        'Urdhva Tiryagbhyam Sutra.',
+        'Vedic',
+        'Multiply 2-digit numbers: 1. Multiply the units (right column). 2. Cross-multiply and add. 3. Multiply the tens (left column). Carry where necessary.',
+        '23 x 12: (2*1) | (2*2 + 3*1) | (3*2) = 2 | 7 | 6 = 276',
+        gen_vedic_vertically_crosswise
+    ),
+    Rule(
+        'vedic-square-near-base',
+        'Squaring near Base',
+        'Yavadunam Sutra.',
+        'Vedic',
+        'To square a number near a base (10, 100): 1. Left part: Number + Deficiency. 2. Right part: Deficiency squared.',
+        '13²: Base 10, diff +3. (13+3) | (3²) = 16 | 9 = 169',
+        gen_vedic_square_near_base
+    ),
+    Rule(
+        'tracht-13',
+        'Multiplication by 13',
+        'Triple the digit and add the neighbor.',
+        'Trachtenberg',
+        'To multiply by 13: Triple each digit in turn and add its neighbor.',
+        '13 x 12 = (3*0+1) (3*1+2) (3*2) = 156.',
+        gen_tracht_13
     )
 ]
 
