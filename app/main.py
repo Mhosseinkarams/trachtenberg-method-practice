@@ -1,5 +1,5 @@
 import flet as ft
-from math_logic import rules
+from math_logic import rules, rules_by_method
 
 class FastMathApp:
     def __init__(self, page: ft.Page):
@@ -27,7 +27,7 @@ class FastMathApp:
         )
 
         self.main_content = ft.Column(expand=True)
-        self.show_rule_selector()
+        self.show_rule_selector(update=False)
 
         self.page.add(
             ft.Column([
@@ -38,15 +38,12 @@ class FastMathApp:
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, expand=True)
         )
 
-    def show_rule_selector(self):
+    def show_rule_selector(self, update=True):
         self.main_content.controls.clear()
 
-        tracht_rules = [r for r in rules if r.method == "Trachtenberg"]
-        vedic_rules = [r for r in rules if r.method == "Vedic"]
-
         sections = [
-            ("Trachtenberg System", tracht_rules),
-            ("Vedic Mathematics", vedic_rules)
+            ("Trachtenberg System", rules_by_method["Trachtenberg"]),
+            ("Vedic Mathematics", rules_by_method["Vedic"])
         ]
 
         grid = ft.Column(spacing=20)
@@ -74,7 +71,8 @@ class FastMathApp:
             grid.controls.append(rule_grid)
 
         self.main_content.controls.append(grid)
-        self.page.update()
+        if update:
+            self.page.update()
 
     def select_rule(self, rule):
         self.selected_rule = rule
@@ -147,13 +145,14 @@ class FastMathApp:
 
         self.next_problem()
 
-    def next_problem(self):
+    def next_problem(self, update=True):
         self.current_problem = self.selected_rule.generate_problem()
         self.problem_text.value = self.current_problem["question"]
         self.answer_input.value = ""
         self.feedback_text.value = ""
         self.answer_input.focus()
-        self.page.update()
+        if update:
+            self.page.update()
 
     def check_answer(self, e):
         if not self.answer_input.value:
@@ -169,10 +168,8 @@ class FastMathApp:
             self.score += 1
             self.feedback_text.value = "Correct!"
             self.feedback_text.color = ft.colors.GREEN_600
-            self.page.update()
-            import time
             # In a real app we'd use a timer, but for simplicity:
-            self.next_problem()
+            self.next_problem(update=False)
         else:
             self.feedback_text.value = f"Wrong. The answer was {self.current_problem['answer']}"
             self.feedback_text.color = ft.colors.RED_600
