@@ -42,7 +42,7 @@ jobs:
           echo "$DELIMITER" >> $GITHUB_OUTPUT
 
       - name: Invoke Jules
-        uses: google-labs-code/jules-invoke@main
+        uses: google-labs-code/jules-action@main
         with:
           prompt: ${{ steps.extract_prompt.outputs.PROMPT }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
