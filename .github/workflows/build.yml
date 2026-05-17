@@ -33,7 +33,7 @@ jobs:
           pip install flet
       - name: Build Web
         run: |
-          flet build web app/
+          flet build web app/ --output build/web --yes
       - name: Upload Web Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -63,7 +63,7 @@ jobs:
           channel: 'stable'
       - name: Build Android APK
         run: |
-          flet build apk app/
+          flet build apk app/ --output build/apk --yes
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
@@ -88,10 +88,10 @@ jobs:
           channel: 'stable'
       - name: Build Windows
         run: |
-          flet build windows app/
+          flet build windows app/ --output build/windows --yes
       - name: List Build Directory
         run: |
-          ls -R build
+          if (Test-Path build) { ls -R build } else { echo "Build directory not found" }
         shell: pwsh
       - name: Upload Windows Distribution
         uses: actions/upload-artifact@v4
