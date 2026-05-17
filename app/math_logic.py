@@ -1,5 +1,4 @@
 import random
-import math
 
 class Rule:
     def __init__(self, id, name, description, method, explanation, example, generate_problem_fn):
@@ -140,3 +139,8 @@ rules = [
         gen_vedic_complementary_addition
     )
 ]
+
+rules_by_method = {
+    "Trachtenberg": [r for r in rules if r.method == "Trachtenberg"],
+    "Vedic": [r for r in rules if r.method == "Vedic"]
+}
