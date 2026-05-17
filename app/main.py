@@ -181,4 +181,4 @@ def main(page: ft.Page):
     FastMathApp(page)
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    ft.run(main)
