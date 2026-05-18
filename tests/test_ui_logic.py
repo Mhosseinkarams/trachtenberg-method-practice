@@ -30,8 +30,10 @@ async def test_category_selection():
 
     # Verify main_content has controls
     assert len(app.main_content.controls) > 0
-    # The first control should be the back button, the second the grid
-    assert isinstance(app.main_content.controls[0], ft.TextButton)
+    # The control is now cached in a Column: [back_button, grid]
+    container = app.main_content.controls[0]
+    assert isinstance(container, ft.Column)
+    assert isinstance(container.controls[0], ft.TextButton)
     # In Flet 0.85.1, 'text' might not be an attribute. We just verify the type for now
     # or check the content if it's set.
 

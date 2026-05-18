@@ -23,6 +23,7 @@ class FastMathApp:
         self.timer_running = False
         self.timer_id = 0
         self.mode = "Learn" # Default mode
+        self.cached_views = {} # Cache for navigation controls
 
         self.setup_ui()
 
@@ -54,72 +55,94 @@ class FastMathApp:
     def show_categories(self, update: bool = True):
         self.main_content.controls.clear()
 
-        categories = [
-            ("Trachtenberg System", "Advanced mental multiplication and addition.", ft.Colors.BLUE_700, ft.Icons.GRID_VIEW),
-            ("Vedic Mathematics", "Ancient Indian techniques for rapid calculation.", ft.Colors.ORANGE_700, ft.Icons.PSYCHOLOGY)
-        ]
-
-        category_grid = ft.ResponsiveRow(spacing=20)
-        for name, desc, color, icon in categories:
-            method_key = "Trachtenberg" if "Trachtenberg" in name else "Vedic"
-            category_grid.controls.append(
-                ft.Container(
-                    content=ft.Column([
-                        ft.Icon(icon, size=40, color=color),
-                        ft.Text(name, size=24, weight=ft.FontWeight.BOLD),
-                        ft.Text(desc, size=16, color=ft.Colors.GREY_600, text_align=ft.TextAlign.CENTER),
-                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                    padding=40,
-                    bgcolor=ft.Colors.WHITE,
-                    border_radius=15,
-                    border=ft.Border.all(1, ft.Colors.GREY_200),
-                    on_click=lambda e, m=method_key: self.show_rule_selector(m),
-                    col={"sm": 12, "md": 6},
-                    ink=True
-                )
-            )
-
-        self.main_content.controls.append(category_grid)
-        if update:
+        # Ensure main_content is on the page before updating it
+        try:
+            if update and not self.main_content.page:
+                update = False
+                self.page.update()
+        except RuntimeError:
+            update = False
             self.page.update()
+
+        if "categories" not in self.cached_views:
+            categories = [
+                ("Trachtenberg System", "Advanced mental multiplication and addition.", ft.Colors.BLUE_700, ft.Icons.GRID_VIEW),
+                ("Vedic Mathematics", "Ancient Indian techniques for rapid calculation.", ft.Colors.ORANGE_700, ft.Icons.PSYCHOLOGY)
+            ]
+
+            category_grid = ft.ResponsiveRow(spacing=20)
+            for name, desc, color, icon in categories:
+                method_key = "Trachtenberg" if "Trachtenberg" in name else "Vedic"
+                category_grid.controls.append(
+                    ft.Container(
+                        content=ft.Column([
+                            ft.Icon(icon, size=40, color=color),
+                            ft.Text(name, size=24, weight=ft.FontWeight.BOLD),
+                            ft.Text(desc, size=16, color=ft.Colors.GREY_600, text_align=ft.TextAlign.CENTER),
+                        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                        padding=40,
+                        bgcolor=ft.Colors.WHITE,
+                        border_radius=15,
+                        border=ft.Border.all(1, ft.Colors.GREY_200),
+                        on_click=lambda e, m=method_key: self.show_rule_selector(m),
+                        col={"sm": 12, "md": 6},
+                        ink=True
+                    )
+                )
+            self.cached_views["categories"] = category_grid
+
+        self.main_content.controls.append(self.cached_views["categories"])
+        if update:
+            self.main_content.update()
 
     def show_rule_selector(self, method: str, update: bool = True):
         self.main_content.controls.clear()
 
-        back_button = ft.TextButton(
-            "Back to Categories",
-            icon=ft.Icons.ARROW_BACK,
-            on_click=lambda _: self.show_categories()
-        )
-
-        rule_list = rules_by_method[method]
-
-        grid = ft.Column(spacing=20)
-        grid.controls.append(ft.Text(f"{method} Methods", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800))
-
-        rule_grid = ft.ResponsiveRow(spacing=10)
-        for rule in rule_list:
-            rule_grid.controls.append(
-                ft.Container(
-                    content=ft.Column([
-                        ft.Text(rule.name, weight=ft.FontWeight.BOLD, size=18),
-                        ft.Text(rule.description, size=14, color=ft.Colors.GREY_600),
-                    ]),
-                    padding=20,
-                    bgcolor=ft.Colors.WHITE,
-                    border_radius=10,
-                    border=ft.Border.all(1, ft.Colors.GREY_200),
-                    on_click=lambda e, r=rule: self.select_rule(r),
-                    col={"sm": 12, "md": 6, "lg": 4},
-                    ink=True
-                )
-            )
-        grid.controls.append(rule_grid)
-
-        self.main_content.controls.append(back_button)
-        self.main_content.controls.append(grid)
-        if update:
+        # Ensure main_content is on the page before updating it
+        try:
+            if update and not self.main_content.page:
+                update = False
+                self.page.update()
+        except RuntimeError:
+            update = False
             self.page.update()
+
+        cache_key = f"rules_{method}"
+        if cache_key not in self.cached_views:
+            back_button = ft.TextButton(
+                "Back to Categories",
+                icon=ft.Icons.ARROW_BACK,
+                on_click=lambda _: self.show_categories()
+            )
+
+            rule_list = rules_by_method[method]
+
+            grid = ft.Column(spacing=20)
+            grid.controls.append(ft.Text(f"{method} Methods", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800))
+
+            rule_grid = ft.ResponsiveRow(spacing=10)
+            for rule in rule_list:
+                rule_grid.controls.append(
+                    ft.Container(
+                        content=ft.Column([
+                            ft.Text(rule.name, weight=ft.FontWeight.BOLD, size=18),
+                            ft.Text(rule.description, size=14, color=ft.Colors.GREY_600),
+                        ]),
+                        padding=20,
+                        bgcolor=ft.Colors.WHITE,
+                        border_radius=10,
+                        border=ft.Border.all(1, ft.Colors.GREY_200),
+                        on_click=lambda e, r=rule: self.select_rule(r),
+                        col={"sm": 12, "md": 6, "lg": 4},
+                        ink=True
+                    )
+                )
+            grid.controls.append(rule_grid)
+            self.cached_views[cache_key] = ft.Column([back_button, grid])
+
+        self.main_content.controls.append(self.cached_views[cache_key])
+        if update:
+            self.main_content.update()
 
     def select_rule(self, rule):
         self.selected_rule = rule
@@ -127,6 +150,15 @@ class FastMathApp:
 
     def show_mode_selection(self, update: bool = True):
         self.main_content.controls.clear()
+
+        # Ensure main_content is on the page before updating it
+        try:
+            if update and not self.main_content.page:
+                update = False
+                self.page.update()
+        except RuntimeError:
+            update = False
+            self.page.update()
 
         back_button = ft.TextButton(
             "Back to methods",
@@ -159,7 +191,7 @@ class FastMathApp:
         self.main_content.controls.append(ft.Text(f"Target: {self.selected_rule.name}", size=20, weight=ft.FontWeight.BOLD))
         self.main_content.controls.append(cards)
         if update:
-            self.page.update()
+            self.main_content.update()
 
     def start_session(self, mode):
         self.mode = mode
@@ -304,11 +336,10 @@ class FastMathApp:
             ])
         )
 
-        if update:
-            self.page.update()
-        self.page.run_task(self.next_problem)
+        # Batch initial problem generation with area setup to reduce updates
+        self.page.run_task(self.next_problem, initial_setup=True)
 
-    async def next_problem(self, e=None):
+    async def next_problem(self, e=None, initial_setup=False):
         try:
             kwargs = {}
             if hasattr(self, 'num_operands_slider'):
@@ -328,7 +359,12 @@ class FastMathApp:
         self.check_button.visible = True
         self.next_button.visible = False
         self.practice_card.bgcolor = ft.Colors.WHITE
-        self.page.update()
+
+        if initial_setup:
+            self.page.update()
+        else:
+            self.practice_card.update()
+
         # In Flet 0.85.1, TextField.focus() is a coroutine and must be awaited
         await self.answer_input.focus()
 
@@ -365,7 +401,7 @@ class FastMathApp:
         self.answer_input.disabled = True
         self.check_button.visible = False
         self.next_button.visible = True
-        self.page.update()
+        self.practice_card.update() # Granular update of the card only
         # In Flet 0.85.1, Button.focus() is a coroutine and must be awaited
         await self.next_button.focus()
 

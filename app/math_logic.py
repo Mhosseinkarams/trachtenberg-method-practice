@@ -1,6 +1,9 @@
 import random
 import math
 
+# Pre-calculate powers of 10 for performance in random number generation
+POWERS_OF_10 = [10**i for i in range(10)]
+
 class Rule:
     def __init__(self, id, name, description, method, explanation, example, generate_problem_fn):
         self.id = id
@@ -53,11 +56,8 @@ def gen_vedic_sqrt_perfect(**kwargs):
 def gen_tracht_addition(num_operands=2, num_digits=3, **kwargs):
     operands = []
     for _ in range(num_operands):
-        if num_digits == 0: # 0 means random
-            d = random.randint(1, 6)
-        else:
-            d = num_digits
-        operands.append(random.randint(10**(d-1), 10**d - 1))
+        d = num_digits if num_digits != 0 else random.randint(1, 6)
+        operands.append(random.randint(POWERS_OF_10[d-1], POWERS_OF_10[d] - 1))
 
     question = " + ".join(map(str, operands))
     answer = sum(operands)
@@ -104,12 +104,9 @@ def gen_vedic_complementary_addition(num_operands=2, num_digits=3, **kwargs):
     return {"question": f"{a} + {b}", "answer": a + b}
 
 def gen_vedic_subtraction_base(num_digits=3, **kwargs):
-    if num_digits == 0:
-        d = random.randint(1, 6)
-    else:
-        d = num_digits
-    base = 10 ** d
-    num = random.randint(10**(d-1), base - 1)
+    d = num_digits if num_digits != 0 else random.randint(1, 6)
+    base = POWERS_OF_10[d]
+    num = random.randint(POWERS_OF_10[d-1], base - 1)
     return {"question": f"{base} - {num}", "answer": base - num}
 
 def gen_vedic_vertically_crosswise(**kwargs):
@@ -118,7 +115,7 @@ def gen_vedic_vertically_crosswise(**kwargs):
     return {"question": f"{a} x {b}", "answer": a * b}
 
 def gen_vedic_square_near_base(**kwargs):
-    base = 10 ** random.randint(1, 2)
+    base = POWERS_OF_10[random.randint(1, 2)]
     diff = random.randint(-5, 5)
     if diff == 0: diff = 1
     num = base + diff
@@ -421,7 +418,7 @@ rules = [
     )
 ]
 
-rules_by_method = {
-    "Trachtenberg": [r for r in rules if r.method == "Trachtenberg"],
-    "Vedic": [r for r in rules if r.method == "Vedic"]
-}
+# Group rules by method in a single pass
+rules_by_method = {}
+for r in rules:
+    rules_by_method.setdefault(r.method, []).append(r)
