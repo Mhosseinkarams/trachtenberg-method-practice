@@ -1,10 +1,23 @@
 import flet as ft
 import time
 import asyncio
+import sys
+import os
+
+# Add the current directory to sys.path to ensure local modules are found
+# This is crucial for bundled apps (Windows/Android) where the app directory
+# is the root of the execution environment.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+
 try:
-    from app_fa.math_logic import rules, rules_by_method, to_persian_digits
+    from math_logic import rules, rules_by_method, to_persian_digits
 except ImportError:
-    from app_fa.math_logic import rules, rules_by_method, to_persian_digits
+    try:
+        from app_fa.math_logic import rules, rules_by_method, to_persian_digits
+    except ImportError:
+        from app.math_logic import rules, rules_by_method, to_persian_digits
 
 class FastMathApp:
     def __init__(self, page: ft.Page):
