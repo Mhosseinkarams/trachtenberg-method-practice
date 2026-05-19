@@ -183,7 +183,12 @@ class FastMathApp:
                     elapsed = int(time.time() - self.start_time)
                     mins, secs = divmod(elapsed, 60)
                     self.timer_text.value = f"Time: {mins:02d}:{secs:02d}"
-                    self.timer_text.update()
+                    # Only update if the control is still part of the page to avoid errors
+                    if self.timer_text.page:
+                        self.timer_text.update()
+                    else:
+                        # Fallback to page update if control is not yet attached
+                        self.page.update()
                 except Exception:
                     # Handle cases where timer_text might be briefly unavailable during transitions
                     pass
@@ -328,7 +333,8 @@ class FastMathApp:
         self.check_button.visible = True
         self.next_button.visible = False
         self.practice_card.bgcolor = ft.Colors.WHITE
-        self.page.update()
+        # Granular update of the practice card instead of the whole page
+        self.practice_card.update()
         # In Flet 0.85.1, TextField.focus() is a coroutine and must be awaited
         await self.answer_input.focus()
 
@@ -365,7 +371,8 @@ class FastMathApp:
         self.answer_input.disabled = True
         self.check_button.visible = False
         self.next_button.visible = True
-        self.page.update()
+        # Granular update of the practice card instead of the whole page
+        self.practice_card.update()
         # In Flet 0.85.1, Button.focus() is a coroutine and must be awaited
         await self.next_button.focus()
 

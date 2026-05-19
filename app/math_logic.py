@@ -1,5 +1,9 @@
 import random
 import math
+from collections import defaultdict
+
+# Pre-calculate powers of 10 to avoid redundant exponentiation in problem generators
+POWERS_OF_10 = [10**i for i in range(10)]
 
 class Rule:
     def __init__(self, id, name, description, method, explanation, example, generate_problem_fn):
@@ -57,7 +61,7 @@ def gen_tracht_addition(num_operands=2, num_digits=3, **kwargs):
             d = random.randint(1, 6)
         else:
             d = num_digits
-        operands.append(random.randint(10**(d-1), 10**d - 1))
+        operands.append(random.randint(POWERS_OF_10[d-1], POWERS_OF_10[d] - 1))
 
     question = " + ".join(map(str, operands))
     answer = sum(operands)
@@ -108,8 +112,8 @@ def gen_vedic_subtraction_base(num_digits=3, **kwargs):
         d = random.randint(1, 6)
     else:
         d = num_digits
-    base = 10 ** d
-    num = random.randint(10**(d-1), base - 1)
+    base = POWERS_OF_10[d]
+    num = random.randint(POWERS_OF_10[d-1], base - 1)
     return {"question": f"{base} - {num}", "answer": base - num}
 
 def gen_vedic_vertically_crosswise(**kwargs):
@@ -118,7 +122,7 @@ def gen_vedic_vertically_crosswise(**kwargs):
     return {"question": f"{a} x {b}", "answer": a * b}
 
 def gen_vedic_square_near_base(**kwargs):
-    base = 10 ** random.randint(1, 2)
+    base = POWERS_OF_10[random.randint(1, 2)]
     diff = random.randint(-5, 5)
     if diff == 0: diff = 1
     num = base + diff
@@ -421,7 +425,7 @@ rules = [
     )
 ]
 
-rules_by_method = {
-    "Trachtenberg": [r for r in rules if r.method == "Trachtenberg"],
-    "Vedic": [r for r in rules if r.method == "Vedic"]
-}
+# Single-pass grouping of rules by method for better efficiency
+rules_by_method = defaultdict(list)
+for r in rules:
+    rules_by_method[r.method].append(r)
