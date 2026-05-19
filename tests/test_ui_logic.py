@@ -14,7 +14,7 @@ async def test_app_initialization():
     # Initialize App
     app = FastMathApp(page)
 
-    assert page.title == "مربی محاسبات سریع"
+    assert page.title == "Fast Math Trainer"
     assert app.selected_rule is None
     # Check if header is added
     assert len(page.add.call_args[0][0].controls) > 0
@@ -26,7 +26,7 @@ async def test_category_selection():
     app = FastMathApp(page)
 
     # Manually trigger show_rule_selector
-    app.show_rule_selector("تراختنبرگ")
+    app.show_rule_selector("Trachtenberg")
 
     # Verify main_content has controls
     assert len(app.main_content.controls) > 0
@@ -42,8 +42,8 @@ async def test_rule_selection_shows_modes():
     app = FastMathApp(page)
 
     rule = MagicMock()
-    rule.method = "تراختنبرگ"
-    rule.name = "قانون تست"
+    rule.method = "Trachtenberg"
+    rule.name = "Test Rule"
 
     app.select_rule(rule)
 
@@ -53,7 +53,7 @@ async def test_rule_selection_shows_modes():
     # Find mode selection text
     found = False
     for control in app.main_content.controls:
-        if isinstance(control, ft.Text) and "هدف:" in control.value:
+        if isinstance(control, ft.Text) and "Target:" in control.value:
             found = True
             break
     assert found
@@ -65,15 +65,15 @@ async def test_start_session_starts_timer():
     app = FastMathApp(page)
 
     rule = MagicMock()
-    rule.method = "تراختنبرگ"
-    rule.name = "قانون تست"
+    rule.method = "Trachtenberg"
+    rule.name = "Test Rule"
     rule.id = "test-rule"
     rule.generate_problem.return_value = {"question": "2+2", "answer": 4}
     app.selected_rule = rule
 
-    app.start_session("تمرین")
+    app.start_session("Practice")
 
-    assert app.mode == "تمرین"
+    assert app.mode == "Practice"
     assert app.timer_running is True
     assert app.timer_id == 1
     page.run_task.assert_any_call(app.update_timer, 1)
@@ -87,7 +87,7 @@ async def test_customization_panel_visibility():
     rule = MagicMock()
     rule.id = "tracht-addition"
     app.selected_rule = rule
-    app.mode = "تمرین"
+    app.mode = "Practice"
 
     app.show_practice_area()
 
@@ -95,9 +95,9 @@ async def test_customization_panel_visibility():
     found_config = False
     for control in app.main_content.controls:
         if isinstance(control, ft.Column) and control.visible:
-            # Look for "پنل تنظیمات" text
+            # Look for "Customization Panel" text
             for sub in control.controls:
-                if isinstance(sub, ft.Text) and "پنل تنظیمات" in sub.value:
+                if isinstance(sub, ft.Text) and "Customization Panel" in sub.value:
                     found_config = True
                     break
     assert found_config
