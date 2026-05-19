@@ -75,7 +75,7 @@ class FastMathApp:
 
         category_grid = ft.ResponsiveRow(spacing=20)
         for name, desc, color, icon in categories:
-            method_key = "Trachtenberg" if "Trachtenberg" in name else "Vedic"
+            method_key = "تراختنبرگ" if "تراختنبرگ" in name else "ودایی"
             category_grid.controls.append(
                 ft.Container(
                     content=ft.Column([
@@ -109,7 +109,7 @@ class FastMathApp:
         rule_list = rules_by_method[method]
 
         grid = ft.Column(spacing=20)
-        grid.controls.append(ft.Text(f"{method} روش‌های ", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800))
+        grid.controls.append(ft.Text(f"روش‌های {method}", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800))
 
         rule_grid = ft.ResponsiveRow(spacing=10)
         for rule in rule_list:
@@ -208,7 +208,7 @@ class FastMathApp:
 
         config_panel = ft.Column(visible=False)
         if self.mode == "تمرین" and self.selected_rule.id in ['tracht-addition', 'vedic-complementary-addition', 'vedic-subtraction-base']:
-            self.num_operands_slider = ft.Slider(min=2, max=5, divisions=3, label="{value} numbers", value=2)
+            self.num_operands_slider = ft.Slider(min=2, max=5, divisions=3, label="{value} عدد", value=2)
             self.num_digits_dropdown = ft.Dropdown(
                 label="ارقام هر عدد",
                 options=[
