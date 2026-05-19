@@ -1,6 +1,13 @@
 import random
 import math
 
+def to_persian_digits(n):
+    n = str(n)
+    english_digits = "0123456789"
+    persian_digits = "۰۱۲۳۴۵۶۷۸۹"
+    translation_table = str.maketrans(english_digits, persian_digits)
+    return n.translate(translation_table)
+
 class Rule:
     def __init__(self, id, name, description, method, explanation, example, generate_problem_fn):
         self.id = id
@@ -16,39 +23,39 @@ class Rule:
 
 def gen_tracht_11(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"11 x {num}", "answer": 11 * num}
+    return {"question": to_persian_digits(f"11 × {num}"), "answer": 11  * num}
 
 def gen_tracht_12(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"12 x {num}", "answer": 12 * num}
+    return {"question": to_persian_digits(f"12 × {num}"), "answer": 12  * num}
 
 def gen_tracht_5(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"5 x {num}", "answer": 5 * num}
+    return {"question": to_persian_digits(f"5 × {num}"), "answer": 5  * num}
 
 def gen_vedic_square_5(**kwargs):
     base = random.randint(1, 12)
-    num = base * 10 + 5
-    return {"question": f"{num}²", "answer": num * num}
+    num = base  * 10 + 5
+    return {"question": to_persian_digits(f"{num}²"), "answer": num  * num}
 
 def gen_vedic_base_10(**kwargs):
     a = random.randint(7, 13)
     b = random.randint(7, 13)
-    return {"question": f"{a} x {b}", "answer": a * b}
+    return {"question": to_persian_digits(f"{a} × {b}"), "answer": a  * b}
 
 def gen_vedic_base_100(**kwargs):
     a = random.randint(90, 110)
     b = random.randint(90, 110)
-    return {"question": f"{a} x {b}", "answer": a * b}
+    return {"question": to_persian_digits(f"{a} × {b}"), "answer": a  * b}
 
 def gen_vedic_squaring_general(**kwargs):
     num = random.randint(11, 99)
-    return {"question": f"{num}²", "answer": num * num}
+    return {"question": to_persian_digits(f"{num}²"), "answer": num  * num}
 
 def gen_vedic_sqrt_perfect(**kwargs):
     root = random.randint(10, 99)
-    num = root * root
-    return {"question": f"√{num}", "answer": root}
+    num = root  * root
+    return {"question": to_persian_digits(f"√{num}"), "answer": root}
 
 def gen_tracht_addition(num_operands=2, num_digits=3, **kwargs):
     operands = []
@@ -65,42 +72,42 @@ def gen_tracht_addition(num_operands=2, num_digits=3, **kwargs):
 
 def gen_tracht_6(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"6 x {num}", "answer": 6 * num}
+    return {"question": to_persian_digits(f"6 × {num}"), "answer": 6  * num}
 
 def gen_tracht_7(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"7 x {num}", "answer": 7 * num}
+    return {"question": to_persian_digits(f"7 × {num}"), "answer": 7  * num}
 
 def gen_tracht_8(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"8 x {num}", "answer": 8 * num}
+    return {"question": to_persian_digits(f"8 × {num}"), "answer": 8  * num}
 
 def gen_tracht_9(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"9 x {num}", "answer": 9 * num}
+    return {"question": to_persian_digits(f"9 × {num}"), "answer": 9  * num}
 
 def gen_tracht_4(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"4 x {num}", "answer": 4 * num}
+    return {"question": to_persian_digits(f"4 × {num}"), "answer": 4  * num}
 
 def gen_tracht_3(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"3 x {num}", "answer": 3 * num}
+    return {"question": to_persian_digits(f"3 × {num}"), "answer": 3  * num}
 
 def gen_vedic_base_1000(**kwargs):
     a = random.randint(990, 1010)
     b = random.randint(990, 1010)
-    return {"question": f"{a} x {b}", "answer": a * b}
+    return {"question": to_persian_digits(f"{a} × {b}"), "answer": a  * b}
 
 def gen_vedic_complementary_addition(num_operands=2, num_digits=3, **kwargs):
     if num_operands > 2 or num_digits != 3:
         # Fallback to general addition if customized beyond its "complementary" definition
         return gen_tracht_addition(num_operands=num_operands, num_digits=num_digits)
 
-    base = random.randint(1, 8) * 10
+    base = random.randint(1, 8)  * 10
     diff = random.randint(1, 9)
     a = base + diff
-    b = (10 - diff) + random.randint(0, 4) * 10
+    b = (10 - diff) + random.randint(0, 4)  * 10
     return {"question": f"{a} + {b}", "answer": a + b}
 
 def gen_vedic_subtraction_base(num_digits=3, **kwargs):
@@ -115,313 +122,313 @@ def gen_vedic_subtraction_base(num_digits=3, **kwargs):
 def gen_vedic_vertically_crosswise(**kwargs):
     a = random.randint(11, 99)
     b = random.randint(11, 99)
-    return {"question": f"{a} x {b}", "answer": a * b}
+    return {"question": to_persian_digits(f"{a} × {b}"), "answer": a  * b}
 
 def gen_vedic_square_near_base(**kwargs):
     base = 10 ** random.randint(1, 2)
     diff = random.randint(-5, 5)
     if diff == 0: diff = 1
     num = base + diff
-    return {"question": f"{num}²", "answer": num * num}
+    return {"question": to_persian_digits(f"{num}²"), "answer": num  * num}
 
 def gen_tracht_13(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"13 x {num}", "answer": 13 * num}
+    return {"question": to_persian_digits(f"13 × {num}"), "answer": 13  * num}
 
 def gen_tracht_general(**kwargs):
     a = random.randint(11, 99)
     b = random.randint(11, 99)
-    return {"question": f"{a} x {b}", "answer": a * b}
+    return {"question": to_persian_digits(f"{a} × {b}"), "answer": a  * b}
 
 def gen_tracht_division(**kwargs):
     divisor = random.randint(2, 12)
     quotient = random.randint(10, 99)
-    num = divisor * quotient
-    return {"question": f"{num} ÷ {divisor}", "answer": quotient}
+    num = divisor  * quotient
+    return {"question": to_persian_digits(f"{num} ÷ {divisor}"), "answer": quotient}
 
 def gen_tracht_sqrt(**kwargs):
     root = random.randint(10, 40)
-    num = root * root
-    return {"question": f"√{num}", "answer": root}
+    num = root  * root
+    return {"question": to_persian_digits(f"√{num}"), "answer": root}
 
 def gen_vedic_div_9(**kwargs):
     num = random.randint(10, 89)
-    return {"question": f"{num} ÷ 9", "answer": num // 9}
+    return {"question": to_persian_digits(f"{num} ÷ 9"), "answer": num // 9}
 
 def gen_vedic_series_9(**kwargs):
     num = random.randint(11, 99)
-    return {"question": f"{num} x 99", "answer": num * 99}
+    return {"question": to_persian_digits(f"{num} × 99"), "answer": num  * 99}
 
 def gen_vedic_ekadhikena(**kwargs):
-    base = random.randint(1, 9) * 10
+    base = random.randint(1, 9)  * 10
     d1 = random.randint(1, 9)
     d2 = 10 - d1
     a = base + d1
     b = base + d2
-    return {"question": f"{a} x {b}", "answer": a * b}
+    return {"question": to_persian_digits(f"{a} × {b}"), "answer": a  * b}
 
 def gen_vedic_cubing(**kwargs):
     base = 10
     diff = random.randint(1, 3)
     num = base + diff
-    return {"question": f"{num}³", "answer": num ** 3}
+    return {"question": to_persian_digits(f"{num}³"), "answer": num ** 3}
 
 rules = [
     Rule(
         'tracht-11',
-        'Multiplication by 11',
-        'Add the neighbor rule.',
-        'Trachtenberg',
-        'To multiply a number by 11: 1. The last digit of the number is the last digit of the answer. 2. Each successive digit of the number is added to its right-hand neighbor. 3. The first digit of the number becomes the first digit of the answer (plus any carry).\n\nCheck: Digit sum(11) * Digit sum(number) = Digit sum(answer).',
-        '11 x 432 = 4 (4+3) (3+2) 2 = 4752',
+        'ضرب اعداد در ۱۱',
+        'قانون اضافه کردن همسایه.',
+        'تراختنبرگ',
+        'برای ضرب یک عدد در ۱۱: ۱. آخرین رقم عدد، آخرین رقم جواب است. ۲. هر رقم متوالی عدد با همسایه سمت راست خود جمع می‌شود. ۳. اولین رقم عدد (به اضافه هر رقم نقلی) اولین رقم جواب می‌شود.\n\nبررسی: مجموع ارقام(۱۱)  × مجموع ارقام(عدد) = مجموع ارقام(جواب).',
+        '۱۱ × ۴۳۲ = ۴ (۴+۳) (۳+۲) ۲ = ۴۷۵۲',
         gen_tracht_11
     ),
     Rule(
         'tracht-12',
-        'Multiplication by 12',
-        'Double the digit and add the neighbor.',
-        'Trachtenberg',
-        'To multiply by 12: Double each digit in turn and add its neighbor.\n\nCheck: Digit sum(12) * Digit sum(number) = Digit sum(answer).',
-        '12 x 413 = (2*4+1) (2*1+3) (2*3) = 4956',
+        'ضرب اعداد در ۱۲',
+        'رقم را دو برابر کرده و با همسایه جمع کنید.',
+        'تراختنبرگ',
+        'برای ضرب در ۱۲: هر رقم را به ترتیب دو برابر کرده و با همسایه خود جمع کنید.\n\nبررسی: مجموع ارقام(۱۲)  × مجموع ارقام(عدد) = مجموع ارقام(جواب).',
+        '۱۲ × ۴۱۳ = (۲×۴+۱) (۲×۱+۳) (۲×۳) = ۴۹۵۶',
         gen_tracht_12
     ),
     Rule(
         'tracht-5',
-        'Multiplication by 5',
-        'Half the neighbor rule.',
-        'Trachtenberg',
-        'Use half the neighbor: if the digit is odd, add 5 to half the neighbor.\n\nCheck: Digit sum(5) * Digit sum(number) = Digit sum(answer).',
-        '5 x 426 = (half of 4) (half of 2) (half of 6) 0 = 2130',
+        'ضرب اعداد در ۵',
+        'قانون نصف همسایه.',
+        'تراختنبرگ',
+        'از نصف همسایه استفاده کنید: اگر رقم فرد است، ۵ را به نصف همسایه اضافه کنید.\n\nبررسی: مجموع ارقام(۵)  × مجموع ارقام(عدد) = مجموع ارقام(جواب).',
+        '۵ × ۴۲۶ = (نصف ۴) (نصف ۲) (نصف ۶) ۰ = ۲۱۳۰',
         gen_tracht_5
     ),
     Rule(
         'vedic-square-5',
-        'Squaring ending in 5',
-        'By one more than the previous one.',
-        'Vedic',
-        'To square a number ending in 5: Multiply the part before 5 by (itself + 1), then append 25.\n\nCheck: Digit sum(number)² = Digit sum(answer).',
-        '35² = (3 * 4) | 25 = 1225',
+        'مربع اعداد مختوم به ۵',
+        'با یکی بیشتر از قبلی.',
+        'ودایی',
+        'برای محاسبه مربع عددی که به ۵ ختم می‌شود: قسمت قبل از ۵ را در (خودش + ۱) ضرب کنید، سپس ۲۵ را به انتهای آن اضافه کنید.\n\nبررسی: مجموع ارقام(عدد)² = مجموع ارقام(جواب).',
+        '۳۵² = (۳ × ۴) | ۲۵ = ۱۲۲۵',
         gen_vedic_square_5
     ),
     Rule(
         'vedic-base-10',
-        'Multiplication near base 10',
-        'All from 9 and the last from 10.',
-        'Vedic',
-        'Multiply numbers close to 10. Find the deficiencies, multiply them for the right part, add crosswise for the left part.\n\nCheck: Casting out nines.',
-        '9 x 8: Deficiencies are 1 and 2. 1*2=2. 9-2=7 or 8-1=7. Answer 72.',
+        'ضرب نزدیک به مبنای ۱۰',
+        'همه از ۹ و آخرین از ۱۰.',
+        'ودایی',
+        'اعداد نزدیک به ۱۰ را ضرب کنید. کمبودها را پیدا کنید، آن‌ها را برای قسمت راست ضرب کنید، و برای قسمت چپ به صورت متقاطع جمع کنید.\n\nبررسی: روش طرد ۹.',
+        '۹ × ۸: اختلاف‌ها ۱ و ۲ هستند. ۱×۲=۲. ۹-۲=۷ یا ۸-۱=۷. جواب ۷۲.',
         gen_vedic_base_10
     ),
     Rule(
         'vedic-base-100',
-        'Multiplication near base 100',
-        'Nikhilam Sutra.',
-        'Vedic',
-        'Multiply numbers close to 100. Find the deficiencies, multiply them for the right part (2 digits), add crosswise for the left part.\n\nCheck: Casting out nines.',
-        '97 x 96: Deficiencies 3 and 4. 3*4=12. 97-4=93. Answer 9312.',
+        'ضرب نزدیک به مبنای ۱۰۰',
+        'نیکیلام سوترا.',
+        'ودایی',
+        'اعداد نزدیک به ۱۰۰ را ضرب کنید. کمبودها را پیدا کنید، آن‌ها را برای قسمت راست (۲ رقم) ضرب کنید، و برای قسمت چپ به صورت متقاطع جمع کنید.\n\nبررسی: روش طرد ۹.',
+        '۹۷ × ۹۶: اختلاف‌ها ۳ و ۴. ۳×۴=۱۲. ۹۷-۴=۹۳. جواب ۹۳۱۲.',
         gen_vedic_base_100
     ),
     Rule(
         'vedic-squaring-general',
-        'General Squaring',
-        'Duplex method.',
-        'Vedic',
-        'To square any number: use the duplex (D). For a single digit a, D=a^2. For two digits ab, D=2ab.\n\nCheck: Digit sum(number)² = Digit sum(answer).',
-        '23² = D(2) | D(23) | D(3) = 4 | 12 | 9 = 529',
+        'مربع اعداد عمومی',
+        'روش دوبلکس.',
+        'ودایی',
+        'برای مربع کردن هر عدد: از دوبلکس (D) استفاده کنید. برای یک رقم a، D=a^۲. برای دو رقم ab، D=۲ab.\n\nبررسی: مجموع ارقام(عدد)² = مجموع ارقام(جواب).',
+        '۲۳² = D(۲) | D(۲۳) | D(۳) = ۴ | ۱۲ | ۹ = ۵۲۹',
         gen_vedic_squaring_general
     ),
     Rule(
         'vedic-sqrt-perfect',
-        'Square Root (Perfect)',
-        'Observation method.',
-        'Vedic',
-        'Look at the last digit to find the possible last digit of the root. Ignore last two digits and find the nearest square below the remaining number.\n\nCheck: Result squared should equal original number.',
-        'sqrt(1225): ends in 5, so root ends in 5. 12 is between 3^2 and 4^2. So tens digit is 3. Answer 35.',
+        'جذر (کامل)',
+        'روش مشاهده.',
+        'ودایی',
+        'به رقم آخر نگاه کنید تا رقم آخر احتمالی ریشه را پیدا کنید. دو رقم آخر را نادیده بگیرید و نزدیک‌ترین مربع کمتر از عدد باقی‌مانده را پیدا کنید.\n\nبررسی: مربع نتیجه باید برابر با عدد اصلی باشد.',
+        'جذر ۱۲۲۵: به ۵ ختم می‌شود، پس ریشه به ۵ ختم می‌شود. ۱۲ بین ۳^۲ و ۴^۲ است. پس رقم دهگان ۳ است. جواب ۳۵.',
         gen_vedic_sqrt_perfect
     ),
     Rule(
         'tracht-addition',
-        'Rapid Addition',
-        'The L-R column method.',
-        'Trachtenberg',
-        'Add columns from left to right, then adjust for carries.\n\nCheck: Sum of digit sums of each number = Digit sum of total.',
-        '456 + 123 = (4+1) (5+2) (6+3) = 579',
+        'جمع سریع',
+        'روش ستونی چپ به راست.',
+        'تراختنبرگ',
+        'ستون‌ها را از چپ به راست جمع کنید، سپس رقم‌های نقلی را تنظیم کنید.\n\nبررسی: مجموع ارقام هر عدد = مجموع ارقام کل.',
+        '۴۵۶ + ۱۲۳ = (۴+۱) (۵+۲) (۶+۳) = ۵۷۹',
         gen_tracht_addition
     ),
     Rule(
         'tracht-6',
-        'Multiplication by 6',
-        'Add half the neighbor rule.',
-        'Trachtenberg',
-        'To multiply by 6: Add half of the neighbor to each digit. If the digit is odd, add 5.\n\nCheck: Digit sum(6) * Digit sum(number) = Digit sum(answer).',
-        '6 x 422 = (4+1) (2+1) (2+0) = 2532',
+        'ضرب اعداد در ۶',
+        'قانون اضافه کردن نصف همسایه.',
+        'تراختنبرگ',
+        'برای ضرب در ۶: نصف همسایه را به هر رقم اضافه کنید. اگر رقم فرد است، ۵ را اضافه کنید.\n\nبررسی: مجموع ارقام(۶)  × مجموع ارقام(عدد) = مجموع ارقام(جواب).',
+        '۶ × ۴۲۲ = (۴+۱) (۲+۱) (۲+۰) = ۲۵۳۲',
         gen_tracht_6
     ),
     Rule(
         'tracht-7',
-        'Multiplication by 7',
-        'Double the digit and add half the neighbor.',
-        'Trachtenberg',
-        'To multiply by 7: Double each digit and add half of the neighbor. If the digit is odd, add 5.\n\nCheck: Digit sum(7) * Digit sum(number) = Digit sum(answer).',
-        '7 x 242 = (2*2+2) (2*4+1) (2*2+0) = 1694',
+        'ضرب اعداد در ۷',
+        'رقم را دو برابر کرده و با نصف همسایه جمع کنید.',
+        'تراختنبرگ',
+        'برای ضرب در ۷: هر رقم را دو برابر کرده و با نصف همسایه جمع کنید. اگر رقم فرد است، ۵ را اضافه کنید.\n\nبررسی: مجموع ارقام(۷)  × مجموع ارقام(عدد) = مجموع ارقام(جواب).',
+        '۷ × ۲۴۲ = (۲×۲+۲) (۲×۴+۱) (۲×۲+۰) = ۱۶۹۴',
         gen_tracht_7
     ),
     Rule(
         'tracht-8',
-        'Multiplication by 8',
-        'Double the complement and add neighbor.',
-        'Trachtenberg',
-        'To multiply by 8: 1. Rightmost: (10 - digit) * 2. 2. Middle: (9 - digit) * 2 + neighbor. 3. Leftmost: neighbor - 2.\n\nCheck: Digit sum(8) * Digit sum(number) = Digit sum(answer).',
-        '8 x 432: (10-2)*2=16; (9-3)*2+2+1=15; (9-4)*2+3+1=14; 4-2+1=3. Ans: 3456',
+        'ضرب اعداد در ۸',
+        'دو برابر متمم و جمع با همسایه.',
+        'تراختنبرگ',
+        'برای ضرب در ۸: ۱. سمت راست‌ترین: ۲  × (۱۰ - رقم). ۲. میانی: (۲  × (۹ - رقم)) + همسایه. ۳. سمت چپ‌ترین: همسایه - ۲.\n\nبررسی: مجموع ارقام(۸)  × مجموع ارقام(عدد) = مجموع ارقام(جواب).',
+        '۸ × ۴۳۲: (۱۰-۲)×۲=۱۶; (۹-۳)×۲+۲+۱=۱۵ (۱ منتقل میشه); (۹-۴)×۲+۳+۱=۱۴ (۱ منتقل میشه); ۴-۲+۱=۳. جواب: ۳۴۵۶',
         gen_tracht_8
     ),
     Rule(
         'tracht-9',
-        'Multiplication by 9',
-        'Subtract from 10, then from 9.',
-        'Trachtenberg',
-        'To multiply by 9: 1. Subtract the right-most digit from 10. 2. For other digits, subtract from 9 and add the neighbor. 3. For the leading zero, subtract 1 from the neighbor.\n\nCheck: Result digit sum should be 9.',
-        '9 x 432: (10-2=8), (9-3+2=8), (9-4+3=8), (4-1=3) = 3888',
+        'ضرب اعداد در ۹',
+        'تفریق از ۱۰، سپس از ۹.',
+        'تراختنبرگ',
+        'برای ضرب در ۹: ۱. سمت راست‌ترین رقم را از ۱۰ کم کنید. ۲. برای سایر ارقام، آن‌ها را از ۹ کم کرده و با همسایه جمع کنید. ۳. برای صفر پیشرو، ۱ را از همسایه کم کنید.\n\nبررسی: مجموع ارقام نتیجه باید ۹ باشد.',
+        '۹ × ۴۳۲: (۱۰-۲=۸), (۹-۳+۲=۸), (۹-۴+۳=۸), (۴-۱=۳) = ۳۸۸۸',
         gen_tracht_9
     ),
     Rule(
         'vedic-base-1000',
-        'Multiplication near base 1000',
-        'Nikhilam Sutra (Base 1000).',
-        'Vedic',
-        'Multiply numbers close to 1000. Find deficiencies, multiply them for the right part (3 digits), add crosswise for the left part.\n\nCheck: Casting out nines.',
-        '998 x 997: Deficiencies 2 and 3. 2*3=006. 998-3=995. Answer 995006.',
+        'ضرب نزدیک به مبنای ۱۰۰۰',
+        'نیکیلام سوترا (مبنای ۱۰۰۰).',
+        'ودایی',
+        'اعداد نزدیک به ۱۰۰۰ را ضرب کنید. کمبودها را پیدا کنید، آن‌ها را برای قسمت راست (۳ رقم) ضرب کنید، و برای قسمت چپ به صورت متقاطع جمع کنید.\n\nبررسی: روش طرد ۹.',
+        '۹۹۸ × ۹۹۷: اختلاف‌ها ۲ و ۳. ۲×۳=۰۰۶. ۹۹۸-۳=۹۹۵. جواب ۹۹۵۰۰۶.',
         gen_vedic_base_1000
     ),
     Rule(
         'vedic-complementary-addition',
-        'Complementary Addition',
-        'Completing the whole.',
-        'Vedic',
-        'Look for numbers that add up to 10, 100, etc. to simplify addition.\n\nCheck: Sum of digit sums = Digit sum of total.',
-        '48 + 32 = 40 + 30 + (8 + 2) = 70 + 10 = 80',
+        'جمع متمم',
+        'تکمیل کردن کل.',
+        'ودایی',
+        'به دنبال اعدادی بگردید که حاصل جمع آن‌ها ۱۰، ۱۰۰ و غیره می‌شود تا جمع ساده‌تر شود.\n\nبررسی: مجموع مجموع ارقام = مجموع ارقام کل.',
+        '۴۸ + ۳۲ = ۴۰ + ۳۰ + (۸ + ۲) = ۷۰ + ۱۰ = ۸۰',
         gen_vedic_complementary_addition
     ),
     Rule(
         'tracht-4',
-        'Multiplication by 4',
-        'Subtract from 9 and add half of neighbor.',
-        'Trachtenberg',
-        'To multiply by 4: 1. Subtract the right-most digit from 10, add 5 if the digit is odd. 2. For other digits, subtract from 9, add half the neighbor, and add 5 if the digit is odd. 3. Leading zero: half the neighbor minus 1.\n\nCheck: Digit sum(4) * Digit sum(number) = Digit sum(answer).',
-        '4 x 426: (10-6=4), (9-2+3=10, 1 carry), (9-4+1+1=7), (2-1=1). Answer 1704',
+        'ضرب اعداد در ۴',
+        'تفریق از ۹ و جمع با نصف همسایه.',
+        'تراختنبرگ',
+        'برای ضرب در ۴: ۱. رقم سمت راست را از ۱۰ کم کنید، اگر رقم فرد است ۵ را اضافه کنید. ۲. برای سایر ارقام، از ۹ کم کنید، نصف همسایه را اضافه کنید و اگر رقم فرد است ۵ را اضافه کنید. ۳. صفر پیشرو: نصف همسایه منهای ۱.\n\nبررسی: مجموع ارقام(۴)  × مجموع ارقام(عدد) = مجموع ارقام(جواب).',
+        '۴ × ۴۲۶: (۱۰-۶=۴), (۹-۲+۳=۱۰, ۱ منتقل میشه), (۹-۴+۱+۱=۷), (۲-۱=۱). جواب ۱۷۰۴',
         gen_tracht_4
     ),
     Rule(
         'tracht-3',
-        'Multiplication by 3',
-        'Two-times the complement and add half neighbor.',
-        'Trachtenberg',
-        'To multiply by 3: 1. Rightmost: Subtract from 10, double, add 5 if odd. 2. Middle: Subtract from 9, double, add half the neighbor, add 5 if odd. 3. Leftmost: Half the neighbor minus 2.\n\nCheck: Digit sum(3) * Digit sum(number) = Digit sum(answer).',
-        '3 x 422: (10-2)*2=16; (9-2)*2+1+1=16; (9-4)*2+1+1=12; 2-2+1=1. Ans: 1266',
+        'ضرب اعداد در ۳',
+        'دو برابر متمم و جمع با نصف همسایه.',
+        'تراختنبرگ',
+        'برای ضرب در ۳: ۱. سمت راست‌ترین: از ۱۰ کم کنید، دو برابر کنید، اگر فرد است ۵ را اضافه کنید. ۲. میانی: از ۹ کم کنید، دو برابر کنید، نصف همسایه را اضافه کنید، اگر فرد است ۵ را اضافه کنید. ۳. سمت چپ‌ترین: نصف همسایه منهای ۲.\n\nبررسی: مجموع ارقام(۳)  × مجموع ارقام(عدد) = مجموع ارقام(جواب).',
+        '۳ × ۴۲۲: (۱۰-۲)×۲=۱۶; (۹-۲)×۲+۱+۱=۱۶; (۹-۴)×۲+۱+۱=۱۲; ۲-۲+۱=۱. جواب: ۱۲۶۶',
         gen_tracht_3
     ),
     Rule(
         'vedic-subtraction-base',
-        'Subtraction from Base',
-        'All from 9 and the last from 10.',
-        'Vedic',
-        'To subtract a number from a power of 10: Subtract each digit from 9, and the last (non-zero) digit from 10.\n\nCheck: Answer + Number = Base.',
-        '1000 - 456 = (9-4) (9-5) (10-6) = 544',
+        'تفریق از مبنا',
+        'همه از ۹ و آخرین از ۱۰.',
+        'ودایی',
+        'برای تفریق یک عدد از توان ۱۰: هر رقم را از ۹ و آخرین رقم (غیر صفر) را از ۱۰ کم کنید.\n\nبررسی: پاسخ + عدد = مبنا.',
+        '۱۰۰۰ - ۴۵۶ = (۹-۴) (۹-۵) (۱۰-۶) = ۵۴۴',
         gen_vedic_subtraction_base
     ),
     Rule(
         'vedic-vertically-crosswise',
-        'Vertically and Crosswise',
-        'Urdhva Tiryagbhyam Sutra.',
-        'Vedic',
-        'Multiply 2-digit numbers: 1. Multiply the units (right column). 2. Cross-multiply and add. 3. Multiply the tens (left column). Carry where necessary.\n\nCheck: Casting out nines.',
-        '23 x 12: (2*1) | (2*2 + 3*1) | (3*2) = 2 | 7 | 6 = 276',
+        'عمودی و متقاطع',
+        'اوردوا تیریاگبیام سوترا.',
+        'ودایی',
+        'ضرب اعداد ۲ رقمی: ۱. یکان‌ها را ضرب کنید (ستون راست). ۲. ضرب متقاطع کرده و جمع کنید. ۳. دهگان‌ها را ضرب کنید (ستون چپ). در صورت نیاز رقم نقلی را منتقل کنید.\n\nبررسی: روش طرد ۹.',
+        '۲۳ × ۱۲: (۲×۱) | (۲×۲ + ۳×۱) | (۳×۲) = ۲ | ۷ | ۶ = ۲۷۶',
         gen_vedic_vertically_crosswise
     ),
     Rule(
         'vedic-square-near-base',
-        'Squaring near Base',
-        'Yavadunam Sutra.',
-        'Vedic',
-        'To square a number near a base (10, 100): 1. Left part: Number + Deficiency. 2. Right part: Deficiency squared.\n\nCheck: Digit sum(number)² = Digit sum(answer).',
-        '13²: Base 10, diff +3. (13+3) | (3²) = 16 | 9 = 169',
+        'مربع نزدیک به مبنا',
+        'یاوادونام سوترا.',
+        'ودایی',
+        'برای مربع کردن عددی نزدیک به مبنا (۱۰، ۱۰۰): ۱. قسمت چپ: عدد + اختلاف. ۲. قسمت راست: مجذور اختلاف.\n\nبررسی: مجموع ارقام(عدد)² = مجموع ارقام(جواب).',
+        '۱۳²: مبنا ۱۰، اختلاف +۳. (۱۳+۳) | (۳²) = ۱۶ | ۹ = ۱۶۹',
         gen_vedic_square_near_base
     ),
     Rule(
         'tracht-13',
-        'Multiplication by 13',
-        'Triple the digit and add the neighbor.',
-        'Trachtenberg',
-        'To multiply by 13: Triple each digit in turn and add its neighbor.\n\nCheck: Casting out nines (Digit sum). Sum the digits of the result. It should equal the digit sum of (1 + 3) * digit sum of the number.',
-        '13 x 12 = (3*0+1) (3*1+2) (3*2) = 156.',
+        'ضرب اعداد در ۱۳',
+        'رقم را سه برابر کرده و با همسایه جمع کنید.',
+        'تراختنبرگ',
+        'برای ضرب در ۱۳: هر رقم را به ترتیب سه برابر کرده و با همسایه خود جمع کنید.\n\nبررسی: روش طرد ۹. مجموع ارقام حاصل‌ضرب باید برابر با مجموع ارقام (۱ + ۳) ضرب در مجموع ارقام عدد باشد.',
+        '۱۳ × ۱۲ = (۳×۰+۱) (۳×۱+۲) (۳×۲) = ۱۵۶.',
         gen_tracht_13
     ),
     Rule(
         'tracht-general',
-        'General Multiplication',
-        'Two-finger method.',
-        'Trachtenberg',
-        'Direct multiplication without tables. Use the "Outside-Inside" rule: multiply the outside pair and the inside pair and add. Repeat for each position.\n\nCheck: Casting out nines (Digit sum).',
-        '23 x 12 = (2*1) | (2*2 + 3*1) | (3*2) = 276',
+        'ضرب عمومی',
+        'روش دو انگشتی.',
+        'تراختنبرگ',
+        'ضرب مستقیم بدون جدول. از قانون "بیرون-درون" استفاده کنید: جفت بیرونی و جفت درونی را ضرب کرده و جمع کنید. برای هر موقعیت تکرار کنید.\n\nبررسی: روش طرد ۹.',
+        '۲۳ × ۱۲ = (۲×۱) | (۲×۲ + ۳×۱) | (۳×۲) = ۲۷۶',
         gen_tracht_general
     ),
     Rule(
         'tracht-division',
-        'Direct Division',
-        'Speed and accuracy method.',
-        'Trachtenberg',
-        'Divide using the leading digit of the divisor, then subtract the results of subsequent products from the remainder.\n\nCheck: Multiplication of result and divisor should equal original number.',
-        '156 ÷ 12 = 13',
+        'تقسیم مستقیم',
+        'روش سرعت و دقت.',
+        'تراختنبرگ',
+        'با استفاده از رقم پیشرو مقسوم‌علیه تقسیم کنید، سپس نتایج حاصل‌ضرب‌های بعدی را از باقی‌مانده کم کنید.\n\nبررسی: حاصل‌ضرب نتیجه در مقسوم‌علیه باید برابر با عدد اصلی باشد.',
+        '۱۵۶ ÷ ۱۲ = ۱۳',
         gen_tracht_division
     ),
     Rule(
         'tracht-sqrt',
-        'Square Root',
-        'Systematic extraction.',
-        'Trachtenberg',
-        'Extract digits using the systematic "work back" method based on the nearest square and remainders.\n\nCheck: Result squared should equal original number.',
-        '√625 = 25',
+        'جذر',
+        'استخراج سیستماتیک.',
+        'تراختنبرگ',
+        'ارقام را با استفاده از روش سیستماتیک "محاسبه معکوس" بر اساس نزدیک‌ترین مربع و باقی‌مانده‌ها استخراج کنید.\n\nبررسی: مربع نتیجه باید برابر با عدد اصلی باشد.',
+        'جذر ۶۲۵ = ۲۵',
         gen_tracht_sqrt
     ),
     Rule(
         'vedic-div-9',
-        'Division by 9',
-        'Nikilam addition method.',
-        'Vedic',
-        'The first digit is the first digit of the quotient. Successively add digits for subsequent quotient digits and the final remainder.\n\nCheck: Result * 9 + Remainder = Number.',
-        '23 ÷ 9 = 2 R 5',
+        'تقسیم بر ۹',
+        'روش جمع نیکیلام.',
+        'ودایی',
+        'رقم اول همان رقم اول خارج‌قسمت است. به طور متوالی ارقام را برای ارقام بعدی خارج‌قسمت و باقی‌مانده نهایی جمع کنید.\n\nبررسی: خارج‌قسمت  × ۹ + باقی‌مانده = عدد اصلی.',
+        '۲۳ ÷ ۹ = ۲ باقی‌مانده ۵',
         gen_vedic_div_9
     ),
     Rule(
         'vedic-series-9',
-        'Multiplication by Series of 9s',
-        'By one less than the previous one.',
-        'Vedic',
-        'Subtract 1 from the number for the left part, then subtract the number from the base (all from 9, last from 10) for the right part.\n\nCheck: Casting out nines.',
-        '43 x 99 = (43-1) | (100-43) = 4257',
+        'ضرب اعداد در سری ۹',
+        'با یکی کمتر از قبلی.',
+        'ودایی',
+        'برای بخش چپ ۱ واحد از عدد کم کنید، سپس برای بخش راست عدد را از مبنا کم کنید (همه از ۹، آخرین از ۱۰).\n\nبررسی: روش طرد ۹.',
+        '۴۳ × ۹۹ = (۴۳-۱) | (۱۰۰-۴۳) = ۴۲۵۷',
         gen_vedic_series_9
     ),
     Rule(
         'vedic-ekadhikena',
-        'Units add to 10',
-        'Ekadhikena Purvena.',
-        'Vedic',
-        'If the tens digits are same and units sum to 10: Multiply tens by (tens + 1) for left part, multiply units for right part.\n\nCheck: Casting out nines.',
-        '42 x 48 = (4*5) | (2*8) = 2016',
+        'یکان‌های مکمل ۱۰',
+        'اکادیکنا پورونا.',
+        'ودایی',
+        'اگر ارقام دهگان یکسان و مجموع یکان‌ها ۱۰ باشد: دهگان را در (دهگان + ۱) برای بخش چپ ضرب کنید، و یکان‌ها را برای بخش راست در هم ضرب کنید.\n\nبررسی: روش طرد ۹.',
+        '۴۲ × ۴۸ = (۴×۵) | (۲×۸) = ۲۰۱۶',
         gen_vedic_ekadhikena
     ),
     Rule(
         'vedic-cubing',
-        'Cubing near Base',
-        'Yavadunam (Cubing).',
-        'Vedic',
-        'To cube a number near base 10: 1. Left: Number + 2*Diff. 2. Middle: 3*Diff^2. 3. Right: Diff^3.\n\nCheck: Digit sum(number)³ = Digit sum(answer).',
-        '12³: Base 10, diff 2. (12+4) | (3*4) | (8) = 16 | 12 | 8 = 1728',
+        'مکعب نزدیک به مبنا',
+        'یاوادونام (مکعب).',
+        'ودایی',
+        'برای محاسبه مکعب عددی نزدیک به مبنای ۱۰: ۱. چپ: عدد + ۲ × اختلاف. ۲. میانی: ۳ × مجذور اختلاف. ۳. راست: مکعب اختلاف.\n\nبررسی: مجموع ارقام(عدد)³ = مجموع ارقام(جواب).',
+        '۱۲³: مبنا ۱۰، اختلاف ۲. (۱۲+۴) | (۳×۴) | (۸) = ۱۶ | ۱۲ | ۸ = ۱۷۲۸',
         gen_vedic_cubing
     )
 ]
 
 rules_by_method = {
-    "Trachtenberg": [r for r in rules if r.method == "Trachtenberg"],
-    "Vedic": [r for r in rules if r.method == "Vedic"]
+    "تراختنبرگ": [r for r in rules if r.method == "تراختنبرگ"],
+    "ودایی": [r for r in rules if r.method == "ودایی"]
 }

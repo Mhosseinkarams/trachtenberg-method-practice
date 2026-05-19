@@ -2,14 +2,15 @@ import flet as ft
 import time
 import asyncio
 try:
-    from math_logic import rules, rules_by_method
+    from math_logic import rules, rules_by_method, to_persian_digits
 except ImportError:
-    from app.math_logic import rules, rules_by_method
+    from app.math_logic import rules, rules_by_method, to_persian_digits
 
 class FastMathApp:
     def __init__(self, page: ft.Page):
         self.page = page
-        self.page.title = "Fast Math Trainer"
+        self.page.title = "مربی محاسبات سریع"
+        self.page.rtl = True
         self.page.theme_mode = ft.ThemeMode.LIGHT
         self.page.padding = 20
         self.page.bgcolor = ft.Colors.GREY_50
@@ -22,7 +23,7 @@ class FastMathApp:
         self.start_time = None
         self.timer_running = False
         self.timer_id = 0
-        self.mode = "Learn" # Default mode
+        self.mode = "آموزش" # Default mode
 
         self.setup_ui()
 
@@ -30,8 +31,8 @@ class FastMathApp:
         self.page.scroll = ft.ScrollMode.AUTO
         self.header = ft.Container(
             content=ft.Column([
-                ft.Text("Fast Math Trainer", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.INDIGO_900),
-                ft.Text("Master Rapid Calculation", size=16, color=ft.Colors.GREY_600),
+                ft.Text("مربی محاسبات سریع", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.INDIGO_900),
+                ft.Text("تسلط بر محاسبات ذهنی سریع", size=16, color=ft.Colors.GREY_600),
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
             margin=ft.Margin.only(bottom=20),
             alignment=ft.Alignment.CENTER
@@ -45,7 +46,7 @@ class FastMathApp:
                 self.header,
                 self.main_content,
                 ft.Divider(),
-                ft.Text("© 2024 Fast Math Trainer. Built with Flet.", size=12, color=ft.Colors.GREY_400, text_align=ft.TextAlign.CENTER)
+                ft.Text("© ۲۰۲۴ مربی محاسبات سریع. ساخته شده با Flet.", size=12, color=ft.Colors.GREY_400, text_align=ft.TextAlign.CENTER)
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
         )
         if update:
@@ -55,13 +56,13 @@ class FastMathApp:
         self.main_content.controls.clear()
 
         categories = [
-            ("Trachtenberg System", "Advanced mental multiplication and addition.", ft.Colors.BLUE_700, ft.Icons.GRID_VIEW),
-            ("Vedic Mathematics", "Ancient Indian techniques for rapid calculation.", ft.Colors.ORANGE_700, ft.Icons.PSYCHOLOGY)
+            ("سیستم تراختنبرگ", "ضرب و جمع ذهنی پیشرفته.", ft.Colors.BLUE_700, ft.Icons.GRID_VIEW),
+            ("ریاضیات ودایی", "تکنیک‌های هند باستان برای محاسبات سریع.", ft.Colors.ORANGE_700, ft.Icons.PSYCHOLOGY)
         ]
 
         category_grid = ft.ResponsiveRow(spacing=20)
         for name, desc, color, icon in categories:
-            method_key = "Trachtenberg" if "Trachtenberg" in name else "Vedic"
+            method_key = "تراختنبرگ" if "تراختنبرگ" in name else "ودایی"
             category_grid.controls.append(
                 ft.Container(
                     content=ft.Column([
@@ -87,7 +88,7 @@ class FastMathApp:
         self.main_content.controls.clear()
 
         back_button = ft.TextButton(
-            "Back to Categories",
+            "بازگشت به دسته‌بندی‌ها",
             icon=ft.Icons.ARROW_BACK,
             on_click=lambda _: self.show_categories()
         )
@@ -95,7 +96,7 @@ class FastMathApp:
         rule_list = rules_by_method[method]
 
         grid = ft.Column(spacing=20)
-        grid.controls.append(ft.Text(f"{method} Methods", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800))
+        grid.controls.append(ft.Text(f"روش‌های {method}", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800))
 
         rule_grid = ft.ResponsiveRow(spacing=10)
         for rule in rule_list:
@@ -129,7 +130,7 @@ class FastMathApp:
         self.main_content.controls.clear()
 
         back_button = ft.TextButton(
-            "Back to methods",
+            "بازگشت به روش‌ها",
             icon=ft.Icons.ARROW_BACK,
             on_click=lambda _: self.show_rule_selector(self.selected_rule.method)
         )
@@ -138,25 +139,25 @@ class FastMathApp:
             ft.Container(
                 content=ft.Column([
                     ft.Icon(ft.Icons.SCHOOL, size=40, color=ft.Colors.BLUE_600),
-                    ft.Text("Learn", size=24, weight=ft.FontWeight.BOLD),
-                    ft.Text("Study the theory and see examples.", size=16, color=ft.Colors.GREY_600),
+                    ft.Text("آموزش", size=24, weight=ft.FontWeight.BOLD),
+                    ft.Text("مطالعه تئوری و مشاهده مثال‌ها.", size=16, color=ft.Colors.GREY_600),
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                 padding=40, bgcolor=ft.Colors.WHITE, border_radius=15, col={"sm": 12, "md": 6},
-                on_click=lambda _: self.start_session("Learn"), ink=True
+                on_click=lambda _: self.start_session("آموزش"), ink=True
             ),
             ft.Container(
                 content=ft.Column([
                     ft.Icon(ft.Icons.TIMER, size=40, color=ft.Colors.ORANGE_600),
-                    ft.Text("Practice", size=24, weight=ft.FontWeight.BOLD),
-                    ft.Text("Test your speed and accuracy.", size=16, color=ft.Colors.GREY_600),
+                    ft.Text("تمرین", size=24, weight=ft.FontWeight.BOLD),
+                    ft.Text("تست سرعت و دقت شما.", size=16, color=ft.Colors.GREY_600),
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                 padding=40, bgcolor=ft.Colors.WHITE, border_radius=15, col={"sm": 12, "md": 6},
-                on_click=lambda _: self.start_session("Practice"), ink=True
+                on_click=lambda _: self.start_session("تمرین"), ink=True
             )
         ], spacing=20)
 
         self.main_content.controls.append(back_button)
-        self.main_content.controls.append(ft.Text(f"Target: {self.selected_rule.name}", size=20, weight=ft.FontWeight.BOLD))
+        self.main_content.controls.append(ft.Text(f"هدف: {self.selected_rule.name}", size=20, weight=ft.FontWeight.BOLD))
         self.main_content.controls.append(cards)
         if update:
             self.page.update()
@@ -182,7 +183,7 @@ class FastMathApp:
                 try:
                     elapsed = int(time.time() - self.start_time)
                     mins, secs = divmod(elapsed, 60)
-                    self.timer_text.value = f"Time: {mins:02d}:{secs:02d}"
+                    self.timer_text.value = to_persian_digits(f"زمان: {mins:02d}:{secs:02d}")
                     self.timer_text.update()
                 except Exception:
                     # Handle cases where timer_text might be briefly unavailable during transitions
@@ -193,29 +194,29 @@ class FastMathApp:
         self.main_content.controls.clear()
 
         config_panel = ft.Column(visible=False)
-        if self.mode == "Practice" and self.selected_rule.id in ['tracht-addition', 'vedic-complementary-addition', 'vedic-subtraction-base']:
-            self.num_operands_slider = ft.Slider(min=2, max=5, divisions=3, label="{value} numbers", value=2)
+        if self.mode == "تمرین" and self.selected_rule.id in ['tracht-addition', 'vedic-complementary-addition', 'vedic-subtraction-base']:
+            self.num_operands_slider = ft.Slider(min=2, max=5, divisions=3, label="{value} عدد", value=2)
             self.num_digits_dropdown = ft.Dropdown(
-                label="Digits per number",
+                label="ارقام هر عدد",
                 options=[
-                    ft.dropdown.Option("0", "Random"),
-                    ft.dropdown.Option("1", "1"),
-                    ft.dropdown.Option("2", "2"),
-                    ft.dropdown.Option("3", "3"),
-                    ft.dropdown.Option("4", "4"),
-                    ft.dropdown.Option("5", "5"),
-                    ft.dropdown.Option("6", "6"),
+                    ft.dropdown.Option("0", "تصادفی"),
+                    ft.dropdown.Option("1", "۱"),
+                    ft.dropdown.Option("2", "۲"),
+                    ft.dropdown.Option("3", "۳"),
+                    ft.dropdown.Option("4", "۴"),
+                    ft.dropdown.Option("5", "۵"),
+                    ft.dropdown.Option("6", "۶"),
                 ],
                 value="3"
             )
 
             config_panel.controls.extend([
-                ft.Text("Customization Panel", weight=ft.FontWeight.BOLD),
+                ft.Text("پنل تنظیمات", weight=ft.FontWeight.BOLD),
                 ft.Row([
-                    ft.Column([ft.Text("Count"), self.num_operands_slider]) if self.selected_rule.id != 'vedic-subtraction-base' else ft.Column(),
+                    ft.Column([ft.Text("تعداد"), self.num_operands_slider]) if self.selected_rule.id != 'vedic-subtraction-base' else ft.Column(),
                     self.num_digits_dropdown
                 ], alignment=ft.MainAxisAlignment.START),
-                ft.ElevatedButton("Apply & Restart", on_click=lambda _: self.page.run_task(self.next_problem)),
+                ft.ElevatedButton("اعمال و شروع مجدد", on_click=lambda _: self.page.run_task(self.next_problem)),
                 ft.Divider()
             ])
             config_panel.visible = True
@@ -225,25 +226,25 @@ class FastMathApp:
             self.show_mode_selection()
 
         back_button = ft.TextButton(
-            "Back to methods",
+            "بازگشت به روش‌ها",
             icon=ft.Icons.ARROW_BACK,
             on_click=go_back
         )
 
         self.problem_text = ft.Text("", size=48, weight=ft.FontWeight.BOLD)
         self.answer_input = ft.TextField(
-            label="Enter answer",
+            label="پاسخ را وارد کنید",
             text_align=ft.TextAlign.CENTER,
             on_submit=self.handle_submit,
             keyboard_type=ft.KeyboardType.NUMBER,
             autofocus=True
         )
         self.feedback_text = ft.Text("", size=18, weight=ft.FontWeight.BOLD)
-        self.score_text = ft.Text(f"Score: 0/0", size=16)
-        self.streak_text = ft.Text(f"Streak: 0", size=16, color=ft.Colors.ORANGE_800, weight=ft.FontWeight.BOLD)
-        self.timer_text = ft.Text(f"Time: 00:00", size=16)
-        self.check_button = ft.ElevatedButton(content=ft.Text("Check Answer"), on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE)
-        self.next_button = ft.ElevatedButton(content=ft.Text("Next Problem"), on_click=self.next_problem, width=400, bgcolor=ft.Colors.GREEN_600, color=ft.Colors.WHITE, visible=False)
+        self.score_text = ft.Text(to_persian_digits(f"امتیاز: 0/0"), size=16)
+        self.streak_text = ft.Text(to_persian_digits(f"توالی: 0"), size=16, color=ft.Colors.ORANGE_800, weight=ft.FontWeight.BOLD)
+        self.timer_text = ft.Text(to_persian_digits(f"زمان: 00:00"), size=16)
+        self.check_button = ft.ElevatedButton(content=ft.Text("بررسی پاسخ"), on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE)
+        self.next_button = ft.ElevatedButton(content=ft.Text("مسئله بعدی"), on_click=self.next_problem, width=400, bgcolor=ft.Colors.GREEN_600, color=ft.Colors.WHITE, visible=False)
 
         self.practice_card = ft.Container(
             content=ft.Column([
@@ -260,7 +261,7 @@ class FastMathApp:
                 ft.Divider(),
                 ft.Column([
                     self.problem_text,
-                    ft.Text("= ?", size=20, color=ft.Colors.GREY_400),
+                    ft.Text("= ؟", size=20, color=ft.Colors.GREY_400),
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                 self.answer_input,
                 self.check_button,
@@ -276,9 +277,9 @@ class FastMathApp:
 
         theory_card = ft.Container(
             content=ft.Column([
-                ft.Text("Theory & Shortcuts", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.INDIGO_700),
+                ft.Text("تئوری و میان‌برها", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.INDIGO_700),
                 ft.Text(self.selected_rule.explanation, size=16),
-                ft.Text("Example", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800),
+                ft.Text("مثال", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800),
                 ft.Container(
                     content=ft.Text(self.selected_rule.example, font_family="monospace", size=14),
                     padding=15,
@@ -351,17 +352,17 @@ class FastMathApp:
         if user_val == self.current_problem["answer"]:
             self.score += 1
             self.streak += 1
-            self.feedback_text.value = "Correct!"
+            self.feedback_text.value = "آفرین! درست بود."
             self.feedback_text.color = ft.Colors.GREEN_600
             self.practice_card.bgcolor = ft.Colors.GREEN_50
         else:
             self.streak = 0
-            self.feedback_text.value = f"Wrong. The answer was {self.current_problem['answer']}"
+            self.feedback_text.value = f"اشتباه بود. جواب {self.current_problem['answer']} بود."
             self.feedback_text.color = ft.Colors.RED_600
             self.practice_card.bgcolor = ft.Colors.RED_50
 
-        self.score_text.value = f"Score: {self.score}/{self.total}"
-        self.streak_text.value = f"Streak: {self.streak}"
+        self.score_text.value = to_persian_digits(f"امتیاز: {self.score}/{self.total}")
+        self.streak_text.value = to_persian_digits(f"توالی: {self.streak}")
         self.answer_input.disabled = True
         self.check_button.visible = False
         self.next_button.visible = True
