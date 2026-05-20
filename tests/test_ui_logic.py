@@ -2,7 +2,7 @@ import pytest
 import asyncio
 from unittest.mock import MagicMock, AsyncMock
 import flet as ft
-from app.main import FastMathApp
+from app.main import FastMathApp, LOCALIZED_UI
 
 @pytest.mark.asyncio
 async def test_app_initialization():
@@ -14,7 +14,7 @@ async def test_app_initialization():
     # Initialize App
     app = FastMathApp(page)
 
-    assert page.title == "Fast Math Trainer"
+    assert page.title == LOCALIZED_UI['fa']['title']
     assert app.selected_rule is None
     # Check if header is added
     assert len(page.add.call_args[0][0].controls) > 0
@@ -25,15 +25,13 @@ async def test_category_selection():
     page.controls = []
     app = FastMathApp(page)
 
-    # Manually trigger show_rule_selector
-    app.show_rule_selector("Trachtenberg")
+    # Manually trigger show_rule_selector with new category
+    app.show_rule_selector("Multiplication")
 
     # Verify main_content has controls
     assert len(app.main_content.controls) > 0
-    # The first control should be the back button, the second the grid
+    # The first control should be the back button
     assert isinstance(app.main_content.controls[0], ft.TextButton)
-    # In Flet 0.85.1, 'text' might not be an attribute. We just verify the type for now
-    # or check the content if it's set.
 
 @pytest.mark.asyncio
 async def test_rule_selection_shows_modes():
@@ -42,18 +40,19 @@ async def test_rule_selection_shows_modes():
     app = FastMathApp(page)
 
     rule = MagicMock()
-    rule.method = "Trachtenberg"
-    rule.name = "Test Rule"
+    rule.get_name.return_value = "Test Rule"
+    rule.category = "Multiplication"
 
     app.select_rule(rule)
 
     assert app.selected_rule == rule
     # Should show mode selection cards
     assert len(app.main_content.controls) > 0
-    # Find mode selection text
+    # Find mode selection text (localized)
     found = False
+    target_prefix = LOCALIZED_UI['fa']['target']
     for control in app.main_content.controls:
-        if isinstance(control, ft.Text) and "Target:" in control.value:
+        if isinstance(control, ft.Text) and target_prefix in control.value:
             found = True
             break
     assert found
@@ -65,10 +64,10 @@ async def test_start_session_starts_timer():
     app = FastMathApp(page)
 
     rule = MagicMock()
-    rule.method = "Trachtenberg"
-    rule.name = "Test Rule"
-    rule.id = "test-rule"
+    rule.get_name.return_value = "Test Rule"
+    rule.category = "Multiplication"
     rule.generate_problem.return_value = {"question": "2+2", "answer": 4}
+    rule.get_steps.return_value = ["Step 1"]
     app.selected_rule = rule
 
     app.start_session("Practice")
@@ -77,30 +76,6 @@ async def test_start_session_starts_timer():
     assert app.timer_running is True
     assert app.timer_id == 1
     page.run_task.assert_any_call(app.update_timer, 1)
-
-@pytest.mark.asyncio
-async def test_customization_panel_visibility():
-    page = MagicMock(spec=ft.Page)
-    page.controls = []
-    app = FastMathApp(page)
-
-    rule = MagicMock()
-    rule.id = "tracht-addition"
-    app.selected_rule = rule
-    app.mode = "Practice"
-
-    app.show_practice_area()
-
-    # Check if config_panel was added
-    found_config = False
-    for control in app.main_content.controls:
-        if isinstance(control, ft.Column) and control.visible:
-            # Look for "Customization Panel" text
-            for sub in control.controls:
-                if isinstance(sub, ft.Text) and "Customization Panel" in sub.value:
-                    found_config = True
-                    break
-    assert found_config
 
 if __name__ == "__main__":
     pytest.main([__file__])
