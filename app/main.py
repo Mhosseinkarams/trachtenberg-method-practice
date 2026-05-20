@@ -348,7 +348,7 @@ class FastMathApp:
         back_button = ft.TextButton(ui['back_methods'], icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_mode_selection())
 
         # Problem Area Components
-        self.problem_text = ft.Text("", size=48, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
+        self.problem_text = ft.Text("", size=48, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE, rtl=False)
         self.answer_input = ft.TextField(
             label=ui['enter_answer'], text_align=ft.TextAlign.CENTER,
             on_submit=self.handle_submit, keyboard_type=ft.KeyboardType.NUMBER, autofocus=True,

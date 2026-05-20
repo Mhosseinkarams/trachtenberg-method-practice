@@ -48,48 +48,48 @@ class Rule:
 # Problem Generators
 def gen_tracht_11(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"11 x {num}", "answer": 11 * num, "num": num}
+    return {"question": f"11 × {num}", "answer": 11 * num, "num": num}
 
 def gen_tracht_12(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"12 x {num}", "answer": 12 * num, "num": num}
+    return {"question": f"12 × {num}", "answer": 12 * num, "num": num}
 
 def gen_tracht_5(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"5 x {num}", "answer": 5 * num, "num": num}
+    return {"question": f"5 × {num}", "answer": 5 * num, "num": num}
 
 def gen_tracht_6(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"6 x {num}", "answer": 6 * num, "num": num}
+    return {"question": f"6 × {num}", "answer": 6 * num, "num": num}
 
 def gen_tracht_7(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"7 x {num}", "answer": 7 * num, "num": num}
+    return {"question": f"7 × {num}", "answer": 7 * num, "num": num}
 
 def gen_tracht_8(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"8 x {num}", "answer": 8 * num, "num": num}
+    return {"question": f"8 × {num}", "answer": 8 * num, "num": num}
 
 def gen_tracht_9(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"9 x {num}", "answer": 9 * num, "num": num}
+    return {"question": f"9 × {num}", "answer": 9 * num, "num": num}
 
 def gen_tracht_4(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"4 x {num}", "answer": 4 * num, "num": num}
+    return {"question": f"4 × {num}", "answer": 4 * num, "num": num}
 
 def gen_tracht_3(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"3 x {num}", "answer": 3 * num, "num": num}
+    return {"question": f"3 × {num}", "answer": 3 * num, "num": num}
 
 def gen_tracht_13(**kwargs):
     num = random.randint(100, 9099)
-    return {"question": f"13 x {num}", "answer": 13 * num, "num": num}
+    return {"question": f"13 × {num}", "answer": 13 * num, "num": num}
 
 def gen_tracht_general(**kwargs):
     a = random.randint(11, 99)
     b = random.randint(11, 99)
-    return {"question": f"{a} x {b}", "answer": a * b, "a": a, "b": b}
+    return {"question": f"{a} × {b}", "answer": a * b, "a": a, "b": b}
 
 def gen_tracht_addition(num_operands=2, num_digits=3, **kwargs):
     operands = []
@@ -164,7 +164,7 @@ def gen_vedic_subtraction_base(num_digits=3, **kwargs):
 def gen_vedic_vertically_crosswise(**kwargs):
     a = random.randint(11, 99)
     b = random.randint(11, 99)
-    return {"question": f"{a} x {b}", "answer": a * b, "a": a, "b": b}
+    return {"question": f"{a} × {b}", "answer": a * b, "a": a, "b": b}
 
 def gen_vedic_square_near_base(**kwargs):
     base = 10 ** random.randint(1, 2)
@@ -179,7 +179,7 @@ def gen_vedic_div_9(**kwargs):
 
 def gen_vedic_series_9(**kwargs):
     num = random.randint(11, 99)
-    return {"question": f"{num} x 99", "answer": num * 99, "num": num}
+    return {"question": f"{num} × 99", "answer": num * 99, "num": num}
 
 def gen_vedic_ekadhikena(**kwargs):
     base = random.randint(1, 9) * 10
@@ -187,7 +187,7 @@ def gen_vedic_ekadhikena(**kwargs):
     d2 = 10 - d1
     a = base + d1
     b = base + d2
-    return {"question": f"{a} x {b}", "answer": a * b, "a": a, "b": b}
+    return {"question": f"{a} × {b}", "answer": a * b, "a": a, "b": b}
 
 def gen_vedic_cubing(**kwargs):
     base = 10
@@ -317,110 +317,110 @@ def steps_vedic_base(p, lang):
 rules = [
     Rule(
         'tracht-11',
-        {'en': 'Multiplication by 11', 'fa': 'ضرب اعداد در ۱۱'},
+        {'en': 'Multiplication by 11', 'fa': 'ضرب در ۱۱'},
         {'en': 'Add the neighbor rule.', 'fa': 'قانون اضافه کردن همسایه.'},
         'Multiplication', 'Trachtenberg',
         {
-            'en': 'To multiply by 11: 1. Last digit is last. 2. Add each digit to its neighbor. 3. First digit is first.',
-            'fa': 'برای ضرب در ۱۱: ۱. رقم آخر خودش است. ۲. هر رقم را با همسایه‌اش جمع کنید. ۳. رقم اول خودش است.'
+            'en': 'Trachtenberg rule for 11:\n1. The last digit of the number is the last digit of the answer.\n2. Each successive digit of the number is added to its neighbor on the right.\n3. The first digit of the number becomes the first digit of the answer (plus any carry).\nImagine a leading zero: 0432 x 11. 2+0=2, 3+2=5, 4+3=7, 0+4=4. Result: 4752.',
+            'fa': 'قانون تراختنبرگ برای عدد ۱۱:\n۱. آخرین رقم عدد، همان آخرین رقم جواب است.\n۲. هر رقم عدد را با همسایه سمت راست آن جمع کنید.\n۳. اولین رقم عدد، اولین رقم جواب می‌شود (به اضافه هر عدد نقلی).\nیک صفر فرضی در ابتدا در نظر بگیرید: مثلاً ۱۱ × ۰۴۳۲. ۲+۰=۲، ۲+۳=۵، ۳+۴=۷، ۴+۰=۴. جواب: ۴۷۵۲.'
         },
-        {'en': '11 x 432 = 4752', 'fa': '۱۱ × ۴۳۲ = ۴۷۵۲'},
+        {'en': '11 × 432 = 4752', 'fa': '۱۱ × ۴۳۲ = ۴۷۵۲'},
         gen_tracht_11, steps_tracht_11
     ),
     Rule(
         'tracht-12',
-        {'en': 'Multiplication by 12', 'fa': 'ضرب اعداد در ۱۲'},
+        {'en': 'Multiplication by 12', 'fa': 'ضرب در ۱۲'},
         {'en': 'Double the digit and add neighbor.', 'fa': 'رقم را دو برابر کرده و با همسایه جمع کنید.'},
         'Multiplication', 'Trachtenberg',
         {
-            'en': 'To multiply by 12: Double each digit and add its neighbor.',
-            'fa': 'برای ضرب در ۱۲: هر رقم را دو برابر کرده و با همسایه‌اش جمع کنید.'
+            'en': 'Trachtenberg rule for 12:\nDouble each digit and add its neighbor on the right.\n1. Last digit: Double it (neighbor is 0).\n2. Middle digits: Double the digit and add the digit to its right.\n3. Leading zero: Just add the digit that was previously to its right.\nExample: 12 × 413. (3*2)=6, (1*2)+3=5, (4*2)+1=9, (0*2)+4=4. Result: 4956.',
+            'fa': 'قانون تراختنبرگ برای عدد ۱۲:\nهر رقم را دو برابر کرده و با همسایه سمت راست آن جمع کنید.\n۱. رقم آخر: آن را دو برابر کنید (همسایه ندارد یا همسایه‌اش ۰ است).\n۲. ارقام میانی: رقم را دو برابر کرده و با رقم سمت راستش جمع کنید.\n۳. صفر فرضی ابتدا: فقط رقمی را که قبلاً سمت راستش بود اضافه کنید.\nمثال: ۱۲ × ۴۱۳. (۳×۲)=۶، (۱×۲)+۳=۵، (۴×۲)+۱=۹، (۰×۲)+۴=۴. جواب: ۴۹۵۶.'
         },
-        {'en': '12 x 413 = 4956', 'fa': '۱۲ × ۴۱۳ = ۴۹۵۶'},
+        {'en': '12 × 413 = 4956', 'fa': '۱۲ × ۴۱۳ = ۴۹۵۶'},
         gen_tracht_12, lambda p, l: steps_tracht_mul(p, l, 12)
     ),
     Rule(
         'tracht-5',
-        {'en': 'Multiplication by 5', 'fa': 'ضرب اعداد در ۵'},
+        {'en': 'Multiplication by 5', 'fa': 'ضرب در ۵'},
         {'en': 'Half the neighbor rule.', 'fa': 'قانون نصف همسایه.'},
         'Multiplication', 'Trachtenberg',
         {
-            'en': 'Use half the neighbor: if the digit is odd, add 5 to half the neighbor.',
-            'fa': 'از نصف همسایه استفاده کنید: اگر رقم فرد است، ۵ را به نصف همسایه اضافه کنید.'
+            'en': 'Trachtenberg rule for 5:\n1. For each digit, take half of its right-hand neighbor (ignore remainder).\n2. If the current digit is ODD, add 5 to that half.\nExample: 5 × 426. Neighbor of 6 is 0 (half is 0). 6 is even, so 0. Neighbor of 2 is 6 (half is 3). 2 is even, so 3. Neighbor of 4 is 2 (half is 1). 4 is even, so 1. Neighbor of leading 0 is 4 (half is 2). 0 is even, so 2. Result: 2130.',
+            'fa': 'قانون تراختنبرگ برای عدد ۵:\n۱. برای هر رقم، نصف همسایه سمت راست آن را در نظر بگیرید (باقیمانده را نادیده بگیرید).\n۲. اگر خودِ رقم فرد است، ۵ واحد به آن نصف اضافه کنید.\nمثال: ۵ × ۴۲۶. همسایه ۶ صفر است (نصفش ۰). ۶ زوج است، پس ۰. همسایه ۲ عدد ۶ است (نصفش ۳). ۲ زوج است، پس ۳. همسایه ۴ عدد ۲ است (نصفش ۱). ۴ زوج است، پس ۱. همسایه صفرِ فرضی ۴ است (نصفش ۲). صفر زوج است، پس ۲. جواب: ۲۱۳۰.'
         },
-        {'en': '5 x 426 = 2130', 'fa': '۵ × ۴۲۶ = ۲۱۳۰'},
+        {'en': '5 × 426 = 2130', 'fa': '۵ × ۴۲۶ = ۲۱۳۰'},
         gen_tracht_5, lambda p, l: steps_tracht_mul(p, l, 5)
     ),
     Rule(
         'tracht-6',
-        {'en': 'Multiplication by 6', 'fa': 'ضرب اعداد در ۶'},
+        {'en': 'Multiplication by 6', 'fa': 'ضرب در ۶'},
         {'en': 'Add half the neighbor rule.', 'fa': 'قانون اضافه کردن نصف همسایه.'},
         'Multiplication', 'Trachtenberg',
         {
-            'en': 'To multiply by 6: Add half of the neighbor. If odd, add 5.',
-            'fa': 'برای ضرب در ۶: نصف همسایه را اضافه کنید. اگر فرد است ۵ واحد اضافه کنید.'
+            'en': 'Trachtenberg rule for 6:\nTo each digit of the number, add half of its right-hand neighbor. If the current digit is ODD, add 5 to the result.\nExample: 6 × 422. (Imagining a leading zero: 0422)\n- 2 is even, neighbor 0: 2 + 0 = 2\n- 2 is even, neighbor 2: 2 + (2/2) = 3\n- 4 is even, neighbor 2: 4 + (2/2) = 5\n- 0 is even, neighbor 4: 0 + (4/2) = 2\nResult: 2532.',
+            'fa': 'قانون تراختنبرگ برای عدد ۶:\nبه هر رقم، نصف همسایه سمت راست آن را اضافه کنید. اگر خودِ رقم فرد است، ۵ واحد به حاصل اضافه کنید.\nمثال: ۶ × ۴۲۲ (یک صفر فرضی در ابتدا در نظر بگیرید: ۰۴۲۲)\n- ۲ زوج است، همسایه ۰: ۲ + ۰ = ۲\n- ۲ زوج است، همسایه ۲: ۲ + (۲/۲) = ۳\n- ۴ زوج است، همسایه ۲: ۴ + (۲/۲) = ۵\n- ۰ زوج است، همسایه ۴: ۰ + (۴/۲) = ۲\nجواب: ۲۵۳۲.'
         },
-        {'en': '6 x 422 = 2532', 'fa': '۶ × ۴۲۲ = ۲۵۳۲'},
+        {'en': '6 × 422 = 2532', 'fa': '۶ × ۴۲۲ = ۲۵۳۲'},
         gen_tracht_6, steps_simple_mul
     ),
     Rule(
         'tracht-7',
-        {'en': 'Multiplication by 7', 'fa': 'ضرب اعداد در ۷'},
+        {'en': 'Multiplication by 7', 'fa': 'ضرب در ۷'},
         {'en': 'Double the digit and add half neighbor.', 'fa': 'رقم را دو برابر کرده و با نصف همسایه جمع کنید.'},
         'Multiplication', 'Trachtenberg',
         {
-            'en': 'To multiply by 7: Double each digit and add half of the neighbor. If odd, add 5.',
-            'fa': 'برای ضرب در ۷: هر رقم را دو برابر کرده و با نصف همسایه جمع کنید. اگر فرد است ۵ واحد اضافه کنید.'
+            'en': 'Trachtenberg rule for 7:\nDouble each digit and add half of its right-hand neighbor. If the current digit is ODD, add 5 to the result.\nExample: 7 × 242 (0242):\n- 2 is even, neighbor 0: (2*2) + 0 = 4\n- 4 is even, neighbor 2: (4*2) + (2/2) = 9\n- 2 is even, neighbor 4: (2*2) + (4/2) = 6\n- 0 is even, neighbor 2: (0*2) + (2/2) = 1\nResult: 1694.',
+            'fa': 'قانون تراختنبرگ برای عدد ۷:\nهر رقم را دو برابر کرده و نصف همسایه سمت راستش را به آن اضافه کنید. اگر خودِ رقم فرد است، ۵ واحد به حاصل اضافه کنید.\nمثال: ۷ × ۲۴۲ (۰۲۴۲):\n- ۲ زوج است، همسایه ۰: (۲×۲) + ۰ = ۴\n- ۴ زوج است، همسایه ۲: (۴×۲) + ۱ = ۹\n- ۲ زوج است، همسایه ۴: (۲×۲) + ۲ = ۶\n- ۰ زوج است، همسایه ۲: (۰×۲) + ۱ = ۱\nجواب: ۱۶۹۴.'
         },
-        {'en': '7 x 242 = 1694', 'fa': '۷ × ۲۴۲ = ۱۶۹۴'},
+        {'en': '7 × 242 = 1694', 'fa': '۷ × ۲۴۲ = ۱۶۹۴'},
         gen_tracht_7, steps_simple_mul
     ),
     Rule(
         'tracht-8',
-        {'en': 'Multiplication by 8', 'fa': 'ضرب اعداد در ۸'},
+        {'en': 'Multiplication by 8', 'fa': 'ضرب در ۸'},
         {'en': 'Double the complement and add neighbor.', 'fa': 'دو برابر متمم و جمع با همسایه.'},
         'Multiplication', 'Trachtenberg',
         {
-            'en': 'To multiply by 8: 1. Rightmost: (10-digit)*2. 2. Middle: (9-digit)*2+neighbor. 3. Leftmost: neighbor-2.',
-            'fa': 'برای ضرب در ۸: ۱. راست‌ترین: ۲ × (۱۰-رقم). ۲. میانی: (۲ × (۹-رقم)) + همسایه. ۳. چپ‌ترین: همسایه - ۲.'
+            'en': 'Trachtenberg rule for 8:\n1. Rightmost digit: Subtract from 10 and double the result.\n2. Middle digits: Subtract from 9, double the result, and add the neighbor on the right.\n3. Leftmost digit: Subtract 2 from the right-hand neighbor.\nExample: 8 × 432 (0432):\n- 2: (10-2)*2 = 16. Write 6, carry 1.\n- 3: (9-3)*2 + 2 + 1(carry) = 15. Write 5, carry 1.\n- 4: (9-4)*2 + 3 + 1(carry) = 14. Write 4, carry 1.\n- 0: (4-2) + 1(carry) = 3.\nResult: 3456.',
+            'fa': 'قانون تراختنبرگ برای عدد ۸:\n۱. راست‌ترین رقم: از ۱۰ کم کرده و دو برابر کنید.\n۲. ارقام میانی: از ۹ کم کرده، دو برابر کنید و با همسایه سمت راست جمع کنید.\n۳. چپ‌ترین رقم (صفر فرضی): از همسایه سمت راستش ۲ واحد کم کنید.\nمثال: ۸ × ۴۳۲ (۰۴۳۲):\n- ۲: ۱۶ = ۲ × (۱۰-۲). ۶ را نوشته، ۱ را نگه دارید.\n- ۳: ۱۵ = ۱ + ۲ + ۲ × (۹-۳). ۵ را نوشته، ۱ را نگه دارید.\n- ۴: ۱۴ = ۱ + ۳ + ۲ × (۹-۴). ۴ را نوشته، ۱ را نگه دارید.\n- ۰: ۳ = ۱ + (۴-۲).\nجواب: ۳۴۵۶.'
         },
-        {'en': '8 x 432 = 3456', 'fa': '۸ × ۴۳۲ = ۳۴۵۶'},
+        {'en': '8 × 432 = 3456', 'fa': '۸ × ۴۳۲ = ۳۴۵۶'},
         gen_tracht_8, steps_simple_mul
     ),
     Rule(
         'tracht-9',
-        {'en': 'Multiplication by 9', 'fa': 'ضرب اعداد در ۹'},
+        {'en': 'Multiplication by 9', 'fa': 'ضرب در ۹'},
         {'en': 'Subtract from 10, then from 9.', 'fa': 'تفریق از ۱۰، سپس از ۹.'},
         'Multiplication', 'Trachtenberg',
         {
-            'en': 'To multiply by 9: 1. Rightmost from 10. 2. Others from 9 and add neighbor. 3. Leading zero: neighbor-1.',
-            'fa': 'برای ضرب در ۹: ۱. راست‌ترین از ۱۰. ۲. بقیه از ۹ و جمع با همسایه. ۳. صفر پیشرو: همسایه منهای ۱.'
+            'en': 'Trachtenberg rule for 9:\n1. Rightmost digit: Subtract from 10.\n2. Middle digits: Subtract from 9 and add the neighbor on the right.\n3. Leftmost digit: Subtract 1 from the right-hand neighbor.\nExample: 9 × 432 (0432):\n- 2: 10 - 2 = 8\n- 3: (9 - 3) + 2 = 8\n- 4: (9 - 4) + 3 = 8\n- 0: 4 - 1 = 3\nResult: 3888.',
+            'fa': 'قانون تراختنبرگ برای عدد ۹:\n۱. راست‌ترین رقم: از ۱۰ کم کنید.\n۲. ارقام میانی: از ۹ کم کرده و با همسایه سمت راست جمع کنید.\n۳. چپ‌ترین رقم (صفر فرضی): از همسایه سمت راستش ۱ واحد کم کنید.\nمثال: ۹ × ۴۳۲ (۰۴۳۲):\n- ۲: ۸ = ۱۰ - ۲\n- ۳: ۸ = ۲ + (۹ - ۳)\n- ۴: ۸ = ۳ + (۹ - ۴)\n- ۰: ۳ = ۴ - ۱\nجواب: ۳۸۸۸.'
         },
-        {'en': '9 x 432 = 3888', 'fa': '۹ × ۴۳۲ = ۳۸۸۸'},
+        {'en': '9 × 432 = 3888', 'fa': '۹ × ۴۳۲ = ۳۸۸۸'},
         gen_tracht_9, steps_simple_mul
     ),
     Rule(
         'tracht-4',
-        {'en': 'Multiplication by 4', 'fa': 'ضرب اعداد در ۴'},
-        {'en': 'Subtract from 9 and add half of neighbor.', 'fa': 'تفریق از ۹ و جمع با نصف همسایه.'},
+        {'en': 'Multiplication by 4', 'fa': 'ضرب در ۴'},
+        {'en': 'Subtract from 10/9 and add 5 if odd.', 'fa': 'تفریق از ۱۰/۹ و اضافه کردن ۵ در صورت فرد بودن.'},
         'Multiplication', 'Trachtenberg',
         {
-            'en': 'To multiply by 4: Subtract from 9, add half neighbor, add 5 if odd.',
-            'fa': 'برای ضرب در ۴: از ۹ کم کنید، با نصف همسایه جمع کنید و اگر فرد است ۵ واحد اضافه کنید.'
+            'en': 'Trachtenberg rule for 4:\n1. Rightmost digit: Subtract from 10. Add 5 if the digit is ODD.\n2. Middle digits: Subtract from 9, add half of the neighbor, and add 5 if the current digit is ODD.\n3. Leftmost digit: Take half of its right-hand neighbor and subtract 1.\nExample: 4 × 426 (0426):\n- 6: (10-6) = 4\n- 2: (9-2) + (6/2) = 10. Write 0, carry 1.\n- 4: (9-4) + (2/2) + 1(carry) = 7\n- 0: (4/2) - 1 = 1\nResult: 1704.',
+            'fa': 'قانون تراختنبرگ برای عدد ۴:\n۱. راست‌ترین رقم: آن را از ۱۰ کم کنید. اگر رقم فرد است، ۵ واحد اضافه کنید.\n۲. ارقام میانی: رقم را از ۹ کم کنید، با نصف همسایه جمع کنید و اگر خود رقم فرد است، ۵ واحد اضافه کنید.\n۳. چپ‌ترین رقم (صفر فرضی): نصف همسایه سمت راست را منهای ۱ کنید.\nمثال: ۴ × ۴۲۶ (۰۴۲۶):\n- ۶: ۴ = ۱۰ - ۶\n- ۲: ۱۰ = ۳ + (۹ - ۲). ۰ را نوشته، ۱ را نگه دارید.\n- ۴: ۷ = ۱ + ۱ + (۹ - ۴)\n- ۰: ۱ = ۲ - ۱\nجواب: ۱۷۰۴.'
         },
-        {'en': '4 x 426 = 1704', 'fa': '۴ × ۴۲۶ = ۱۷۰۴'},
+        {'en': '4 × 426 = 1704', 'fa': '۴ × ۴۲۶ = ۱۷۰۴'},
         gen_tracht_4, steps_simple_mul
     ),
     Rule(
         'tracht-3',
-        {'en': 'Multiplication by 3', 'fa': 'ضرب اعداد در ۳'},
-        {'en': 'Two-times the complement and add half neighbor.', 'fa': 'دو برابر متمم و جمع با نصف همسایه.'},
+        {'en': 'Multiplication by 3', 'fa': 'ضرب در ۳'},
+        {'en': 'Double and subtract from 10/9.', 'fa': 'دو برابر کردن و تفریق از ۱۰/۹.'},
         'Multiplication', 'Trachtenberg',
         {
-            'en': 'To multiply by 3: Double complement, add half neighbor, add 5 if odd.',
-            'fa': 'برای ضرب در ۳: متمم را دو برابر کنید، با نصف همسایه جمع کنید و اگر فرد است ۵ واحد اضافه کنید.'
+            'en': 'Trachtenberg rule for 3:\n1. Rightmost digit: Subtract from 10, double the result, and add 5 if the digit is ODD.\n2. Middle digits: Subtract from 9, double, add half of the neighbor, and add 5 if the current digit is ODD.\n3. Leftmost digit: Take half of its right-hand neighbor and subtract 2.\nExample: 3 × 432 (0432):\n- 2: (10-2)*2 = 16. Write 6, carry 1.\n- 3: (9-3)*2 + (2/2) + 5 + 1(carry) = 19. Write 9, carry 1.\n- 4: (9-4)*2 + (3/2) + 1(carry) = 12. Write 2, carry 1.\n- 0: (4/2) - 2 + 1(carry) = 1.\nResult: 1296.',
+            'fa': 'قانون تراختنبرگ برای عدد ۳:\n۱. راست‌ترین رقم: از ۱۰ کم کرده، دو برابر کنید و اگر رقم فرد است، ۵ واحد اضافه کنید.\n۲. ارقام میانی: از ۹ کم کرده، دو برابر کنید، با نصف همسایه جمع کنید و اگر خود رقم فرد است، ۵ واحد اضافه کنید.\n۳. چپ‌ترین رقم (صفر فرضی): نصف همسایه سمت راست را منهای ۲ کنید.\nمثال: ۳ × ۴۳۲ (۰۴۳۲):\n- ۲: ۱۶ = ۲ × (۱۰-۲). ۶ را نوشته، ۱ را نگه دارید.\n- ۳: ۱۹ = ۱ + ۵ + ۱ + ۲ × (۹-۳). ۹ را نوشته، ۱ را نگه دارید.\n- ۴: ۱۲ = ۱ + ۱ + ۲ × (۹-۴). ۲ را نوشته، ۱ را نگه دارید.\n- ۰: ۱ = ۱ + ۲ - ۲\nجواب: ۱۲۹۶.'
         },
-        {'en': '3 x 422 = 1266', 'fa': '۳ × ۴۲۲ = ۱۲۶۶'},
+        {'en': '3 × 432 = 1296', 'fa': '۳ × ۴۳۲ = ۱۲۹۶'},
         gen_tracht_3, steps_simple_mul
     ),
     Rule(
@@ -537,8 +537,8 @@ rules = [
         {'en': 'Duplex method.', 'fa': 'روش دوبلکس.'},
         'Squaring & Cubing', 'Vedic',
         {
-            'en': 'To square any number: use the duplex (D). For a single digit a, D=a^2. For two digits ab, D=2ab.',
-            'fa': 'برای مربع کردن هر عدد از روش دوبلکس (D) استفاده کنید.'
+            'en': 'Vedic General Squaring (Duplex Method):\nTo square any number, we use the "Duplex" (D) for each part.\n- For 1 digit (a): D = a²\n- For 2 digits (ab): D = 2*a*b\n- For 3 digits (abc): D = 2*a*c + b²\nExample: 23². D(2)=4, D(23)=2*2*3=12, D(3)=9. Combine with carries: 4 | 12 | 9 = 529.',
+            'fa': 'مربع عمومی (روش دوبلکس وِدیک):\nبرای مربع کردن هر عدد، از مقدار "دوبلکس" (D) برای هر بخش استفاده می‌کنیم.\n- برای ۱ رقم (a): D = a²\n- برای ۲ رقم (ab): D = ۲×a×b\n- برای ۳ رقم (abc): D = (۲×a×c) + b²\nمثال: ۲۳ به توان ۲. D(2)=۴، D(23)=۱۲، D(3)=۹. ترکیب با ارقام نقلی: ۹ | ۱۲ | ۴ که می‌شود ۵۲۹.'
         },
         {'en': '23² = 529', 'fa': '۲۳² = ۵۲۹'},
         gen_vedic_squaring_general, steps_simple_mul
@@ -549,8 +549,8 @@ rules = [
         {'en': 'Observation method.', 'fa': 'روش مشاهده.'},
         'Division & Roots', 'Vedic',
         {
-            'en': 'Look at the last digit to find possible last digit of root. Find nearest square below.',
-            'fa': 'به رقم آخر نگاه کنید تا رقم آخر ریشه را بیابید. نزدیک‌ترین مربع کمتر را پیدا کنید.'
+            'en': 'Vedic Square Root (Perfect Squares):\n1. Look at the last digit to find two possible last digits for the root (e.g., if ends in 6, root ends in 4 or 6).\n2. Ignore the last two digits and find the largest square below the remaining part to find the first digit.\n3. Test which of the two possibilities is correct.\nExample: √1225. Ends in 5 -> root ends in 5. Below 12 is 3^2=9. So first digit is 3. Result: 35.',
+            'fa': 'جذر اعداد کامل (روش وِدیک):\n۱. به رقم آخر نگاه کنید تا دو رقم احتمالی برای پایان ریشه پیدا کنید (مثلاً اگر به ۶ ختم شود، ریشه به ۴ یا ۶ ختم می‌شود).\n۲. دو رقم آخر را نادیده بگیرید و بزرگترین مربعی که از باقی‌مانده کوچکتر است را برای پیدا کردن رقم اول بیابید.\n۳. امتحان کنید کدام یک از دو حالت درست است.\nمثال: جذر ۱۲۲۵. به ۵ ختم می‌شود پس رقم آخر ۵ است. زیر ۱۲، مربعِ ۳ قرار دارد. پس رقم اول ۳ است. جواب: ۳۵.'
         },
         {'en': 'sqrt(1225) = 35', 'fa': 'جذر ۱۲۲۵ = ۳۵'},
         gen_vedic_sqrt_perfect, steps_simple_mul
@@ -561,8 +561,8 @@ rules = [
         {'en': 'Completing the whole.', 'fa': 'تکمیل کردن کل.'},
         'Addition & Subtraction', 'Vedic',
         {
-            'en': 'Look for numbers that add up to 10, 100, etc. to simplify addition.',
-            'fa': 'به دنبال اعدادی بگردید که حاصل جمع آن‌ها ۱۰، ۱۰۰ و غیره می‌شود.'
+            'en': 'Vedic Complementary Addition:\nInstead of adding numbers directly, look for pairs that complete a multiple of 10 or 100. This "completing the whole" makes mental calculation much easier.\nExample: 48 + 32. 8 and 2 complete a 10. So (40+30) + (8+2) = 70 + 10 = 80.',
+            'fa': 'جمع متمم (تکمیل کردن کل):\nبه جای جمع معمولی، به دنبال جفت‌اعدادی بگردید که حاصل‌جمع‌شان مضربی از ۱۰ یا ۱۰۰ می‌شود. این کار محاسبات ذهنی را بسیار ساده می‌کند.\nمثال: ۴۸ + ۳۲. اعداد ۸ و ۲ متمم هم هستند. پس ۸۰ = ۱۰ + ۷۰ = (۲+۸) + (۳۰+۴۰).'
         },
         {'en': '48 + 32 = 80', 'fa': '۴۸ + ۳۲ = ۸۰'},
         gen_vedic_complementary_addition, steps_simple_mul
@@ -573,8 +573,8 @@ rules = [
         {'en': 'All from 9 and the last from 10.', 'fa': 'همه از ۹ و آخرین از ۱۰.'},
         'Addition & Subtraction', 'Vedic',
         {
-            'en': 'Subtract each digit from 9, and the last (non-zero) digit from 10.',
-            'fa': 'هر رقم را از ۹ و آخرین رقم (غیر صفر) را از ۱۰ کم کنید.'
+            'en': 'Vedic Subtraction from Base:\nApply the "All from 9 and the Last from 10" rule.\n1. Subtract each digit from 9 starting from the left.\n2. Subtract the final non-zero digit from 10.\nExample: 1000 - 456. (9-4)=5, (9-5)=4, (10-6)=4. Result: 544.',
+            'fa': 'تفریق از مبنا (همه از ۹ و آخرین از ۱۰):\n۱. تمام ارقام را از چپ به راست از ۹ کم کنید.\n۲. آخرین رقم (غیر صفر) را از ۱۰ کم کنید.\nمثال: ۴۵۶ - ۱۰۰۰. ۵ = ۴ - ۹. ۴ = ۵ - ۹. ۴ = ۶ - ۱۰. جواب: ۵۴۴.'
         },
         {'en': '1000 - 456 = 544', 'fa': '۱۰۰۰ - ۴۵۶ = ۵۴۴'},
         gen_vedic_subtraction_base, steps_vedic_sub_base
@@ -585,10 +585,10 @@ rules = [
         {'en': 'Urdhva Tiryagbhyam Sutra.', 'fa': 'اوردوا تیریاگبیام سوترا.'},
         'Multiplication', 'Vedic',
         {
-            'en': 'Multiply 2-digit numbers: Multiply units, cross-multiply and add, multiply tens.',
-            'fa': 'ضرب اعداد ۲ رقمی: یکان‌ها را ضرب کنید، ضرب متقاطع و جمع، دهگان‌ها را ضرب کنید.'
+            'en': 'Vedic Vertically and Crosswise:\n1. Multiply units digits.\n2. Cross-multiply and add the results.\n3. Multiply tens digits.\nExample: 23 × 12. (3*2)=6, (2*2)+(3*1)=7, (2*1)=2. Result: 276.',
+            'fa': 'عمودی و متقاطع (روش وِدیک):\n۱. یکان‌ها را در هم ضرب کنید.\n۲. به صورت ضربدری (متقاطع) ضرب کرده و نتایج را جمع کنید.\n۳. دهگان‌ها را در هم ضرب کنید.\nمثال: ۲۳ × ۱۲. یکان: ۶ = ۲×۳. دهگان: ۷ = (۱×۳) + (۲×۲). صدگان: ۲ = ۱×۲. جواب: ۲۷۶.'
         },
-        {'en': '23 x 12 = 276', 'fa': '۲۳ × ۱۲ = ۲۷۶'},
+        {'en': '23 × 12 = 276', 'fa': '۲۳ × ۱۲ = ۲۷۶'},
         gen_vedic_vertically_crosswise, steps_simple_mul
     ),
     Rule(
@@ -597,8 +597,8 @@ rules = [
         {'en': 'Yavadunam Sutra.', 'fa': 'یاوادونام سوترا.'},
         'Squaring & Cubing', 'Vedic',
         {
-            'en': 'To square near base: Left part = Number + Deficiency. Right part = Deficiency squared.',
-            'fa': 'مربع نزدیک مبنا: بخش چپ = عدد + اختلاف. بخش راست = مجذور اختلاف.'
+            'en': 'Vedic Square near Base:\n1. Left part: Number + Deficiency (or - Excess).\n2. Right part: Square of the deficiency.\nExample: 13². Base 10, excess is 3. Left: 13+3=16. Right: 3^2=9. Result: 169.',
+            'fa': 'مربع نزدیک به مبنا (روش وِدیک):\n۱. بخش چپ: عدد را با اختلافش از مبنا جمع کنید.\n۲. بخش راست: مجذور اختلاف را قرار دهید.\nمثال: ۱۳ به توان ۲. مبنا ۱۰ است و اختلاف ۳ واحد است. بخش چپ: ۱۶ = ۳ + ۱۳. بخش راست: ۹ = ۳ به توان ۲. جواب: ۱۶۹.'
         },
         {'en': '13² = 169', 'fa': '۱۳² = ۱۶۹'},
         gen_vedic_square_near_base, steps_simple_mul
@@ -609,8 +609,8 @@ rules = [
         {'en': 'Nikilam addition method.', 'fa': 'روش جمع نیکیلام.'},
         'Division & Roots', 'Vedic',
         {
-            'en': 'Successively add digits for quotient and final remainder.',
-            'fa': 'به طور متوالی ارقام را برای خارج‌قسمت و باقی‌مانده جمع کنید.'
+            'en': 'Vedic Division by 9:\n1. First digit is first quotient digit.\n2. Add this to next digit for next quotient part.\n3. The final sum is the remainder.\nExample: 23 ÷ 9. First digit 2. Remainder: 2+3=5. Result: 2 R 5.',
+            'fa': 'تقسیم بر ۹ (روش وِدیک):\n۱. اولین رقم، اولین رقمِ خارج‌قسمت است.\n۲. آن را با رقم بعدی جمع کنید تا رقم بعدی (یا باقی‌مانده) به دست آید.\n۳. جمع نهایی همان باقی‌مانده است.\nمثال: ۲۳ تقسیم بر ۹. رقم اول ۲ است. باقی‌مانده: ۵ = ۳ + ۲. جواب: ۲ با باقی‌مانده ۵.'
         },
         {'en': '23 ÷ 9 = 2 R 5', 'fa': '۲۳ ÷ ۹ = ۲ باقی‌مانده ۵'},
         gen_vedic_div_9, steps_simple_mul
@@ -621,10 +621,10 @@ rules = [
         {'en': 'By one less than the previous one.', 'fa': 'با یکی کمتر از قبلی.'},
         'Multiplication', 'Vedic',
         {
-            'en': 'Left part = number - 1. Right part = number from base (all from 9, last from 10).',
-            'fa': 'بخش چپ = عدد منهای ۱. بخش راست = تفریق عدد از مبنا.'
+            'en': 'Vedic Multiplication by 9, 99, etc:\n1. Left part: Subtract 1 from the number.\n2. Right part: Use "All from 9 and last from 10" on the original number.\nExample: 43 × 99. Left: 43-1=42. Right: (9-4)=5, (10-3)=7. Result: 4257.',
+            'fa': 'ضرب در ۹، ۹۹ و غیره (روش وِدیک):\n۱. بخش چپ: یک واحد از عدد کم کنید.\n۲. بخش راست: از قانون "همه از ۹ و آخرین از ۱۰" برای عدد اصلی استفاده کنید.\nمثال: ۴۳ × ۹۹. بخش چپ: ۴۲ = ۱ - ۴۳. بخش راست: ۵۷ (۳-۱۰ و ۴-۹). جواب: ۴۲۵۷.'
         },
-        {'en': '43 x 99 = 4257', 'fa': '۴۳ × ۹۹ = ۴۲۵۷'},
+        {'en': '43 × 99 = 4257', 'fa': '۴۳ × ۹۹ = ۴۲۵۷'},
         gen_vedic_series_9, steps_vedic_series_9
     ),
     Rule(
@@ -633,10 +633,10 @@ rules = [
         {'en': 'Ekadhikena Purvena.', 'fa': 'اکادیکنا پورونا.'},
         'Multiplication', 'Vedic',
         {
-            'en': 'Tens same and units sum 10: Tens*(Tens+1) | Units product.',
-            'fa': 'دهگان یکسان و مجموع یکان‌ها ۱۰: دهگان در (دهگان+۱) | ضرب یکان‌ها.'
+            'en': 'Vedic rule for same tens and units summing to 10:\n1. Left part: Multiply tens digit by its successor.\n2. Right part: Multiply the units digits.\nExample: 42 × 48. Left: 4*(4+1)=20. Right: 2*8=16. Result: 2016.',
+            'fa': 'دهگان یکسان و مجموع یکان ۱۰ (روش وِدیک):\n۱. بخش چپ: دهگان را در عدد بعدی‌اش ضرب کنید.\n۲. بخش راست: یکان‌ها را در هم ضرب کنید.\nمثال: ۴۲ × ۴۸. بخش چپ: ۲۰ = (۱+۴) × ۴. بخش راست: ۱۶ = ۸ × ۲. جواب: ۲۰۱۶.'
         },
-        {'en': '42 x 48 = 2016', 'fa': '۴۲ × ۴۸ = ۲۰۱۶'},
+        {'en': '42 × 48 = 2016', 'fa': '۴۲ × ۴۸ = ۲۰۱۶'},
         gen_vedic_ekadhikena, steps_vedic_ekadhikena
     ),
     Rule(
@@ -645,8 +645,8 @@ rules = [
         {'en': 'Yavadunam (Cubing).', 'fa': 'یاوادونام (مکعب).'},
         'Squaring & Cubing', 'Vedic',
         {
-            'en': 'To cube near base 10: Left: Num+2*Diff. Middle: 3*Diff^2. Right: Diff^3.',
-            'fa': 'مکعب نزدیک مبنای ۱۰: چپ: عدد+۲×اختلاف. میانی: ۳×مجذور اختلاف. راست: مکعب اختلاف.'
+            'en': 'Vedic Cubing near Base 10:\n1. Left: Number + 2 * Deficiency.\n2. Middle: 3 * (Deficiency²).\n3. Right: Deficiency³.\nExample: 12³. Deficiency is 2. Left: 12+2*2=16. Middle: 3*(2^2)=12. Right: 2^3=8. Combine with carries: 16 | 12 | 8 = 1728.',
+            'fa': 'مکعب نزدیک به مبنا (روش وِدیک):\n۱. بخش چپ: عدد + (۲ × اختلاف).\n۲. بخش میانی: ۳ × (مجذور اختلاف).\n۳. بخش راست: مکعب اختلاف.\nمثال: ۱۲ به توان ۳. اختلاف ۲ است. بخش چپ: ۱۶ = ۲×۲ + ۱۲. بخش میانی: ۱۲ = ۴ × ۳. بخش راست: ۸ = ۲ به توان ۳. ترکیب با ارقام نقلی: ۸ | ۱۲ | ۱۶ که می‌شود ۱۷۲۸.'
         },
         {'en': '12³ = 1728', 'fa': '۱۲³ = ۱۷۲۸'},
         gen_vedic_cubing, steps_simple_mul
