@@ -31,11 +31,11 @@ def main():
 
         print(f"{BOLD}--- Trachtenberg System ---{END}")
         for i, rule in enumerate(tracht_rules):
-            print(f"{i + 1:2}. {rule.name}")
+            print(f"{i + 1:2}. {rule.get_name('en')}")
 
         print(f"\n{BOLD}--- Vedic Mathematics ---{END}")
         for i, rule in enumerate(vedic_rules):
-            print(f"{len(tracht_rules) + i + 1:2}. {rule.name}")
+            print(f"{len(tracht_rules) + i + 1:2}. {rule.get_name('en')}")
 
         print(f"\n{BOLD} 0. Exit{END}")
 
@@ -64,8 +64,8 @@ def main():
                 elapsed = int(time.time() - start_time)
                 mins, secs = divmod(elapsed, 60)
 
-                print(f"{BOLD}Method: {BLUE}{rule.name}{END}")
-                print(f"{BOLD}Theory: {END}{rule.description}")
+                print(f"{BOLD}Method: {BLUE}{rule.get_name('en')}{END}")
+                print(f"{BOLD}Theory: {END}{rule.get_description('en')}")
                 print(f"{BOLD}Score:  {GREEN}{score}{END}/{total}  {BOLD}Streak: {END}{streak}  {BOLD}Time: {END}{mins:02d}:{secs:02d}")
                 print("-" * 50)
 
@@ -77,8 +77,8 @@ def main():
                     break
 
                 if user_input == 'h':
-                    print(f"\n{BOLD}Explanation:{END} {rule.explanation}")
-                    print(f"{BOLD}Example:{END} {rule.example}")
+                    print(f"\n{BOLD}Explanation:{END} {rule.get_explanation('en')}")
+                    print(f"{BOLD}Example:{END} {rule.get_example('en')}")
                     input("\nPress Enter to return to problem...")
                     continue
 

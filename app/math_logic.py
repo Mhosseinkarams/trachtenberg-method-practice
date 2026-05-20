@@ -654,7 +654,12 @@ rules = [
 ]
 
 rules_by_category = {}
+rules_by_method = {}
 for r in rules:
     if r.category not in rules_by_category:
         rules_by_category[r.category] = []
     rules_by_category[r.category].append(r)
+
+    if r.method not in rules_by_method:
+        rules_by_method[r.method] = []
+    rules_by_method[r.method].append(r)

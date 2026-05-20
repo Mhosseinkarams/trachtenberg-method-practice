@@ -25,6 +25,7 @@ LOCALIZED_UI = {
     'en': {
         'title': 'MathBeast',
         'subtitle': 'Master Rapid Calculation',
+        'back_systems': 'Back to Systems',
         'back_categories': 'Back to Categories',
         'back_methods': 'Back to methods',
         'learn': 'Learn',
@@ -48,11 +49,15 @@ LOCALIZED_UI = {
         'count': 'Count',
         'digits': 'Digits per number',
         'random': 'Random',
+        'choose_system': 'Choose a Calculation System',
+        'trachtenberg': 'Trachtenberg System',
+        'vedic': 'Vedic Mathematics',
         'footer': '© 2024 MathBeast. Built with Flet.'
     },
     'fa': {
         'title': 'MathBeast',
         'subtitle': 'تسلط بر محاسبات ذهنی سریع',
+        'back_systems': 'بازگشت به سیستم‌ها',
         'back_categories': 'بازگشت به دسته‌بندی‌ها',
         'back_methods': 'بازگشت به روش‌ها',
         'learn': 'آموزش',
@@ -76,6 +81,9 @@ LOCALIZED_UI = {
         'count': 'تعداد',
         'digits': 'ارقام هر عدد',
         'random': 'تصادفی',
+        'choose_system': 'انتخاب سیستم محاسباتی',
+        'trachtenberg': 'سیستم تراختنبرگ',
+        'vedic': 'ریاضیات وِدیک',
         'footer': '© ۲۰۲۴ MathBeast. ساخته شده با Flet.'
     }
 }
@@ -130,6 +138,7 @@ class FastMathApp:
         self.timer_running = False
         self.timer_id = 0
         self.mode = "Learn"
+        self.selected_system = None
 
         self.setup_ui()
 
@@ -176,7 +185,7 @@ class FastMathApp:
         )
 
         self.main_content = ft.Column()
-        self.show_categories(update=False)
+        self.show_system_selection(update=False)
 
         self.page.add(
             ft.Column([
@@ -188,11 +197,55 @@ class FastMathApp:
         )
         self.page.update()
 
+    def show_system_selection(self, update: bool = True):
+        self.main_content.controls.clear()
+        ui = LOCALIZED_UI[self.lang]
+
+        cards = ft.ResponsiveRow([
+            ft.Container(
+                content=ft.Column([
+                    ft.Icon(ft.Icons.AUTO_AWESOME_MOTION, size=40, color=COLOR_PRIMARY),
+                    ft.Text(ui['trachtenberg'], size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                    ft.Text("Speed system for multiplication and addition.", size=16, color=ft.Colors.GREY_400),
+                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                padding=40, bgcolor=COLOR_SURFACE, border_radius=15, col={"sm": 12, "md": 6},
+                on_click=lambda _: self.select_system("Trachtenberg"), ink=True, border=ft.Border.all(1, ft.Colors.GREY_800)
+            ),
+            ft.Container(
+                content=ft.Column([
+                    ft.Icon(ft.Icons.HUB, size=40, color=COLOR_ACCENT),
+                    ft.Text(ui['vedic'], size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                    ft.Text("Ancient Indian mathematical techniques.", size=16, color=ft.Colors.GREY_400),
+                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                padding=40, bgcolor=COLOR_SURFACE, border_radius=15, col={"sm": 12, "md": 6},
+                on_click=lambda _: self.select_system("Vedic"), ink=True, border=ft.Border.all(1, ft.Colors.GREY_800)
+            )
+        ], spacing=20)
+
+        self.main_content.controls.append(ft.Text(ui['choose_system'], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
+        self.main_content.controls.append(cards)
+        if update:
+            self.page.update()
+
+    def select_system(self, system):
+        self.selected_system = system
+        self.show_categories()
+
     def show_categories(self, update: bool = True):
         self.main_content.controls.clear()
+        ui = LOCALIZED_UI[self.lang]
+
+        back_button = ft.TextButton(ui['back_systems'],
+                                    icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_system_selection())
+
         category_grid = ft.ResponsiveRow(spacing=20)
 
         for cat_key, info in CATEGORIES_INFO.items():
+            # Filter categories by selected system
+            cat_rules = [r for r in rules_by_category.get(cat_key, []) if r.method == self.selected_system]
+            if not cat_rules:
+                continue
+
             name = info[self.lang]
             desc = info[f'desc_{self.lang}']
             category_grid.controls.append(
@@ -208,6 +261,8 @@ class FastMathApp:
                 )
             )
 
+        self.main_content.controls.append(back_button)
+        self.main_content.controls.append(ft.Text(f"{self.selected_system}", size=24, weight=ft.FontWeight.BOLD, color=COLOR_ACCENT))
         self.main_content.controls.append(category_grid)
         if update:
             self.page.update()
@@ -217,7 +272,8 @@ class FastMathApp:
         ui = LOCALIZED_UI[self.lang]
 
         back_button = ft.TextButton(ui['back_categories'], icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_categories())
-        rule_list = rules_by_category.get(category, [])
+        # Filter rules by selected system
+        rule_list = [r for r in rules_by_category.get(category, []) if r.method == self.selected_system]
 
         grid = ft.Column(spacing=20)
         grid.controls.append(ft.Text(CATEGORIES_INFO[category][self.lang], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
