@@ -14,9 +14,16 @@ try:
 except ImportError:
     from app.math_logic import rules, rules_by_category, to_lang_digits
 
+# Theme Colors
+COLOR_PRIMARY = "#00D4C8"  # Vibrant Teal
+COLOR_ACCENT = "#FF6B00"   # Bright Orange
+COLOR_BG = "#0F172A"       # Deep Black / Dark Navy
+COLOR_SURFACE = "#1E2937"  # Darker Surface
+COLOR_SUCCESS = "#00FF7F"  # Spring Green
+
 LOCALIZED_UI = {
     'en': {
-        'title': 'Fast Math Trainer',
+        'title': 'MathBeast',
         'subtitle': 'Master Rapid Calculation',
         'back_categories': 'Back to Categories',
         'back_methods': 'Back to methods',
@@ -41,10 +48,10 @@ LOCALIZED_UI = {
         'count': 'Count',
         'digits': 'Digits per number',
         'random': 'Random',
-        'footer': '© 2024 Fast Math Trainer. Built with Flet.'
+        'footer': '© 2024 MathBeast. Built with Flet.'
     },
     'fa': {
-        'title': 'مربی محاسبات سریع',
+        'title': 'MathBeast',
         'subtitle': 'تسلط بر محاسبات ذهنی سریع',
         'back_categories': 'بازگشت به دسته‌بندی‌ها',
         'back_methods': 'بازگشت به روش‌ها',
@@ -69,7 +76,7 @@ LOCALIZED_UI = {
         'count': 'تعداد',
         'digits': 'ارقام هر عدد',
         'random': 'تصادفی',
-        'footer': '© ۲۰۲۴ مربی محاسبات سریع. ساخته شده با Flet.'
+        'footer': '© ۲۰۲۴ MathBeast. ساخته شده با Flet.'
     }
 }
 
@@ -80,7 +87,7 @@ CATEGORIES_INFO = {
         'desc_en': 'Techniques for rapid multiplication.',
         'desc_fa': 'تکنیک‌های ضرب سریع اعداد.',
         'icon': ft.Icons.GRID_VIEW,
-        'color': ft.Colors.BLUE_700
+        'color': COLOR_PRIMARY
     },
     'Addition & Subtraction': {
         'en': 'Addition & Subtraction',
@@ -88,7 +95,7 @@ CATEGORIES_INFO = {
         'desc_en': 'Speed up your basic arithmetic.',
         'desc_fa': 'سرعت بخشیدن به عملیات پایه.',
         'icon': ft.Icons.ADD_CIRCLE_OUTLINE,
-        'color': ft.Colors.GREEN_700
+        'color': ft.Colors.BLUE_400
     },
     'Squaring & Cubing': {
         'en': 'Squaring & Cubing',
@@ -96,7 +103,7 @@ CATEGORIES_INFO = {
         'desc_en': 'Calculate powers in seconds.',
         'desc_fa': 'محاسبه توان‌ها در چند ثانیه.',
         'icon': ft.Icons.EXPOSURE_PLUS_2,
-        'color': ft.Colors.ORANGE_700
+        'color': COLOR_ACCENT
     },
     'Division & Roots': {
         'en': 'Division & Roots',
@@ -104,7 +111,7 @@ CATEGORIES_INFO = {
         'desc_en': 'Master division and square roots.',
         'desc_fa': 'تسلط بر تقسیم و ریشه‌های دوم.',
         'icon': ft.Icons.FUNCTIONS,
-        'color': ft.Colors.PURPLE_700
+        'color': ft.Colors.PURPLE_400
     }
 }
 
@@ -129,9 +136,9 @@ class FastMathApp:
     def update_page_config(self):
         self.page.title = LOCALIZED_UI[self.lang]['title']
         self.page.rtl = (self.lang == 'fa')
-        self.page.theme_mode = ft.ThemeMode.LIGHT
+        self.page.theme_mode = ft.ThemeMode.DARK
         self.page.padding = 20
-        self.page.bgcolor = ft.Colors.GREY_50
+        self.page.bgcolor = COLOR_BG
         self.page.scroll = ft.ScrollMode.AUTO
 
     def toggle_language(self, e):
@@ -145,21 +152,22 @@ class FastMathApp:
         ui = LOCALIZED_UI[self.lang]
 
         lang_btn = ft.Container(
-            content=ft.Text("en" if self.lang == 'fa' else "فا", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
-            bgcolor=ft.Colors.INDIGO_400,
+            content=ft.Text("en" if self.lang == 'fa' else "فا", weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY),
+            bgcolor=COLOR_SURFACE,
             padding=10,
             border_radius=5,
             on_click=self.toggle_language,
             ink=True,
-            left=0, top=0
+            left=0, top=0,
+            border=ft.Border.all(1, COLOR_PRIMARY)
         )
 
         self.header = ft.Container(
             content=ft.Stack([
                 ft.Row([
                     ft.Column([
-                        ft.Text(ui['title'], size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.INDIGO_900),
-                        ft.Text(ui['subtitle'], size=16, color=ft.Colors.GREY_600),
+                        ft.Text(ui['title'], size=40, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY),
+                        ft.Text(ui['subtitle'], size=16, color=ft.Colors.GREY_400),
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                 ], alignment=ft.MainAxisAlignment.CENTER),
                 lang_btn
@@ -174,8 +182,8 @@ class FastMathApp:
             ft.Column([
                 self.header,
                 self.main_content,
-                ft.Divider(),
-                ft.Text(ui['footer'], size=12, color=ft.Colors.GREY_400, text_align=ft.TextAlign.CENTER)
+                ft.Divider(color=COLOR_SURFACE),
+                ft.Text(ui['footer'], size=12, color=ft.Colors.GREY_600, text_align=ft.TextAlign.CENTER)
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
         )
         self.page.update()
@@ -191,10 +199,10 @@ class FastMathApp:
                 ft.Container(
                     content=ft.Column([
                         ft.Icon(info['icon'], size=40, color=info['color']),
-                        ft.Text(name, size=24, weight=ft.FontWeight.BOLD),
-                        ft.Text(desc, size=16, color=ft.Colors.GREY_600, text_align=ft.TextAlign.CENTER),
+                        ft.Text(name, size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                        ft.Text(desc, size=16, color=ft.Colors.GREY_400, text_align=ft.TextAlign.CENTER),
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                    padding=40, bgcolor=ft.Colors.WHITE, border_radius=15, border=ft.Border.all(1, ft.Colors.GREY_200),
+                    padding=40, bgcolor=COLOR_SURFACE, border_radius=15, border=ft.Border.all(1, ft.Colors.GREY_800),
                     on_click=lambda e, k=cat_key: self.show_rule_selector(k),
                     col={"sm": 12, "md": 6}, ink=True
                 )
@@ -212,18 +220,18 @@ class FastMathApp:
         rule_list = rules_by_category.get(category, [])
 
         grid = ft.Column(spacing=20)
-        grid.controls.append(ft.Text(CATEGORIES_INFO[category][self.lang], size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800))
+        grid.controls.append(ft.Text(CATEGORIES_INFO[category][self.lang], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
 
         rule_grid = ft.ResponsiveRow(spacing=10)
         for rule in rule_list:
             rule_grid.controls.append(
                 ft.Container(
                     content=ft.Column([
-                        ft.Text(rule.get_name(self.lang), weight=ft.FontWeight.BOLD, size=18),
-                        ft.Text(rule.get_description(self.lang), size=14, color=ft.Colors.GREY_600),
-                        ft.Text(rule.method, size=12, italic=True, color=ft.Colors.INDIGO_300)
+                        ft.Text(rule.get_name(self.lang), weight=ft.FontWeight.BOLD, size=18, color=ft.Colors.WHITE),
+                        ft.Text(rule.get_description(self.lang), size=14, color=ft.Colors.GREY_400),
+                        ft.Text(rule.method, size=12, italic=True, color=COLOR_PRIMARY)
                     ]),
-                    padding=20, bgcolor=ft.Colors.WHITE, border_radius=10, border=ft.Border.all(1, ft.Colors.GREY_200),
+                    padding=20, bgcolor=COLOR_SURFACE, border_radius=10, border=ft.Border.all(1, ft.Colors.GREY_800),
                     on_click=lambda e, r=rule: self.select_rule(r),
                     col={"sm": 12, "md": 6, "lg": 4}, ink=True
                 )
@@ -248,26 +256,26 @@ class FastMathApp:
         cards = ft.ResponsiveRow([
             ft.Container(
                 content=ft.Column([
-                    ft.Icon(ft.Icons.SCHOOL, size=40, color=ft.Colors.BLUE_600),
-                    ft.Text(ui['learn'], size=24, weight=ft.FontWeight.BOLD),
-                    ft.Text(ui['learn_desc'], size=16, color=ft.Colors.GREY_600),
+                    ft.Icon(ft.Icons.SCHOOL, size=40, color=COLOR_PRIMARY),
+                    ft.Text(ui['learn'], size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                    ft.Text(ui['learn_desc'], size=16, color=ft.Colors.GREY_400),
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                padding=40, bgcolor=ft.Colors.WHITE, border_radius=15, col={"sm": 12, "md": 6},
-                on_click=lambda _: self.start_session("Learn"), ink=True
+                padding=40, bgcolor=COLOR_SURFACE, border_radius=15, col={"sm": 12, "md": 6},
+                on_click=lambda _: self.start_session("Learn"), ink=True, border=ft.Border.all(1, ft.Colors.GREY_800)
             ),
             ft.Container(
                 content=ft.Column([
-                    ft.Icon(ft.Icons.TIMER, size=40, color=ft.Colors.ORANGE_600),
-                    ft.Text(ui['practice'], size=24, weight=ft.FontWeight.BOLD),
-                    ft.Text(ui['practice_desc'], size=16, color=ft.Colors.GREY_600),
+                    ft.Icon(ft.Icons.TIMER, size=40, color=COLOR_ACCENT),
+                    ft.Text(ui['practice'], size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                    ft.Text(ui['practice_desc'], size=16, color=ft.Colors.GREY_400),
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                padding=40, bgcolor=ft.Colors.WHITE, border_radius=15, col={"sm": 12, "md": 6},
-                on_click=lambda _: self.start_session("Practice"), ink=True
+                padding=40, bgcolor=COLOR_SURFACE, border_radius=15, col={"sm": 12, "md": 6},
+                on_click=lambda _: self.start_session("Practice"), ink=True, border=ft.Border.all(1, ft.Colors.GREY_800)
             )
         ], spacing=20)
 
         self.main_content.controls.append(back_button)
-        self.main_content.controls.append(ft.Text(f"{ui['target']} {self.selected_rule.get_name(self.lang)}", size=20, weight=ft.FontWeight.BOLD))
+        self.main_content.controls.append(ft.Text(f"{ui['target']} {self.selected_rule.get_name(self.lang)}", size=20, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
         self.main_content.controls.append(cards)
         if update:
             self.page.update()
@@ -324,56 +332,84 @@ class FastMathApp:
                     ft.Column([ft.Text(ui['count']), self.num_operands_slider]) if self.selected_rule.id != 'vedic-subtraction-base' else ft.Column(),
                     self.num_digits_dropdown
                 ], alignment=ft.MainAxisAlignment.START),
-                ft.ElevatedButton(ui['apply_restart'], on_click=lambda _: self.page.run_task(self.next_problem)),
-                ft.Divider()
+                ft.Container(
+                    content=ft.Text(ui['apply_restart'], weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                    on_click=lambda _: self.page.run_task(self.next_problem),
+                    height=45,
+                    alignment=ft.Alignment.CENTER,
+                    gradient=ft.LinearGradient([COLOR_PRIMARY, COLOR_ACCENT]),
+                    border_radius=8,
+                    ink=True
+                ),
+                ft.Divider(color=ft.Colors.GREY_800)
             ])
             config_panel.visible = True
 
         back_button = ft.TextButton(ui['back_methods'], icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_mode_selection())
 
         # Problem Area Components
-        self.problem_text = ft.Text("", size=48, weight=ft.FontWeight.BOLD)
+        self.problem_text = ft.Text("", size=48, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
         self.answer_input = ft.TextField(
             label=ui['enter_answer'], text_align=ft.TextAlign.CENTER,
-            on_submit=self.handle_submit, keyboard_type=ft.KeyboardType.NUMBER, autofocus=True
+            on_submit=self.handle_submit, keyboard_type=ft.KeyboardType.NUMBER, autofocus=True,
+            border_color=COLOR_PRIMARY, cursor_color=COLOR_ACCENT
         )
         self.feedback_text = ft.Text("", size=18, weight=ft.FontWeight.BOLD)
-        self.score_text = ft.Text(f"{ui['score']} 0/0", size=16, visible=not is_learn)
-        self.streak_text = ft.Text(f"{ui['streak']} 0", size=16, color=ft.Colors.ORANGE_800, weight=ft.FontWeight.BOLD, visible=not is_learn)
-        self.timer_text = ft.Text(f"{ui['time']} 00:00", size=16, visible=not is_learn)
+        self.score_text = ft.Text(f"{ui['score']} 0/0", size=16, visible=not is_learn, color=ft.Colors.WHITE)
+        self.streak_text = ft.Text(f"{ui['streak']} 0", size=16, color=COLOR_ACCENT, weight=ft.FontWeight.BOLD, visible=not is_learn)
+        self.timer_text = ft.Text(f"{ui['time']} 00:00", size=16, visible=not is_learn, color=ft.Colors.GREY_400)
 
-        self.check_button = ft.ElevatedButton(content=ft.Text(ui['check']), on_click=self.check_answer, width=400, bgcolor=ft.Colors.INDIGO_600, color=ft.Colors.WHITE)
-        self.next_button = ft.ElevatedButton(content=ft.Text(ui['next']), on_click=self.next_problem, width=400, bgcolor=ft.Colors.GREEN_600, color=ft.Colors.WHITE, visible=False)
+        self.check_button = ft.Container(
+            content=ft.Text(ui['check'], weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+            on_click=self.check_answer,
+            width=400,
+            height=50,
+            alignment=ft.Alignment.CENTER,
+            gradient=ft.LinearGradient([COLOR_PRIMARY, COLOR_ACCENT]),
+            border_radius=10,
+            ink=True
+        )
+        self.next_button = ft.Container(
+            content=ft.Text(ui['next'], weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+            on_click=self.next_problem,
+            width=400,
+            height=50,
+            alignment=ft.Alignment.CENTER,
+            gradient=ft.LinearGradient([ft.Colors.GREEN_400, ft.Colors.GREEN_700]),
+            border_radius=10,
+            ink=True,
+            visible=False
+        )
 
         self.practice_card = ft.Container(
             content=ft.Column([
                 ft.Row([
-                    ft.Column([ft.Text(self.selected_rule.get_name(self.lang), weight=ft.FontWeight.BOLD), self.timer_text]),
+                    ft.Column([ft.Text(self.selected_rule.get_name(self.lang), weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY), self.timer_text]),
                     ft.Column([self.score_text, self.streak_text], horizontal_alignment=ft.CrossAxisAlignment.END)
                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                ft.Divider(),
-                ft.Column([self.problem_text, ft.Text("= ?", size=20, color=ft.Colors.GREY_400)], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                ft.Divider(color=ft.Colors.GREY_800),
+                ft.Column([self.problem_text, ft.Text("= ?", size=20, color=ft.Colors.GREY_600)], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                 self.answer_input, self.check_button, self.next_button, self.feedback_text,
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=20),
-            padding=30, bgcolor=ft.Colors.WHITE, border_radius=15, shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.GREY_300)
+            padding=30, bgcolor=COLOR_SURFACE, border_radius=15, border=ft.Border.all(1, ft.Colors.GREY_800)
         )
 
         # Theory & Steps Area
         self.steps_column = ft.Column(spacing=10)
         theory_card = ft.Container(
             content=ft.Column([
-                ft.Text(ui['theory_title'], size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.INDIGO_700),
-                ft.Text(self.selected_rule.get_explanation(self.lang), size=16),
-                ft.Text(ui['example_title'], size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800),
-                ft.Container(content=ft.Text(self.selected_rule.get_example(self.lang), font_family="monospace", size=14),
-                             padding=15, bgcolor=ft.Colors.GREY_100, border_radius=10, border=ft.Border.all(1, ft.Colors.GREY_300)),
+                ft.Text(ui['theory_title'], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY),
+                ft.Text(self.selected_rule.get_explanation(self.lang), size=16, color=ft.Colors.GREY_400),
+                ft.Text(ui['example_title'], size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                ft.Container(content=ft.Text(self.selected_rule.get_example(self.lang), font_family="monospace", size=14, color=ft.Colors.WHITE),
+                             padding=15, bgcolor=COLOR_BG, border_radius=10, border=ft.Border.all(1, ft.Colors.GREY_800)),
                 ft.Column([
-                    ft.Divider(),
-                    ft.Text(ui['steps_title'], size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.GREEN_700),
+                    ft.Divider(color=ft.Colors.GREY_800),
+                    ft.Text(ui['steps_title'], size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.GREEN_400),
                     self.steps_column
                 ], visible=is_learn)
             ], spacing=15),
-            padding=30, bgcolor=ft.Colors.WHITE, border_radius=15, border=ft.Border.all(1, ft.Colors.GREY_200)
+            padding=30, bgcolor=COLOR_SURFACE, border_radius=15, border=ft.Border.all(1, ft.Colors.GREY_800)
         )
 
         self.main_content.controls.append(back_button)
@@ -420,7 +456,7 @@ class FastMathApp:
             self.steps_column.controls.clear()
             steps = self.selected_rule.get_steps(self.current_problem, self.lang)
             for step in steps:
-                self.steps_column.controls.append(ft.Text(step, size=14, color=ft.Colors.GREY_800))
+                self.steps_column.controls.append(ft.Text(step, size=14, color=ft.Colors.GREY_400))
 
         self.page.update()
         await self.answer_input.focus()
@@ -440,12 +476,12 @@ class FastMathApp:
             self.score += 1
             self.streak += 1
             self.feedback_text.value = ui['correct']
-            self.feedback_text.color = ft.Colors.GREEN_600
+            self.feedback_text.color = COLOR_SUCCESS
         else:
             self.streak = 0
             ans_str = to_lang_digits(self.current_problem['answer'], self.lang)
             self.feedback_text.value = f"{ui['wrong']} {ans_str}"
-            self.feedback_text.color = ft.Colors.RED_600
+            self.feedback_text.color = ft.Colors.RED_400
 
         self.score_text.value = f"{ui['score']} {to_lang_digits(self.score, self.lang)}/{to_lang_digits(self.total, self.lang)}"
         self.streak_text.value = f"{ui['streak']} {to_lang_digits(self.streak, self.lang)}"
@@ -453,7 +489,6 @@ class FastMathApp:
         self.check_button.visible = False
         self.next_button.visible = True
         self.page.update()
-        await self.next_button.focus()
 
 def main(page: ft.Page):
     FastMathApp(page)

@@ -20,7 +20,7 @@ def main():
     while True:
         clear_screen()
         print(f"{BOLD}{BLUE}==============================={END}")
-        print(f"{BOLD}{BLUE}      FAST MATH TRAINER        {END}")
+        print(f"{BOLD}{BLUE}           MATHBEAST           {END}")
         print(f"{BOLD}{BLUE}==============================={END}")
         print("Select a method to practice:\n")
 

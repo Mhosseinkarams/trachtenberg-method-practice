@@ -1,4 +1,4 @@
-# Fast Math Trainer - Unified Python Platform
+# MathBeast - Unified Python Platform
 
 A comprehensive mental math training application supporting Trachtenberg and Vedic methods. This repository has been unified to use Python for all platforms.
 
