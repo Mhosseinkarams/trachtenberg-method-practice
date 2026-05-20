@@ -1,6 +1,9 @@
 import random
 import math
 
+# Pre-calculate powers of 10 for performance optimization in problem generators
+POWERS_OF_10 = [10**i for i in range(10)]
+
 def to_persian_digits(n):
     n = str(n)
     english_digits = "0123456789"
@@ -98,7 +101,7 @@ def gen_tracht_addition(num_operands=2, num_digits=3, **kwargs):
             d = random.randint(1, 6)
         else:
             d = num_digits
-        operands.append(random.randint(10**(d-1), 10**d - 1))
+        operands.append(random.randint(POWERS_OF_10[d-1], POWERS_OF_10[d] - 1))
     question = " + ".join(map(str, operands))
     answer = sum(operands)
     return {"question": question, "answer": answer, "operands": operands}
@@ -157,8 +160,8 @@ def gen_vedic_subtraction_base(num_digits=3, **kwargs):
         d = random.randint(1, 6)
     else:
         d = num_digits
-    base = 10 ** d
-    num = random.randint(10**(d-1), base - 1)
+    base = POWERS_OF_10[d]
+    num = random.randint(POWERS_OF_10[d-1], base - 1)
     return {"question": f"{base} - {num}", "answer": base - num, "base": base, "num": num}
 
 def gen_vedic_vertically_crosswise(**kwargs):

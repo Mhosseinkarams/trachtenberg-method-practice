@@ -130,6 +130,7 @@ class FastMathApp:
         self.timer_running = False
         self.timer_id = 0
         self.mode = "Learn"
+        self.cached_views = {}
 
         self.setup_ui()
 
@@ -144,7 +145,8 @@ class FastMathApp:
     def toggle_language(self, e):
         self.lang = 'en' if self.lang == 'fa' else 'fa'
         self.update_page_config()
-        # Full UI refresh
+        # Full UI refresh - clear cache on language change
+        self.cached_views.clear()
         self.page.controls.clear()
         self.setup_ui()
 
@@ -190,25 +192,30 @@ class FastMathApp:
 
     def show_categories(self, update: bool = True):
         self.main_content.controls.clear()
-        category_grid = ft.ResponsiveRow(spacing=20)
 
-        for cat_key, info in CATEGORIES_INFO.items():
-            name = info[self.lang]
-            desc = info[f'desc_{self.lang}']
-            category_grid.controls.append(
-                ft.Container(
-                    content=ft.Column([
-                        ft.Icon(info['icon'], size=40, color=info['color']),
-                        ft.Text(name, size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
-                        ft.Text(desc, size=16, color=ft.Colors.GREY_400, text_align=ft.TextAlign.CENTER),
-                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                    padding=40, bgcolor=COLOR_SURFACE, border_radius=15, border=ft.Border.all(1, ft.Colors.GREY_800),
-                    on_click=lambda e, k=cat_key: self.show_rule_selector(k),
-                    col={"sm": 12, "md": 6}, ink=True
+        cache_key = f"categories_{self.lang}"
+        if cache_key in self.cached_views:
+            self.main_content.controls.append(self.cached_views[cache_key])
+        else:
+            category_grid = ft.ResponsiveRow(spacing=20)
+            for cat_key, info in CATEGORIES_INFO.items():
+                name = info[self.lang]
+                desc = info[f'desc_{self.lang}']
+                category_grid.controls.append(
+                    ft.Container(
+                        content=ft.Column([
+                            ft.Icon(info['icon'], size=40, color=info['color']),
+                            ft.Text(name, size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                            ft.Text(desc, size=16, color=ft.Colors.GREY_400, text_align=ft.TextAlign.CENTER),
+                        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                        padding=40, bgcolor=COLOR_SURFACE, border_radius=15, border=ft.Border.all(1, ft.Colors.GREY_800),
+                        on_click=lambda e, k=cat_key: self.show_rule_selector(k),
+                        col={"sm": 12, "md": 6}, ink=True
+                    )
                 )
-            )
+            self.cached_views[cache_key] = category_grid
+            self.main_content.controls.append(category_grid)
 
-        self.main_content.controls.append(category_grid)
         if update:
             self.page.update()
 
@@ -217,29 +224,34 @@ class FastMathApp:
         ui = LOCALIZED_UI[self.lang]
 
         back_button = ft.TextButton(ui['back_categories'], icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_categories())
-        rule_list = rules_by_category.get(category, [])
-
-        grid = ft.Column(spacing=20)
-        grid.controls.append(ft.Text(CATEGORIES_INFO[category][self.lang], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
-
-        rule_grid = ft.ResponsiveRow(spacing=10)
-        for rule in rule_list:
-            rule_grid.controls.append(
-                ft.Container(
-                    content=ft.Column([
-                        ft.Text(rule.get_name(self.lang), weight=ft.FontWeight.BOLD, size=18, color=ft.Colors.WHITE),
-                        ft.Text(rule.get_description(self.lang), size=14, color=ft.Colors.GREY_400),
-                        ft.Text(rule.method, size=12, italic=True, color=COLOR_PRIMARY)
-                    ]),
-                    padding=20, bgcolor=COLOR_SURFACE, border_radius=10, border=ft.Border.all(1, ft.Colors.GREY_800),
-                    on_click=lambda e, r=rule: self.select_rule(r),
-                    col={"sm": 12, "md": 6, "lg": 4}, ink=True
-                )
-            )
-        grid.controls.append(rule_grid)
-
         self.main_content.controls.append(back_button)
-        self.main_content.controls.append(grid)
+
+        cache_key = f"rules_{category}_{self.lang}"
+        if cache_key in self.cached_views:
+            self.main_content.controls.append(self.cached_views[cache_key])
+        else:
+            rule_list = rules_by_category.get(category, [])
+            grid = ft.Column(spacing=20)
+            grid.controls.append(ft.Text(CATEGORIES_INFO[category][self.lang], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
+
+            rule_grid = ft.ResponsiveRow(spacing=10)
+            for rule in rule_list:
+                rule_grid.controls.append(
+                    ft.Container(
+                        content=ft.Column([
+                            ft.Text(rule.get_name(self.lang), weight=ft.FontWeight.BOLD, size=18, color=ft.Colors.WHITE),
+                            ft.Text(rule.get_description(self.lang), size=14, color=ft.Colors.GREY_400),
+                            ft.Text(rule.method, size=12, italic=True, color=COLOR_PRIMARY)
+                        ]),
+                        padding=20, bgcolor=COLOR_SURFACE, border_radius=10, border=ft.Border.all(1, ft.Colors.GREY_800),
+                        on_click=lambda e, r=rule: self.select_rule(r),
+                        col={"sm": 12, "md": 6, "lg": 4}, ink=True
+                    )
+                )
+            grid.controls.append(rule_grid)
+            self.cached_views[cache_key] = grid
+            self.main_content.controls.append(grid)
+
         if update:
             self.page.update()
 
@@ -457,8 +469,9 @@ class FastMathApp:
             steps = self.selected_rule.get_steps(self.current_problem, self.lang)
             for step in steps:
                 self.steps_column.controls.append(ft.Text(step, size=14, color=ft.Colors.GREY_400))
+            self.steps_column.update()
 
-        self.page.update()
+        self.practice_card.update()
         await self.answer_input.focus()
 
     async def handle_submit(self, e):
@@ -488,7 +501,7 @@ class FastMathApp:
         self.answer_input.disabled = True
         self.check_button.visible = False
         self.next_button.visible = True
-        self.page.update()
+        self.practice_card.update()
 
 def main(page: ft.Page):
     FastMathApp(page)
