@@ -1,12 +1,11 @@
 import random
 import math
 
+_PERSIAN_TRANS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
+POWERS_OF_10 = [1, 10, 100, 1000, 10000, 100000, 1000000]
+
 def to_persian_digits(n):
-    n = str(n)
-    english_digits = "0123456789"
-    persian_digits = "۰۱۲۳۴۵۶۷۸۹"
-    translation_table = str.maketrans(english_digits, persian_digits)
-    return n.translate(translation_table)
+    return str(n).translate(_PERSIAN_TRANS)
 
 def to_lang_digits(n, lang):
     if lang == 'fa':
@@ -98,7 +97,7 @@ def gen_tracht_addition(num_operands=2, num_digits=3, **kwargs):
             d = random.randint(1, 6)
         else:
             d = num_digits
-        operands.append(random.randint(10**(d-1), 10**d - 1))
+        operands.append(random.randint(POWERS_OF_10[d-1], POWERS_OF_10[d] - 1))
     question = " + ".join(map(str, operands))
     answer = sum(operands)
     return {"question": question, "answer": answer, "operands": operands}
@@ -157,8 +156,8 @@ def gen_vedic_subtraction_base(num_digits=3, **kwargs):
         d = random.randint(1, 6)
     else:
         d = num_digits
-    base = 10 ** d
-    num = random.randint(10**(d-1), base - 1)
+    base = POWERS_OF_10[d]
+    num = random.randint(POWERS_OF_10[d-1], base - 1)
     return {"question": f"{base} - {num}", "answer": base - num, "base": base, "num": num}
 
 def gen_vedic_vertically_crosswise(**kwargs):
@@ -655,11 +654,13 @@ rules = [
 
 rules_by_category = {}
 rules_by_method = {}
-for r in rules:
-    if r.category not in rules_by_category:
-        rules_by_category[r.category] = []
-    rules_by_category[r.category].append(r)
+rules_by_system_category = {} # {system: {category: [rules]}}
 
-    if r.method not in rules_by_method:
-        rules_by_method[r.method] = []
-    rules_by_method[r.method].append(r)
+for r in rules:
+    # Existing groupings
+    rules_by_category.setdefault(r.category, []).append(r)
+    rules_by_method.setdefault(r.method, []).append(r)
+
+    # New optimization: Group by system AND category
+    system_map = rules_by_system_category.setdefault(r.method, {})
+    system_map.setdefault(r.category, []).append(r)
