@@ -10,9 +10,9 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 try:
-    from math_logic import rules, rules_by_category, to_lang_digits
+    from math_logic import rules, rules_by_category, rules_by_system_category, to_lang_digits
 except ImportError:
-    from app.math_logic import rules, rules_by_category, to_lang_digits
+    from app.math_logic import rules, rules_by_category, rules_by_system_category, to_lang_digits
 
 # Theme Colors
 COLOR_PRIMARY = "#00D4C8"  # Vibrant Teal
@@ -139,6 +139,7 @@ class FastMathApp:
         self.timer_id = 0
         self.mode = "Learn"
         self.selected_system = None
+        self.cached_views = {}
 
         self.setup_ui()
 
@@ -153,6 +154,7 @@ class FastMathApp:
     def toggle_language(self, e):
         self.lang = 'en' if self.lang == 'fa' else 'fa'
         self.update_page_config()
+        self.cached_views.clear()
         # Full UI refresh
         self.page.controls.clear()
         self.setup_ui()
@@ -201,29 +203,30 @@ class FastMathApp:
         self.main_content.controls.clear()
         ui = LOCALIZED_UI[self.lang]
 
-        cards = ft.ResponsiveRow([
-            ft.Container(
-                content=ft.Column([
-                    ft.Icon(ft.Icons.AUTO_AWESOME_MOTION, size=40, color=COLOR_PRIMARY),
-                    ft.Text(ui['trachtenberg'], size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
-                    ft.Text("Speed system for multiplication and addition.", size=16, color=ft.Colors.GREY_400),
-                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                padding=40, bgcolor=COLOR_SURFACE, border_radius=15, col={"sm": 12, "md": 6},
-                on_click=lambda _: self.select_system("Trachtenberg"), ink=True, border=ft.Border.all(1, ft.Colors.GREY_800)
-            ),
-            ft.Container(
-                content=ft.Column([
-                    ft.Icon(ft.Icons.HUB, size=40, color=COLOR_ACCENT),
-                    ft.Text(ui['vedic'], size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
-                    ft.Text("Ancient Indian mathematical techniques.", size=16, color=ft.Colors.GREY_400),
-                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                padding=40, bgcolor=COLOR_SURFACE, border_radius=15, col={"sm": 12, "md": 6},
-                on_click=lambda _: self.select_system("Vedic"), ink=True, border=ft.Border.all(1, ft.Colors.GREY_800)
-            )
-        ], spacing=20)
+        if 'system_selection' not in self.cached_views:
+            self.cached_views['system_selection'] = ft.ResponsiveRow([
+                ft.Container(
+                    content=ft.Column([
+                        ft.Icon(ft.Icons.AUTO_AWESOME_MOTION, size=40, color=COLOR_PRIMARY),
+                        ft.Text(ui['trachtenberg'], size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                        ft.Text("Speed system for multiplication and addition.", size=16, color=ft.Colors.GREY_400),
+                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                    padding=40, bgcolor=COLOR_SURFACE, border_radius=15, col={"sm": 12, "md": 6},
+                    on_click=lambda _: self.select_system("Trachtenberg"), ink=True, border=ft.Border.all(1, ft.Colors.GREY_800)
+                ),
+                ft.Container(
+                    content=ft.Column([
+                        ft.Icon(ft.Icons.HUB, size=40, color=COLOR_ACCENT),
+                        ft.Text(ui['vedic'], size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                        ft.Text("Ancient Indian mathematical techniques.", size=16, color=ft.Colors.GREY_400),
+                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                    padding=40, bgcolor=COLOR_SURFACE, border_radius=15, col={"sm": 12, "md": 6},
+                    on_click=lambda _: self.select_system("Vedic"), ink=True, border=ft.Border.all(1, ft.Colors.GREY_800)
+                )
+            ], spacing=20)
 
         self.main_content.controls.append(ft.Text(ui['choose_system'], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
-        self.main_content.controls.append(cards)
+        self.main_content.controls.append(self.cached_views['system_selection'])
         if update:
             self.page.update()
 
@@ -234,68 +237,70 @@ class FastMathApp:
     def show_categories(self, update: bool = True):
         self.main_content.controls.clear()
         ui = LOCALIZED_UI[self.lang]
+        cache_key = f"categories_{self.selected_system}"
+
+        if cache_key not in self.cached_views:
+            category_grid = ft.ResponsiveRow(spacing=20)
+            for cat_key, info in CATEGORIES_INFO.items():
+                # Filter categories by selected system using pre-calculated dict
+                if cat_key not in rules_by_system_category.get(self.selected_system, {}):
+                    continue
+
+                name = info[self.lang]
+                desc = info[f'desc_{self.lang}']
+                category_grid.controls.append(
+                    ft.Container(
+                        content=ft.Column([
+                            ft.Icon(info['icon'], size=40, color=info['color']),
+                            ft.Text(name, size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                            ft.Text(desc, size=16, color=ft.Colors.GREY_400, text_align=ft.TextAlign.CENTER),
+                        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                        padding=40, bgcolor=COLOR_SURFACE, border_radius=15, border=ft.Border.all(1, ft.Colors.GREY_800),
+                        on_click=lambda e, k=cat_key: self.show_rule_selector(k),
+                        col={"sm": 12, "md": 6}, ink=True
+                    )
+                )
+            self.cached_views[cache_key] = category_grid
 
         back_button = ft.TextButton(ui['back_systems'],
                                     icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_system_selection())
 
-        category_grid = ft.ResponsiveRow(spacing=20)
-
-        for cat_key, info in CATEGORIES_INFO.items():
-            # Filter categories by selected system
-            cat_rules = [r for r in rules_by_category.get(cat_key, []) if r.method == self.selected_system]
-            if not cat_rules:
-                continue
-
-            name = info[self.lang]
-            desc = info[f'desc_{self.lang}']
-            category_grid.controls.append(
-                ft.Container(
-                    content=ft.Column([
-                        ft.Icon(info['icon'], size=40, color=info['color']),
-                        ft.Text(name, size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
-                        ft.Text(desc, size=16, color=ft.Colors.GREY_400, text_align=ft.TextAlign.CENTER),
-                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                    padding=40, bgcolor=COLOR_SURFACE, border_radius=15, border=ft.Border.all(1, ft.Colors.GREY_800),
-                    on_click=lambda e, k=cat_key: self.show_rule_selector(k),
-                    col={"sm": 12, "md": 6}, ink=True
-                )
-            )
-
         self.main_content.controls.append(back_button)
         self.main_content.controls.append(ft.Text(f"{self.selected_system}", size=24, weight=ft.FontWeight.BOLD, color=COLOR_ACCENT))
-        self.main_content.controls.append(category_grid)
+        self.main_content.controls.append(self.cached_views[cache_key])
         if update:
             self.page.update()
 
     def show_rule_selector(self, category: str, update: bool = True):
         self.main_content.controls.clear()
         ui = LOCALIZED_UI[self.lang]
+        cache_key = f"rules_{self.selected_system}_{category}"
+
+        if cache_key not in self.cached_views:
+            rule_list = rules_by_system_category.get(self.selected_system, {}).get(category, [])
+            grid = ft.Column(spacing=20)
+            grid.controls.append(ft.Text(CATEGORIES_INFO[category][self.lang], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
+
+            rule_grid = ft.ResponsiveRow(spacing=10)
+            for rule in rule_list:
+                rule_grid.controls.append(
+                    ft.Container(
+                        content=ft.Column([
+                            ft.Text(rule.get_name(self.lang), weight=ft.FontWeight.BOLD, size=18, color=ft.Colors.WHITE),
+                            ft.Text(rule.get_description(self.lang), size=14, color=ft.Colors.GREY_400),
+                            ft.Text(rule.method, size=12, italic=True, color=COLOR_PRIMARY)
+                        ]),
+                        padding=20, bgcolor=COLOR_SURFACE, border_radius=10, border=ft.Border.all(1, ft.Colors.GREY_800),
+                        on_click=lambda e, r=rule: self.select_rule(r),
+                        col={"sm": 12, "md": 6, "lg": 4}, ink=True
+                    )
+                )
+            grid.controls.append(rule_grid)
+            self.cached_views[cache_key] = grid
 
         back_button = ft.TextButton(ui['back_categories'], icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_categories())
-        # Filter rules by selected system
-        rule_list = [r for r in rules_by_category.get(category, []) if r.method == self.selected_system]
-
-        grid = ft.Column(spacing=20)
-        grid.controls.append(ft.Text(CATEGORIES_INFO[category][self.lang], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
-
-        rule_grid = ft.ResponsiveRow(spacing=10)
-        for rule in rule_list:
-            rule_grid.controls.append(
-                ft.Container(
-                    content=ft.Column([
-                        ft.Text(rule.get_name(self.lang), weight=ft.FontWeight.BOLD, size=18, color=ft.Colors.WHITE),
-                        ft.Text(rule.get_description(self.lang), size=14, color=ft.Colors.GREY_400),
-                        ft.Text(rule.method, size=12, italic=True, color=COLOR_PRIMARY)
-                    ]),
-                    padding=20, bgcolor=COLOR_SURFACE, border_radius=10, border=ft.Border.all(1, ft.Colors.GREY_800),
-                    on_click=lambda e, r=rule: self.select_rule(r),
-                    col={"sm": 12, "md": 6, "lg": 4}, ink=True
-                )
-            )
-        grid.controls.append(rule_grid)
-
         self.main_content.controls.append(back_button)
-        self.main_content.controls.append(grid)
+        self.main_content.controls.append(self.cached_views[cache_key])
         if update:
             self.page.update()
 
@@ -513,8 +518,9 @@ class FastMathApp:
             steps = self.selected_rule.get_steps(self.current_problem, self.lang)
             for step in steps:
                 self.steps_column.controls.append(ft.Text(step, size=14, color=ft.Colors.GREY_400))
+            self.steps_column.update()
 
-        self.page.update()
+        self.practice_card.update()
         await self.answer_input.focus()
 
     async def handle_submit(self, e):
@@ -544,7 +550,7 @@ class FastMathApp:
         self.answer_input.disabled = True
         self.check_button.visible = False
         self.next_button.visible = True
-        self.page.update()
+        self.practice_card.update()
 
 def main(page: ft.Page):
     FastMathApp(page)
