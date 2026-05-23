@@ -10,9 +10,9 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 try:
-    from math_logic import rules, rules_by_category, to_lang_digits
+    from math_logic import rules, rules_by_category, rules_by_system_category, to_lang_digits
 except ImportError:
-    from app.math_logic import rules, rules_by_category, to_lang_digits
+    from app.math_logic import rules, rules_by_category, rules_by_system_category, to_lang_digits
 
 # Theme Colors
 COLOR_PRIMARY = "#00D4C8"  # Vibrant Teal
@@ -242,7 +242,7 @@ class FastMathApp:
 
         for cat_key, info in CATEGORIES_INFO.items():
             # Filter categories by selected system
-            cat_rules = [r for r in rules_by_category.get(cat_key, []) if r.method == self.selected_system]
+            cat_rules = rules_by_system_category.get(self.selected_system, {}).get(cat_key, [])
             if not cat_rules:
                 continue
 
@@ -273,7 +273,7 @@ class FastMathApp:
 
         back_button = ft.TextButton(ui['back_categories'], icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_categories())
         # Filter rules by selected system
-        rule_list = [r for r in rules_by_category.get(category, []) if r.method == self.selected_system]
+        rule_list = rules_by_system_category.get(self.selected_system, {}).get(category, [])
 
         grid = ft.Column(spacing=20)
         grid.controls.append(ft.Text(CATEGORIES_INFO[category][self.lang], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
