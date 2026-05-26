@@ -1,12 +1,11 @@
 import random
 import math
 
+_PERSIAN_TRANS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
+POWERS_OF_10 = [10**i for i in range(10)]
+
 def to_persian_digits(n):
-    n = str(n)
-    english_digits = "0123456789"
-    persian_digits = "۰۱۲۳۴۵۶۷۸۹"
-    translation_table = str.maketrans(english_digits, persian_digits)
-    return n.translate(translation_table)
+    return str(n).translate(_PERSIAN_TRANS)
 
 def to_lang_digits(n, lang):
     if lang == 'fa':
@@ -98,7 +97,7 @@ def gen_tracht_addition(num_operands=2, num_digits=3, **kwargs):
             d = random.randint(1, 6)
         else:
             d = num_digits
-        operands.append(random.randint(10**(d-1), 10**d - 1))
+        operands.append(random.randint(POWERS_OF_10[d-1], POWERS_OF_10[d] - 1))
     question = " + ".join(map(str, operands))
     answer = sum(operands)
     return {"question": question, "answer": answer, "operands": operands}
@@ -157,8 +156,8 @@ def gen_vedic_subtraction_base(num_digits=3, **kwargs):
         d = random.randint(1, 6)
     else:
         d = num_digits
-    base = 10 ** d
-    num = random.randint(10**(d-1), base - 1)
+    base = POWERS_OF_10[d]
+    num = random.randint(POWERS_OF_10[d-1], base - 1)
     return {"question": f"{base} - {num}", "answer": base - num, "base": base, "num": num}
 
 def gen_vedic_vertically_crosswise(**kwargs):
@@ -167,7 +166,7 @@ def gen_vedic_vertically_crosswise(**kwargs):
     return {"question": f"{a} × {b}", "answer": a * b, "a": a, "b": b}
 
 def gen_vedic_square_near_base(**kwargs):
-    base = 10 ** random.randint(1, 2)
+    base = POWERS_OF_10[random.randint(1, 2)]
     diff = random.randint(-5, 5)
     if diff == 0: diff = 1
     num = base + diff
@@ -655,6 +654,7 @@ rules = [
 
 rules_by_category = {}
 rules_by_method = {}
+rules_by_system_category = {}
 for r in rules:
     if r.category not in rules_by_category:
         rules_by_category[r.category] = []
@@ -663,3 +663,8 @@ for r in rules:
     if r.method not in rules_by_method:
         rules_by_method[r.method] = []
     rules_by_method[r.method].append(r)
+
+    sys_cat = (r.method, r.category)
+    if sys_cat not in rules_by_system_category:
+        rules_by_system_category[sys_cat] = []
+    rules_by_system_category[sys_cat].append(r)
