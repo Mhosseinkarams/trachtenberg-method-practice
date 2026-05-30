@@ -10,9 +10,9 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 try:
-    from math_logic import rules, rules_by_category, to_lang_digits
+    from math_logic import rules, rules_by_category, to_lang_digits, rules_by_system_category
 except ImportError:
-    from app.math_logic import rules, rules_by_category, to_lang_digits
+    from app.math_logic import rules, rules_by_category, to_lang_digits, rules_by_system_category
 
 # Theme Colors
 COLOR_PRIMARY = "#00D4C8"  # Vibrant Teal
@@ -241,9 +241,8 @@ class FastMathApp:
         category_grid = ft.ResponsiveRow(spacing=20)
 
         for cat_key, info in CATEGORIES_INFO.items():
-            # Filter categories by selected system
-            cat_rules = [r for r in rules_by_category.get(cat_key, []) if r.method == self.selected_system]
-            if not cat_rules:
+            # Optimized lookup using pre-calculated mapping
+            if (self.selected_system, cat_key) not in rules_by_system_category:
                 continue
 
             name = info[self.lang]
@@ -272,8 +271,8 @@ class FastMathApp:
         ui = LOCALIZED_UI[self.lang]
 
         back_button = ft.TextButton(ui['back_categories'], icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_categories())
-        # Filter rules by selected system
-        rule_list = [r for r in rules_by_category.get(category, []) if r.method == self.selected_system]
+        # Optimized lookup using pre-calculated mapping
+        rule_list = rules_by_system_category.get((self.selected_system, category), [])
 
         grid = ft.Column(spacing=20)
         grid.controls.append(ft.Text(CATEGORIES_INFO[category][self.lang], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
@@ -513,8 +512,9 @@ class FastMathApp:
             steps = self.selected_rule.get_steps(self.current_problem, self.lang)
             for step in steps:
                 self.steps_column.controls.append(ft.Text(step, size=14, color=ft.Colors.GREY_400))
+            self.steps_column.update()
 
-        self.page.update()
+        self.practice_card.update()
         await self.answer_input.focus()
 
     async def handle_submit(self, e):
@@ -544,7 +544,7 @@ class FastMathApp:
         self.answer_input.disabled = True
         self.check_button.visible = False
         self.next_button.visible = True
-        self.page.update()
+        self.practice_card.update()
 
 def main(page: ft.Page):
     FastMathApp(page)
