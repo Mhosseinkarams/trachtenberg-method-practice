@@ -1,12 +1,10 @@
 import random
 import math
 
+_PERSIAN_TRANS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
+
 def to_persian_digits(n):
-    n = str(n)
-    english_digits = "0123456789"
-    persian_digits = "۰۱۲۳۴۵۶۷۸۹"
-    translation_table = str.maketrans(english_digits, persian_digits)
-    return n.translate(translation_table)
+    return str(n).translate(_PERSIAN_TRANS)
 
 def to_lang_digits(n, lang):
     if lang == 'fa':
@@ -655,6 +653,8 @@ rules = [
 
 rules_by_category = {}
 rules_by_method = {}
+rules_by_system_category = {} # {system: {category: [rules]}}
+
 for r in rules:
     if r.category not in rules_by_category:
         rules_by_category[r.category] = []
@@ -663,3 +663,9 @@ for r in rules:
     if r.method not in rules_by_method:
         rules_by_method[r.method] = []
     rules_by_method[r.method].append(r)
+
+    if r.method not in rules_by_system_category:
+        rules_by_system_category[r.method] = {}
+    if r.category not in rules_by_system_category[r.method]:
+        rules_by_system_category[r.method][r.category] = []
+    rules_by_system_category[r.method][r.category].append(r)
