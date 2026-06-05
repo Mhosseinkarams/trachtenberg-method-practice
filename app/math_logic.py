@@ -1,12 +1,11 @@
 import random
 import math
 
+_PERSIAN_TRANS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
+
 def to_persian_digits(n):
-    n = str(n)
-    english_digits = "0123456789"
-    persian_digits = "۰۱۲۳۴۵۶۷۸۹"
-    translation_table = str.maketrans(english_digits, persian_digits)
-    return n.translate(translation_table)
+    """Converts English digits to Persian digits using a pre-calculated translation table."""
+    return str(n).translate(_PERSIAN_TRANS)
 
 def to_lang_digits(n, lang):
     if lang == 'fa':
