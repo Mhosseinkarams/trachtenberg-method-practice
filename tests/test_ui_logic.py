@@ -30,8 +30,12 @@ async def test_category_selection():
 
     # Verify main_content has controls
     assert len(app.main_content.controls) > 0
+    # The view might be wrapped in a Column due to caching optimization
+    content = app.main_content.controls[0]
+    if isinstance(content, ft.Column):
+        content = content.controls[0]
     # The first control should be the back button
-    assert isinstance(app.main_content.controls[0], ft.TextButton)
+    assert isinstance(content, ft.TextButton)
 
 @pytest.mark.asyncio
 async def test_rule_selection_shows_modes():
@@ -51,11 +55,16 @@ async def test_rule_selection_shows_modes():
     # Find mode selection text (localized)
     found = False
     target_prefix = LOCALIZED_UI['fa']['target']
-    for control in app.main_content.controls:
-        if isinstance(control, ft.Text) and target_prefix in control.value:
-            found = True
-            break
-    assert found
+
+    def search_controls(controls):
+        for control in controls:
+            if isinstance(control, ft.Text) and control.value and target_prefix in control.value:
+                return True
+            if hasattr(control, "controls") and search_controls(control.controls):
+                return True
+        return False
+
+    assert search_controls(app.main_content.controls)
 
 @pytest.mark.asyncio
 async def test_start_session_starts_timer():
