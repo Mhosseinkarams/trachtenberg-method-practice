@@ -30,8 +30,12 @@ async def test_category_selection():
 
     # Verify main_content has controls
     assert len(app.main_content.controls) > 0
-    # The first control should be the back button
-    assert isinstance(app.main_content.controls[0], ft.TextButton)
+
+    # Performance Optimization Note: Views are now wrapped in an ft.Column for caching
+    view = app.main_content.controls[0]
+    assert isinstance(view, ft.Column)
+    # The first control in the view should be the back button
+    assert isinstance(view.controls[0], ft.TextButton)
 
 @pytest.mark.asyncio
 async def test_rule_selection_shows_modes():
@@ -48,10 +52,15 @@ async def test_rule_selection_shows_modes():
     assert app.selected_rule == rule
     # Should show mode selection cards
     assert len(app.main_content.controls) > 0
+
+    # Performance Optimization Note: Views are now wrapped in an ft.Column for caching
+    view = app.main_content.controls[0]
+    assert isinstance(view, ft.Column)
+
     # Find mode selection text (localized)
     found = False
     target_prefix = LOCALIZED_UI['fa']['target']
-    for control in app.main_content.controls:
+    for control in view.controls:
         if isinstance(control, ft.Text) and target_prefix in control.value:
             found = True
             break
