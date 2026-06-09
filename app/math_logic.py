@@ -1,12 +1,11 @@
 import random
 import math
 
+_PERSIAN_TRANS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
+
 def to_persian_digits(n):
-    n = str(n)
-    english_digits = "0123456789"
-    persian_digits = "۰۱۲۳۴۵۶۷۸۹"
-    translation_table = str.maketrans(english_digits, persian_digits)
-    return n.translate(translation_table)
+    """Optimized Persian digit conversion using pre-calculated translation table."""
+    return str(n).translate(_PERSIAN_TRANS)
 
 def to_lang_digits(n, lang):
     if lang == 'fa':
@@ -44,6 +43,9 @@ class Rule:
         if self.steps_fn:
             return self.steps_fn(problem, lang)
         return []
+
+# Pre-calculated powers of 10 for performance optimization
+_POW10 = [10**i for i in range(10)]
 
 # Problem Generators
 def gen_tracht_11(**kwargs):
@@ -98,7 +100,8 @@ def gen_tracht_addition(num_operands=2, num_digits=3, **kwargs):
             d = random.randint(1, 6)
         else:
             d = num_digits
-        operands.append(random.randint(10**(d-1), 10**d - 1))
+        # Optimization: use pre-calculated powers of 10
+        operands.append(random.randint(_POW10[d-1], _POW10[d] - 1))
     question = " + ".join(map(str, operands))
     answer = sum(operands)
     return {"question": question, "answer": answer, "operands": operands}
@@ -157,8 +160,9 @@ def gen_vedic_subtraction_base(num_digits=3, **kwargs):
         d = random.randint(1, 6)
     else:
         d = num_digits
-    base = 10 ** d
-    num = random.randint(10**(d-1), base - 1)
+    # Optimization: use pre-calculated powers of 10
+    base = _POW10[d]
+    num = random.randint(_POW10[d-1], base - 1)
     return {"question": f"{base} - {num}", "answer": base - num, "base": base, "num": num}
 
 def gen_vedic_vertically_crosswise(**kwargs):
@@ -655,6 +659,9 @@ rules = [
 
 rules_by_category = {}
 rules_by_method = {}
+# Optimized indexing for near-instant UI navigation: (System, Category) -> [Rules]
+rules_by_system_category = {}
+
 for r in rules:
     if r.category not in rules_by_category:
         rules_by_category[r.category] = []
@@ -663,3 +670,9 @@ for r in rules:
     if r.method not in rules_by_method:
         rules_by_method[r.method] = []
     rules_by_method[r.method].append(r)
+
+    # Performance Optimization: Pre-index by system and category
+    sys_cat_key = (r.method, r.category)
+    if sys_cat_key not in rules_by_system_category:
+        rules_by_system_category[sys_cat_key] = []
+    rules_by_system_category[sys_cat_key].append(r)

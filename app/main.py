@@ -10,9 +10,9 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 try:
-    from math_logic import rules, rules_by_category, to_lang_digits
+    from math_logic import rules, rules_by_category, rules_by_system_category, to_lang_digits
 except ImportError:
-    from app.math_logic import rules, rules_by_category, to_lang_digits
+    from app.math_logic import rules, rules_by_category, rules_by_system_category, to_lang_digits
 
 # Theme Colors
 COLOR_PRIMARY = "#00D4C8"  # Vibrant Teal
@@ -129,6 +129,9 @@ class FastMathApp:
         self.lang = 'fa'
         self.update_page_config()
 
+        # Performance Optimization: Cache for UI views to avoid redundant reconstruction
+        self.cached_views = {}
+
         self.selected_rule = None
         self.current_problem = None
         self.score = 0
@@ -153,6 +156,8 @@ class FastMathApp:
     def toggle_language(self, e):
         self.lang = 'en' if self.lang == 'fa' else 'fa'
         self.update_page_config()
+        # Invalidate cache on language change
+        self.cached_views = {}
         # Full UI refresh
         self.page.controls.clear()
         self.setup_ui()
@@ -199,8 +204,13 @@ class FastMathApp:
 
     def show_system_selection(self, update: bool = True):
         self.main_content.controls.clear()
-        ui = LOCALIZED_UI[self.lang]
 
+        if "systems" in self.cached_views:
+            self.main_content.controls.append(self.cached_views["systems"])
+            if update: self.page.update()
+            return
+
+        ui = LOCALIZED_UI[self.lang]
         cards = ft.ResponsiveRow([
             ft.Container(
                 content=ft.Column([
@@ -222,8 +232,12 @@ class FastMathApp:
             )
         ], spacing=20)
 
-        self.main_content.controls.append(ft.Text(ui['choose_system'], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
-        self.main_content.controls.append(cards)
+        view = ft.Column([
+            ft.Text(ui['choose_system'], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY),
+            cards
+        ])
+        self.cached_views["systems"] = view
+        self.main_content.controls.append(view)
         if update:
             self.page.update()
 
@@ -233,16 +247,21 @@ class FastMathApp:
 
     def show_categories(self, update: bool = True):
         self.main_content.controls.clear()
-        ui = LOCALIZED_UI[self.lang]
+        cache_key = f"categories_{self.selected_system}"
+        if cache_key in self.cached_views:
+            self.main_content.controls.append(self.cached_views[cache_key])
+            if update: self.page.update()
+            return
 
+        ui = LOCALIZED_UI[self.lang]
         back_button = ft.TextButton(ui['back_systems'],
                                     icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_system_selection())
 
         category_grid = ft.ResponsiveRow(spacing=20)
 
         for cat_key, info in CATEGORIES_INFO.items():
-            # Filter categories by selected system
-            cat_rules = [r for r in rules_by_category.get(cat_key, []) if r.method == self.selected_system]
+            # Performance Optimization: Use pre-calculated index
+            cat_rules = rules_by_system_category.get((self.selected_system, cat_key), [])
             if not cat_rules:
                 continue
 
@@ -261,19 +280,29 @@ class FastMathApp:
                 )
             )
 
-        self.main_content.controls.append(back_button)
-        self.main_content.controls.append(ft.Text(f"{self.selected_system}", size=24, weight=ft.FontWeight.BOLD, color=COLOR_ACCENT))
-        self.main_content.controls.append(category_grid)
+        view = ft.Column([
+            back_button,
+            ft.Text(f"{self.selected_system}", size=24, weight=ft.FontWeight.BOLD, color=COLOR_ACCENT),
+            category_grid
+        ])
+        self.cached_views[cache_key] = view
+        self.main_content.controls.append(view)
         if update:
             self.page.update()
 
     def show_rule_selector(self, category: str, update: bool = True):
         self.main_content.controls.clear()
-        ui = LOCALIZED_UI[self.lang]
+        cache_key = f"rules_{self.selected_system}_{category}"
+        if cache_key in self.cached_views:
+            self.main_content.controls.append(self.cached_views[cache_key])
+            if update: self.page.update()
+            return
 
+        ui = LOCALIZED_UI[self.lang]
         back_button = ft.TextButton(ui['back_categories'], icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_categories())
-        # Filter rules by selected system
-        rule_list = [r for r in rules_by_category.get(category, []) if r.method == self.selected_system]
+
+        # Performance Optimization: Use pre-calculated index
+        rule_list = rules_by_system_category.get((self.selected_system, category), [])
 
         grid = ft.Column(spacing=20)
         grid.controls.append(ft.Text(CATEGORIES_INFO[category][self.lang], size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
@@ -294,8 +323,9 @@ class FastMathApp:
             )
         grid.controls.append(rule_grid)
 
-        self.main_content.controls.append(back_button)
-        self.main_content.controls.append(grid)
+        view = ft.Column([back_button, grid])
+        self.cached_views[cache_key] = view
+        self.main_content.controls.append(view)
         if update:
             self.page.update()
 
@@ -305,8 +335,13 @@ class FastMathApp:
 
     def show_mode_selection(self, update: bool = True):
         self.main_content.controls.clear()
-        ui = LOCALIZED_UI[self.lang]
+        cache_key = f"modes_{self.selected_rule.id}"
+        if cache_key in self.cached_views:
+            self.main_content.controls.append(self.cached_views[cache_key])
+            if update: self.page.update()
+            return
 
+        ui = LOCALIZED_UI[self.lang]
         back_button = ft.TextButton(ui['back_methods'], icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_rule_selector(self.selected_rule.category))
 
         cards = ft.ResponsiveRow([
@@ -330,9 +365,13 @@ class FastMathApp:
             )
         ], spacing=20)
 
-        self.main_content.controls.append(back_button)
-        self.main_content.controls.append(ft.Text(f"{ui['target']} {self.selected_rule.get_name(self.lang)}", size=20, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY))
-        self.main_content.controls.append(cards)
+        view = ft.Column([
+            back_button,
+            ft.Text(f"{ui['target']} {self.selected_rule.get_name(self.lang)}", size=20, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY),
+            cards
+        ])
+        self.cached_views[cache_key] = view
+        self.main_content.controls.append(view)
         if update:
             self.page.update()
 
@@ -514,7 +553,11 @@ class FastMathApp:
             for step in steps:
                 self.steps_column.controls.append(ft.Text(step, size=14, color=ft.Colors.GREY_400))
 
-        self.page.update()
+        # Performance Optimization: Use granular update
+        self.practice_card.update()
+        if self.mode == "Learn":
+            self.steps_column.update()
+
         await self.answer_input.focus()
 
     async def handle_submit(self, e):
@@ -544,7 +587,9 @@ class FastMathApp:
         self.answer_input.disabled = True
         self.check_button.visible = False
         self.next_button.visible = True
-        self.page.update()
+
+        # Performance Optimization: Use granular update to minimize socket traffic
+        self.practice_card.update()
 
 def main(page: ft.Page):
     FastMathApp(page)
