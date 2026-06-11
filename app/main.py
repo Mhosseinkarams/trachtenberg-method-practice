@@ -16,10 +16,10 @@ except ImportError:
     from app.math_logic import rules, rules_by_category, to_lang_digits
 
 # Theme Colors
-COLOR_PRIMARY = "#00D4C8"  # Vibrant Teal
+COLOR_PRIMARY = "#00EEFF"  # Electric Blue
 COLOR_ACCENT = "#FF6B00"   # Bright Orange
-COLOR_BG = "#0F172A"       # Deep Black / Dark Navy
-COLOR_SURFACE = "#1E2937"  # Darker Surface
+COLOR_BG = "#050A18"       # Deep Dark
+COLOR_SURFACE = "#161B22"  # Dark Surface
 COLOR_SUCCESS = "#00FF7F"  # Spring Green
 
 LOCALIZED_UI = {
@@ -53,6 +53,22 @@ LOCALIZED_UI = {
         'choose_system': 'Choose a Calculation System',
         'trachtenberg': 'Trachtenberg System',
         'vedic': 'Vedic Mathematics',
+        'stats_title': 'Statistics',
+        'level': 'Level',
+        'xp': 'XP',
+        'daily_challenge': 'Daily Challenge',
+        'solved': 'solved',
+        'continue_training': 'Continue Training',
+        'accuracy': 'Accuracy',
+        'avg_time': 'Avg Time',
+        'fastest': 'Fastest',
+        'best_streak': 'Best Streak',
+        'total_xp': 'Total XP',
+        'xp_today': 'XP Today',
+        'combo': 'COMBO',
+        'perfect': 'PERFECT!',
+        'arena': 'ARENA',
+        'back': 'Back',
         'footer': '© 2024 MathBeast. Built with Flet.'
     },
     'fa': {
@@ -85,6 +101,22 @@ LOCALIZED_UI = {
         'choose_system': 'انتخاب سیستم محاسباتی',
         'trachtenberg': 'سیستم تراختنبرگ',
         'vedic': 'ریاضیات وِدیک',
+        'stats_title': 'آمار و ارقام',
+        'level': 'سطح',
+        'xp': 'امتیاز (XP)',
+        'daily_challenge': 'چالش روزانه',
+        'solved': 'حل شده',
+        'continue_training': 'ادامه آموزش',
+        'accuracy': 'دقت',
+        'avg_time': 'میانگین زمان',
+        'fastest': 'سریع‌ترین',
+        'best_streak': 'بهترین توالی',
+        'total_xp': 'کل امتیاز',
+        'xp_today': 'امتیاز امروز',
+        'combo': 'توالی',
+        'perfect': 'عالی!',
+        'arena': 'میدان مبارزه',
+        'back': 'بازگشت',
         'footer': '© ۲۰۲۴ MathBeast. ساخته شده با Flet.'
     }
 }
@@ -141,7 +173,72 @@ class FastMathApp:
         self.mode = "Learn"
         self.selected_system = None
 
+        # Beast Mascot & Progress State
+        self.total_xp = 0
+        self.xp_today = 0
+        self.daily_solved_count = 0
+        self.best_streak = 0
+        self.solve_times = []  # To track average/fastest
+
         self.setup_ui()
+
+    def get_beast_state(self):
+        level = (self.total_xp // 100) + 1
+        if self.total_xp >= 5000:
+            state = "Math Titan" if self.lang == 'en' else "تایتان ریاضی"
+            mascot = "🐉"
+        elif self.total_xp >= 1000:
+            state = "Alpha Beast" if self.lang == 'en' else "هیولای آلفا"
+            mascot = "🦍"
+        elif self.total_xp >= 500:
+            state = "Warrior Beast" if self.lang == 'en' else "هیولای جنگجو"
+            mascot = "🦁"
+        elif self.total_xp >= 100:
+            state = "Young Beast" if self.lang == 'en' else "هیولای جوان"
+            mascot = "🐺"
+        else:
+            state = "Cub" if self.lang == 'en' else "توله هیولا"
+            mascot = "🐾"
+        return level, state, mascot
+
+    def show_statistics(self, update: bool = True):
+        ui = LOCALIZED_UI[self.lang]
+        accuracy = (self.score / self.total * 100) if self.total > 0 else 0
+        avg_time = sum(self.solve_times) / len(self.solve_times) if self.solve_times else 0
+        fastest = min(self.solve_times) if self.solve_times else 0
+        level, state, mascot = self.get_beast_state()
+
+        back_btn = ft.TextButton(ui['back'], icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_system_selection())
+
+        def stat_card(label, value, icon, color):
+            return ft.Container(
+                content=ft.Column([
+                    ft.Icon(icon, color=color, size=30),
+                    ft.Text(label, size=14, color=ft.Colors.GREY_400),
+                    ft.Text(value, size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                padding=20, bgcolor=COLOR_SURFACE, border_radius=15, col={"sm": 6, "md": 4}
+            )
+
+        view = ft.Column([
+            ft.Row([back_btn], alignment=ft.MainAxisAlignment.START),
+            ft.Text(ui['stats_title'], size=32, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY),
+            ft.Container(height=20),
+            ft.ResponsiveRow([
+                stat_card(ui['accuracy'], f"{to_lang_digits(int(accuracy), self.lang)}%", ft.Icons.TRACK_CHANGES, ft.Colors.GREEN_400),
+                stat_card(ui['avg_time'], f"{to_lang_digits(round(avg_time, 1), self.lang)}s", ft.Icons.TIMER, ft.Colors.BLUE_400),
+                stat_card(ui['fastest'], f"{to_lang_digits(round(fastest, 1), self.lang)}s", ft.Icons.BOLT, COLOR_ACCENT),
+                stat_card(ui['best_streak'], to_lang_digits(self.best_streak, self.lang), ft.Icons.STAR, ft.Colors.YELLOW_400),
+                stat_card(ui['total_xp'], to_lang_digits(self.total_xp, self.lang), ft.Icons.UPGRADE, COLOR_PRIMARY),
+                stat_card(ui['xp_today'], to_lang_digits(self.xp_today, self.lang), ft.Icons.TODAY, ft.Colors.PURPLE_400),
+            ], spacing=10),
+            ft.Container(height=30),
+            ft.Text(f"{mascot} {state}", size=20, color=COLOR_PRIMARY, weight=ft.FontWeight.BOLD),
+        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+
+        self.main_content.content = view
+        if update:
+            self.page.update()
 
     def update_page_config(self):
         self.page.title = LOCALIZED_UI[self.lang]['title']
@@ -256,6 +353,39 @@ class FastMathApp:
 
     def show_system_selection(self, update: bool = True):
         ui = LOCALIZED_UI[self.lang]
+        level, state, mascot = self.get_beast_state()
+
+        # Hero Section
+        hero = ft.Container(
+            content=ft.Column([
+                ft.Row([
+                    ft.Text(mascot, size=80),
+                    ft.Column([
+                        ft.Text(f"{ui['level']} {to_lang_digits(level, self.lang)} {state}", size=24, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY),
+                        ft.Text(f"{ui['xp']}: {to_lang_digits(self.total_xp, self.lang)} / {to_lang_digits(((level)*100), self.lang)}", size=16, color=ft.Colors.GREY_400),
+                        ft.ProgressBar(value=self.total_xp % 100 / 100, width=300, color=COLOR_PRIMARY, bgcolor=ft.Colors.with_opacity(0.1, COLOR_PRIMARY)),
+                    ], spacing=5)
+                ], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
+                ft.Container(height=10),
+                ft.Row([
+                    ft.Icon(ft.Icons.CALENDAR_TODAY, color=COLOR_ACCENT, size=20),
+                    ft.Text(f"{ui['daily_challenge']}: {to_lang_digits(self.daily_solved_count, self.lang)} / {to_lang_digits(20, self.lang)} {ui['solved']}", size=14, color=ft.Colors.GREY_300),
+                ], alignment=ft.MainAxisAlignment.CENTER),
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            padding=30,
+            bgcolor=ft.Colors.with_opacity(0.05, COLOR_PRIMARY),
+            border_radius=30,
+            border=ft.Border.all(1, ft.Colors.with_opacity(0.1, COLOR_PRIMARY)),
+            margin=ft.Margin.only(bottom=30)
+        )
+
+        stats_btn = ft.Container(
+            content=ft.Row([ft.Icon(ft.Icons.BAR_CHART), ft.Text(ui['stats_title'], weight=ft.FontWeight.BOLD)], alignment=ft.MainAxisAlignment.CENTER),
+            padding=15, border_radius=15, bgcolor=COLOR_SURFACE,
+            border=ft.Border.all(1, ft.Colors.with_opacity(0.1, ft.Colors.WHITE)),
+            on_click=lambda _: self.show_statistics(), ink=True,
+            on_hover=self.on_hover
+        )
 
         cards = ft.ResponsiveRow([
             ft.Container(
@@ -283,6 +413,9 @@ class FastMathApp:
         ], spacing=20)
 
         view = ft.Column([
+            hero,
+            ft.Row([stats_btn], alignment=ft.MainAxisAlignment.CENTER),
+            ft.Container(height=20),
             ft.Text(ui['choose_system'], size=28, weight=ft.FontWeight.BOLD, color=COLOR_PRIMARY),
             ft.Container(height=10),
             cards
@@ -441,10 +574,48 @@ class FastMathApp:
                     mins, secs = divmod(elapsed, 60)
                     self.timer_text.value = f"{ui['time']} {mins:02d}:{secs:02d}"
                     self.timer_text.update()
-                except: pass
-            await asyncio.sleep(1)
 
-    def trigger_success_animation(self):
+                    # Update Arena Ring (deplete over 30s as a visual goal)
+                    if hasattr(self, "arena_timer"):
+                        # We use problem_start_time for per-problem ring
+                        if hasattr(self, "problem_start_time"):
+                            p_elapsed = time.time() - self.problem_start_time
+                            self.arena_timer.value = max(0, 1 - (p_elapsed / 30))
+                            self.arena_timer.update()
+                except: pass
+            await asyncio.sleep(0.1)
+
+    def trigger_success_animation(self, combo=1):
+        ui = LOCALIZED_UI[self.lang]
+        # Combo/XP indicator
+        xp_gain = 10 + (combo * 5)
+        indicator = ft.Container(
+            content=ft.Column([
+                ft.Text(f"✓ {ui['perfect']}", color=COLOR_SUCCESS, size=24, weight=ft.FontWeight.BOLD),
+                ft.Text(f"+{to_lang_digits(xp_gain, self.lang)} {ui['xp']}", color=COLOR_PRIMARY, size=18, weight=ft.FontWeight.BOLD),
+                ft.Text(f"{to_lang_digits(combo, self.lang)}x {ui['combo']}", color=COLOR_ACCENT, size=16, weight=ft.FontWeight.BOLD) if combo > 1 else ft.Container()
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            left=self.page.width/2 - 50,
+            top=self.page.height/2 - 150,
+            animate_opacity=ft.Animation(800, ft.AnimationCurve.EASE_IN_OUT),
+            animate_offset=ft.Animation(800, ft.AnimationCurve.EASE_OUT),
+            offset=ft.Offset(0, 0),
+            opacity=1
+        )
+        self.page.overlay.append(indicator)
+        self.page.update()
+
+        indicator.offset = ft.Offset(0, -1)
+        indicator.opacity = 0
+        indicator.update()
+
+        async def remove_indicator(ind):
+            await asyncio.sleep(1)
+            if ind in self.page.overlay:
+                self.page.overlay.remove(ind)
+                self.page.update()
+        self.page.run_task(remove_indicator, indicator)
+
         for _ in range(15):
             star = ft.Icon(
                 name=ft.Icons.STAR,
@@ -516,12 +687,21 @@ class FastMathApp:
         back_button = ft.TextButton(ui['back_methods'], icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_mode_selection())
 
         # Problem Area Components
+        self.arena_timer = ft.ProgressRing(value=1.0, width=200, height=200, stroke_width=10, color=COLOR_PRIMARY, bgcolor=ft.Colors.with_opacity(0.1, COLOR_PRIMARY))
         self.problem_text = ft.Text("", size=60, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE, rtl=False,
                                    animate_scale=ft.Animation(400, ft.AnimationCurve.BOUNCE_OUT), scale=1)
+
+        self.arena_stack = ft.Stack([
+            ft.Container(self.arena_timer, alignment=ft.Alignment.CENTER),
+            ft.Container(self.problem_text, alignment=ft.Alignment.CENTER),
+        ], width=250, height=250)
+
         self.answer_input = ft.TextField(
             label=ui['enter_answer'], text_align=ft.TextAlign.CENTER,
             on_submit=self.handle_submit, keyboard_type=ft.KeyboardType.NUMBER, autofocus=True,
-            border_color=COLOR_PRIMARY, cursor_color=COLOR_ACCENT
+            border_color=COLOR_PRIMARY, cursor_color=COLOR_ACCENT,
+            animate_offset=ft.Animation(100, ft.AnimationCurve.BOUNCE_IN),
+            offset=ft.Offset(0, 0)
         )
         self.feedback_text = ft.Text("", size=18, weight=ft.FontWeight.BOLD,
                                     animate_opacity=ft.Animation(300, ft.AnimationCurve.EASE_IN))
@@ -562,7 +742,9 @@ class FastMathApp:
                     ft.Column([self.score_text, self.streak_text], horizontal_alignment=ft.CrossAxisAlignment.END)
                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                 ft.Divider(color=ft.Colors.with_opacity(0.1, ft.Colors.WHITE)),
-                ft.Column([self.problem_text, ft.Text("= ?", size=20, color=ft.Colors.GREY_600)], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                ft.Text(ui['arena'], size=12, weight=ft.FontWeight.BOLD, color=ft.Colors.with_opacity(0.3, COLOR_PRIMARY)),
+                self.arena_stack,
+                ft.Text("= ?", size=20, color=ft.Colors.GREY_600),
                 self.answer_input, self.check_button, self.next_button, self.feedback_text,
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=20),
             padding=40, bgcolor=COLOR_SURFACE, border_radius=20,
@@ -617,6 +799,12 @@ class FastMathApp:
         self.page.run_task(self.next_problem)
 
     async def next_problem(self, e=None):
+        self.problem_start_time = time.time()
+        if hasattr(self, "arena_timer"):
+            self.arena_timer.value = 1.0
+            self.arena_timer.color = COLOR_PRIMARY
+            self.arena_timer.update()
+
         self.problem_text.scale = 0.8
         self.problem_text.update()
         try:
@@ -641,11 +829,21 @@ class FastMathApp:
         if self.mode == "Learn":
             self.steps_column.controls.clear()
             steps = self.selected_rule.get_steps(self.current_problem, self.lang)
-            for step in steps:
-                self.steps_column.controls.append(ft.Text(step, size=14, color=ft.Colors.GREY_400))
+            self.page.run_task(self.reveal_steps, steps)
 
         self.page.update()
         await self.answer_input.focus()
+
+    async def reveal_steps(self, steps):
+        self.steps_column.controls.clear()
+        for step in steps:
+            self.steps_column.controls.append(
+                ft.Text(step, size=14, color=ft.Colors.GREY_400, opacity=0,
+                        animate_opacity=ft.Animation(300))
+            )
+            self.steps_column.controls[-1].opacity = 1
+            self.steps_column.update()
+            await asyncio.sleep(0.6)
 
     async def handle_submit(self, e):
         if self.check_button.visible: await self.check_answer(e)
@@ -660,17 +858,95 @@ class FastMathApp:
         except: return
 
         self.total += 1
+        level, state, mascot = self.get_beast_state()
+
         if user_val == self.current_problem["answer"]:
             self.score += 1
             self.streak += 1
-            self.feedback_text.value = ui['correct']
+            self.daily_solved_count += 1
+
+            xp_gain = 10 + (self.streak * 5)
+            self.total_xp += xp_gain
+            self.xp_today += xp_gain
+
+            if self.streak > self.best_streak:
+                self.best_streak = self.streak
+
+            # Record solve time
+            solve_time = time.time() - self.problem_start_time
+            self.solve_times.append(solve_time)
+
+            self.feedback_text.value = f"{mascot} {ui['correct']}"
             self.feedback_text.color = COLOR_SUCCESS
-            self.trigger_success_animation()
+
+            # Green pulse / Arena effect
+            if hasattr(self, "arena_timer"):
+                self.arena_timer.color = COLOR_SUCCESS
+                self.arena_timer.update()
+
+            self.trigger_success_animation(combo=self.streak)
+
+            # Daily Challenge bonus
+            if self.daily_solved_count == 20:
+                self.total_xp += 150
+                self.xp_today += 150
+                # Could add a notification here
+
+            # Streak Milestones
+            if self.streak in [3, 5, 10]:
+                milestone_text = ""
+                if self.streak == 3: milestone_text = "🔥 Hot Streak" if self.lang == 'en' else "🔥 توالی داغ"
+                elif self.streak == 5: milestone_text = "⚡ Beast Mode" if self.lang == 'en' else "⚡ وضعیت هیولا"
+                elif self.streak == 10: milestone_text = "👑 Mental Math Monster" if self.lang == 'en' else "👑 غول محاسبات ذهنی"
+
+                msg = ft.Container(
+                    content=ft.Text(milestone_text, size=40, weight=ft.FontWeight.BOLD, color=COLOR_ACCENT),
+                    opacity=0,
+                    animate_opacity=ft.Animation(500),
+                    scale=0.5,
+                    animate_scale=ft.Animation(500, ft.AnimationCurve.BOUNCE_OUT)
+                )
+                self.page.overlay.append(msg)
+                self.page.update()
+                msg.opacity = 1
+                msg.scale = 1
+                msg.left = self.page.width/2 - 150
+                msg.top = 100
+                msg.update()
+
+                async def remove_milestone(m):
+                    await asyncio.sleep(2)
+                    m.opacity = 0
+                    m.update()
+                    await asyncio.sleep(0.5)
+                    if m in self.page.overlay: self.page.overlay.remove(m)
+                    self.page.update()
+                self.page.run_task(remove_milestone, msg)
+
         else:
             self.streak = 0
             ans_str = to_lang_digits(self.current_problem['answer'], self.lang)
-            self.feedback_text.value = f"{ui['wrong']} {ans_str}"
+            self.feedback_text.value = f"❌ {ui['wrong']} {ans_str}"
             self.feedback_text.color = ft.Colors.RED_400
+
+            # Shake animation
+            for _ in range(3):
+                self.answer_input.offset = ft.Offset(0.02, 0)
+                self.answer_input.update()
+                await asyncio.sleep(0.05)
+                self.answer_input.offset = ft.Offset(-0.02, 0)
+                self.answer_input.update()
+                await asyncio.sleep(0.05)
+            self.answer_input.offset = ft.Offset(0, 0)
+            self.answer_input.update()
+
+            if hasattr(self, "arena_timer"):
+                self.arena_timer.color = ft.Colors.RED_400
+                self.arena_timer.update()
+
+            # Reveal steps on wrong answer
+            steps = self.selected_rule.get_steps(self.current_problem, self.lang)
+            self.page.run_task(self.reveal_steps, steps)
 
         self.score_text.value = f"{ui['score']} {to_lang_digits(self.score, self.lang)}/{to_lang_digits(self.total, self.lang)}"
         self.streak_text.value = f"{ui['streak']} {to_lang_digits(self.streak, self.lang)}"
