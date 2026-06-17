@@ -1,0 +1,5 @@
+product:
+  name: MathBeast
+  org: com.mathbeast
+  version: 1.0.0
+  description: Master Rapid Calculation with MathBeast.
