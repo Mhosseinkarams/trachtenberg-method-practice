@@ -16,8 +16,13 @@ async def test_app_initialization():
 
     assert page.title == LOCALIZED_UI['fa']['title']
     assert app.selected_rule is None
+<<<<<<< Updated upstream
     # Check if root container is added
     assert isinstance(page.add.call_args[0][0], ft.Container)
+=======
+    # Check if header is added
+    assert len(page.add.call_args[0][0].controls) > 0
+>>>>>>> Stashed changes
 
 @pytest.mark.asyncio
 async def test_category_selection():
@@ -28,10 +33,17 @@ async def test_category_selection():
     # Manually trigger show_rule_selector with new category
     app.show_rule_selector("Multiplication")
 
+<<<<<<< Updated upstream
     # Verify main_content has content
     assert app.main_content.content is not None
     # The first control in the view should be the back button (wrapped in a Row)
     assert isinstance(app.main_content.content.controls[0].controls[0], ft.TextButton)
+=======
+    # Verify main_content has controls
+    assert len(app.main_content.controls) > 0
+    # The first control should be the back button
+    assert isinstance(app.main_content.controls[0], ft.TextButton)
+>>>>>>> Stashed changes
 
 @pytest.mark.asyncio
 async def test_rule_selection_shows_modes():
@@ -47,11 +59,19 @@ async def test_rule_selection_shows_modes():
 
     assert app.selected_rule == rule
     # Should show mode selection cards
+<<<<<<< Updated upstream
     assert app.main_content.content is not None
     # Find mode selection text (localized)
     found = False
     target_prefix = LOCALIZED_UI['fa']['target']
     for control in app.main_content.content.controls:
+=======
+    assert len(app.main_content.controls) > 0
+    # Find mode selection text (localized)
+    found = False
+    target_prefix = LOCALIZED_UI['fa']['target']
+    for control in app.main_content.controls:
+>>>>>>> Stashed changes
         if isinstance(control, ft.Text) and target_prefix in control.value:
             found = True
             break
