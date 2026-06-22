@@ -360,7 +360,7 @@ def steps_vedic_series_9(p, lang):
     if lang == 'en':
         steps.append(f"1. Subtract 1 from {num}: {num} - 1 = {num - 1} (Left part).")
         steps.append(f"2. Subtract {num} from 100: 100 - {num} = {100 - num} (Right part).")
-        steps.append(f"Result: {num - 1}{100 - num}")
+        steps.append(f"Result: {num * 99}")
     else:
         steps.append(f"۱. عدد ۱ را از {to_persian_digits(num)} کم کنید: {to_persian_digits(num)} - ۱ = {to_persian_digits(num - 1)} (بخش چپ).")
         steps.append(f"۲. {to_persian_digits(num)} را از ۱۰۰ کم کنید: ۱۰۰ - {to_persian_digits(num)} = {to_persian_digits(100 - num)} (بخش راست).")
@@ -415,7 +415,7 @@ def steps_vedic_base(p, lang):
         steps.append(f"1. Base is {base}. Deficiencies are {d_a} and {d_b}.")
         steps.append(f"2. Multiply deficiencies: {d_a} × {d_b} = {d_a * d_b} (Right part).")
         steps.append(f"3. Subtract crosswise: {a} - {d_b} = {a - d_b} (Left part).")
-        steps.append(f"Result: {a - d_b}{d_a * d_b if d_a * d_b >= 10 or base==10 else '0'+str(d_a*d_b)}")
+        steps.append(f"Result: {a * b}")
     else:
         steps.append(f"۱. مبنا {to_persian_digits(base)} است. اختلاف‌ها {to_persian_digits(d_a)} و {to_persian_digits(d_b)} هستند.")
         steps.append(f"۲. حاصل‌ضرب اختلاف‌ها: {to_persian_digits(d_a)} × {to_persian_digits(d_b)} = {to_persian_digits(d_a * d_b)} (بخش راست).")
@@ -431,12 +431,14 @@ def steps_tracht_general(p, lang):
         steps.append(f"1. Units: ({a%10} × {b%10}) = { (a%10)*(b%10) }")
         steps.append(f"2. Tens: ({a//10} × {b%10}) + ({a%10} × {b//10}) = { (a//10)*(b%10) + (a%10)*(b//10) }")
         steps.append(f"3. Hundreds: ({a//10} × {b//10}) = { (a//10)*(b//10) }")
+        steps.append(f"Result: {a * b}")
     else:
         steps.append(f"مسئله: {to_persian_digits(a)} × {to_persian_digits(b)}")
         steps.append("از روش دو انگشتی (قانون بیرون-درون) استفاده کنید.")
         steps.append(f"۱. یکان‌ها: {to_persian_digits((a%10)*(b%10))} = {to_persian_digits(b%10)} × {to_persian_digits(a%10)}")
         steps.append(f"۲. دهگان‌ها: {to_persian_digits((a//10)*(b%10) + (a%10)*(b//10))} = ({to_persian_digits(b//10)} × {to_persian_digits(a%10)}) + ({to_persian_digits(b%10)} × {to_persian_digits(a//10)})")
-        steps.append(f"۳. صدگان‌ها: {to_persian_digits((a//10)*(b//10))} = {to_persian_digits(b//10)} × {to_persian_digits(a//10)}")
+        steps.append(f"۳. صدگان‌ها: {to_persian_digits((a//10)*(b%10))} = {to_persian_digits(b//10)} × {to_persian_digits(a//10)}")
+        steps.append(f"جواب: {to_persian_digits(a * b)}")
     return steps
 
 def steps_tracht_addition(p, lang):
@@ -459,27 +461,113 @@ def steps_tracht_addition(p, lang):
 def steps_tracht_division(p, lang):
     num, divisor = p['num'], p['divisor']
     steps = []
+    q_target = num // divisor
+
     if lang == 'en':
         steps.append(f"Problem: {num} ÷ {divisor}")
-        steps.append(f"1. How many times does {divisor} go into {num}?")
-        steps.append(f"Result: {num // divisor}")
+        if divisor < 10:
+            steps.append(f"1. For single-digit divisor {divisor}, use systematic long division.")
+            curr = 0
+            for i, digit in enumerate(str(num)):
+                val = curr * 10 + int(digit)
+                q_digit = val // divisor
+                new_curr = val % divisor
+                steps.append(f"   Step {i+1}: {val} ÷ {divisor} = {q_digit}, remainder {new_curr}")
+                curr = new_curr
+        else:
+            d1, d2 = divisor // 10, divisor % 10
+            steps.append(f"1. Use leading digit {d1} as working divisor and {d2} for corrections.")
+            num_str = str(num)
+            curr = 0
+            q_digits = []
+            # Simplified Trachtenberg for 10-12
+            for i in range(len(str(q_target)) + 1):
+                if i < len(num_str):
+                    val = curr * 10 + int(num_str[i])
+                else:
+                    val = curr * 10
+
+                if i > 0 and i <= len(q_digits):
+                    correction = q_digits[i-1] * d2
+                    val -= correction
+                    steps.append(f"   Correction {i}: Subtract (last quotient digit {q_digits[i-1]} × {d2}) = {correction}. New value: {val}")
+
+                if i < len(str(q_target)):
+                    q_digit = val // d1
+                    curr = val % d1
+                    q_digits.append(q_digit)
+                    steps.append(f"   Divide: {val} ÷ {d1} = {q_digit}, remainder {curr}")
+        steps.append(f"Result: {q_target}")
     else:
         steps.append(f"مسئله: {to_persian_digits(num)} ÷ {to_persian_digits(divisor)}")
-        steps.append(f"۱. چند بار عدد {to_persian_digits(divisor)} در {to_persian_digits(num)} قرار می‌گیرد؟")
-        steps.append(f"جواب: {to_persian_digits(num // divisor)}")
+        if divisor < 10:
+            steps.append(f"۱. برای مقسوم‌علیه تک‌رقمی {to_persian_digits(divisor)}، از تقسیم سیستماتیک استفاده کنید.")
+            curr = 0
+            for i, digit in enumerate(str(num)):
+                val = curr * 10 + int(digit)
+                q_digit = val // divisor
+                new_curr = val % divisor
+                steps.append(f"   مرحله {to_persian_digits(i+1)}: {to_persian_digits(val)} ÷ {to_persian_digits(divisor)} = {to_persian_digits(q_digit)}، باقیمانده {to_persian_digits(new_curr)}")
+                curr = new_curr
+        else:
+            d1, d2 = divisor // 10, divisor % 10
+            steps.append(f"۱. از رقم اول {to_persian_digits(d1)} برای تقسیم و از {to_persian_digits(d2)} برای اصلاح استفاده کنید.")
+            num_str = str(num)
+            curr = 0
+            q_digits = []
+            for i in range(len(str(q_target)) + 1):
+                if i < len(num_str):
+                    val = curr * 10 + int(num_str[i])
+                else:
+                    val = curr * 10
+
+                if i > 0 and i <= len(q_digits):
+                    correction = q_digits[i-1] * d2
+                    val -= correction
+                    steps.append(f"   اصلاح {to_persian_digits(i)}: کسر حاصل‌ضرب ({to_persian_digits(q_digits[i-1])} × {to_persian_digits(d2)}) = {to_persian_digits(correction)}. مقدار جدید: {to_persian_digits(val)}")
+
+                if i < len(str(q_target)):
+                    q_digit = val // d1
+                    curr = val % d1
+                    q_digits.append(q_digit)
+                    steps.append(f"   تقسیم: {to_persian_digits(val)} ÷ {to_persian_digits(d1)} = {to_persian_digits(q_digit)}، باقیمانده {to_persian_digits(curr)}")
+        steps.append(f"جواب: {to_persian_digits(q_target)}")
     return steps
 
 def steps_tracht_sqrt(p, lang):
     num = p['num']
     steps = []
+    ans = int(num**0.5)
+
     if lang == 'en':
         steps.append(f"Problem: √{num}")
-        steps.append(f"1. Find a number that, when multiplied by itself, equals {num}.")
-        steps.append(f"Result: {int(num**0.5)}")
+        steps.append("1. Group digits in pairs from the decimal point: " + (f"{num//100}|{num%100:02}" if num >= 100 else str(num)))
+
+        # Step-by-step extraction
+        if num >= 100:
+            first_pair = num // 100
+            a1 = int(first_pair**0.5)
+            rem = first_pair - a1**2
+            steps.append(f"2. Largest square below {first_pair} is {a1}² = {a1**2}. First digit: {a1}")
+            steps.append(f"3. Remainder: {first_pair} - {a1**2} = {rem}. Bring down next pair: {rem}{num%100:02}")
+        else:
+            steps.append(f"2. Largest square below {num} is {ans}² = {ans**2}.")
+
+        steps.append(f"Result: {ans}")
     else:
         steps.append(f"مسئله: جذر {to_persian_digits(num)}")
-        steps.append(f"۱. عددی را پیدا کنید که در خودش ضرب شده و برابر {to_persian_digits(num)} شود.")
-        steps.append(f"جواب: {to_persian_digits(int(num**0.5))}")
+        steps.append("۱. ارقام را از سمت راست دوتا دوتا جدا کنید: " + (to_persian_digits(f"{num//100}|{num%100:02}") if num >= 100 else to_persian_digits(num)))
+
+        if num >= 100:
+            first_pair = num // 100
+            a1 = int(first_pair**0.5)
+            rem = first_pair - a1**2
+            steps.append(f"۲. بزرگترین مربع زیر {to_persian_digits(first_pair)} برابر {to_persian_digits(a1)}² = {to_persian_digits(a1**2)} است. رقم اول: {to_persian_digits(a1)}")
+            steps.append(f"۳. باقیمانده: {to_persian_digits(rem)}. جفت بعدی را پایین بیاورید: {to_persian_digits(f'{rem}{num%100:02}')}")
+        else:
+            steps.append(f"۲. بزرگترین مربع زیر {to_persian_digits(num)} برابر {to_persian_digits(ans)}² = {to_persian_digits(ans**2)} است.")
+
+        steps.append(f"جواب: {to_persian_digits(ans)}")
     return steps
 
 def steps_vedic_squaring_general(p, lang):
@@ -569,14 +657,28 @@ def steps_vedic_square_near_base(p, lang):
 def steps_vedic_div_9(p, lang):
     num = p['num']
     steps = []
+    q_first = num // 10
+    rem_last = num % 10
+    raw_rem = q_first + rem_last
+
     if lang == 'en':
         steps.append(f"Problem: {num} ÷ 9")
-        steps.append(f"1. First digit of quotient: {num // 10}")
-        steps.append(f"2. Remainder: {num // 10} + {num % 10} = {(num // 10) + (num % 10)}")
+        steps.append(f"1. Bring down the first digit as the first quotient part: {q_first}")
+        steps.append(f"2. Add it to the next digit for the remainder: {q_first} + {rem_last} = {raw_rem}")
+        if raw_rem >= 9:
+            steps.append(f"3. Since remainder {raw_rem} ≥ 9, carry 1 to quotient and subtract 9 from remainder.")
+            steps.append(f"Result: {q_first + 1} R {raw_rem - 9}")
+        else:
+            steps.append(f"Result: {q_first} R {raw_rem}")
     else:
         steps.append(f"مسئله: {to_persian_digits(num)} ÷ ۹")
-        steps.append(f"۱. رقم اول خارج‌قسمت: {to_persian_digits(num // 10)}")
-        steps.append(f"۲. باقی‌مانده: {to_persian_digits(num // 10)} + {to_persian_digits(num % 10)} = {to_persian_digits((num // 10) + (num % 10))}")
+        steps.append(f"۱. اولین رقم را به عنوان بخش اول خارج‌قسمت پایین بیاورید: {to_persian_digits(q_first)}")
+        steps.append(f"۲. آن را با رقم بعدی جمع کنید تا باقی‌مانده به دست آید: {to_persian_digits(q_first)} + {to_persian_digits(rem_last)} = {to_persian_digits(raw_rem)}")
+        if raw_rem >= 9:
+            steps.append(f"۳. چون باقی‌مانده {to_persian_digits(raw_rem)} ≥ ۹ است، ۱ واحد به خارج‌قسمت اضافه کرده و ۹ واحد از باقی‌مانده کم کنید.")
+            steps.append(f"جواب: {to_persian_digits(q_first + 1)} با باقی‌مانده {to_persian_digits(raw_rem - 9)}")
+        else:
+            steps.append(f"جواب: {to_persian_digits(q_first)} با باقی‌مانده {to_persian_digits(raw_rem)}")
     return steps
 
 def steps_vedic_cubing(p, lang):
