@@ -1,6 +1,6 @@
-# Fast Math Trainer - Android App
+# MathBeast - Android App
 
-This is the Android version of the Fast Math Trainer, written in Python using Flet.
+This is the Android version of the MathBeast, written in Python using Flet.
 
 ## How to get .apk output
 

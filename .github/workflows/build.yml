@@ -1,4 +1,4 @@
-name: Build Fast Math Trainer
+name: Build MathBeast
 
 on:
   workflow_dispatch:

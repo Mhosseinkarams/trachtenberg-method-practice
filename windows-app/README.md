@@ -1,6 +1,6 @@
-# Fast Math Trainer - Windows App
+# MathBeast - Windows App
 
-This is the Windows desktop version of the Fast Math Trainer, written in Python using Flet.
+This is the Windows desktop version of the MathBeast, written in Python using Flet.
 
 ## How to get .exe output
 
