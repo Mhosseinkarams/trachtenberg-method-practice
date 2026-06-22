@@ -15,6 +15,9 @@ try:
 except ImportError:
     from app.math_logic import rules, rules_by_category, to_lang_digits
 
+import json
+from datetime import datetime
+
 # Theme Colors
 COLOR_PRIMARY = "#00EEFF"  # Electric Blue
 COLOR_ACCENT = "#FF6B00"   # Bright Orange
@@ -156,10 +159,11 @@ CATEGORIES_INFO = {
     }
 }
 
-class FastMathApp:
+class MathBeast:
     def __init__(self, page: ft.Page):
         self.page = page
         self.lang = 'fa'
+        self.current_problem = None
         self.update_page_config()
 
         self.selected_rule = None
@@ -170,7 +174,7 @@ class FastMathApp:
         self.start_time = None
         self.timer_running = False
         self.timer_id = 0
-        self.mode = "Learn"
+        self.mode = None
         self.selected_system = None
 
         # Beast Mascot & Progress State
@@ -179,8 +183,75 @@ class FastMathApp:
         self.daily_solved_count = 0
         self.best_streak = 0
         self.solve_times = []  # To track average/fastest
+        self.last_solve_date = ""
 
+        self.load_state()
+        self.check_daily_reset()
         self.setup_ui()
+
+    def load_state(self):
+        try:
+            stored_state = self.page.client_storage.get("mathbeast_state")
+            if stored_state:
+                data = json.loads(stored_state)
+                self.total_xp = data.get("total_xp", 0)
+                self.xp_today = data.get("xp_today", 0)
+                self.daily_solved_count = data.get("daily_solved_count", 0)
+                self.best_streak = data.get("best_streak", 0)
+                self.solve_times = data.get("solve_times", [])
+                self.last_solve_date = data.get("last_solve_date", "")
+        except Exception as e:
+            print(f"Error loading state: {e}")
+
+    def save_state(self):
+        try:
+            state = {
+                "total_xp": self.total_xp,
+                "xp_today": self.xp_today,
+                "daily_solved_count": self.daily_solved_count,
+                "best_streak": self.best_streak,
+                "solve_times": self.solve_times,
+                "last_solve_date": self.last_solve_date
+            }
+            self.page.client_storage.set("mathbeast_state", json.dumps(state))
+        except Exception as e:
+            print(f"Error saving state: {e}")
+
+    def check_daily_reset(self):
+        today = datetime.now().strftime("%Y-%m-%d")
+        if self.last_solve_date != today:
+            self.xp_today = 0
+            self.daily_solved_count = 0
+            self.last_solve_date = today
+            self.save_state()
+
+    def reset_progress(self, e):
+        def confirm_reset(e):
+            self.total_xp = 0
+            self.xp_today = 0
+            self.daily_solved_count = 0
+            self.best_streak = 0
+            self.solve_times = []
+            self.last_solve_date = datetime.now().strftime("%Y-%m-%d")
+            self.save_state()
+            self.page.dialog.open = False
+            self.show_statistics()
+
+        def cancel_reset(e):
+            self.page.dialog.open = False
+            self.page.update()
+
+        self.page.dialog = ft.AlertDialog(
+            title=ft.Text("Reset Progress?" if self.lang == 'en' else "بازنشانی پیشرفت؟"),
+            content=ft.Text("This will wipe all your XP and statistics permanently." if self.lang == 'en' else "این کار تمام امتیازات و آمار شما را برای همیشه پاک می‌کند."),
+            actions=[
+                ft.TextButton("Yes" if self.lang == 'en' else "بله", on_click=confirm_reset),
+                ft.TextButton("No" if self.lang == 'en' else "خیر", on_click=cancel_reset),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+        self.page.dialog.open = True
+        self.page.update()
 
     def get_beast_state(self):
         level = (self.total_xp // 100) + 1
@@ -234,6 +305,12 @@ class FastMathApp:
             ], spacing=10),
             ft.Container(height=30),
             ft.Text(f"{mascot} {state}", size=20, color=COLOR_PRIMARY, weight=ft.FontWeight.BOLD),
+            ft.Container(height=20),
+            ft.ElevatedButton("Reset Progress" if self.lang == 'en' else "بازنشانی پیشرفت",
+                             icon=ft.Icons.DELETE_FOREVER,
+                             color=ft.Colors.WHITE,
+                             bgcolor=ft.Colors.RED_700,
+                             on_click=self.reset_progress)
         ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
 
         self.main_content.content = view
@@ -251,7 +328,6 @@ class FastMathApp:
     def toggle_language(self, e):
         self.lang = 'en' if self.lang == 'fa' else 'fa'
         self.update_page_config()
-        self.cached_views = {}
         # Full UI refresh
         self.page.controls.clear()
         self.setup_ui()
@@ -348,7 +424,19 @@ class FastMathApp:
         )
 
         self.page.add(self.root_container)
-        self.show_system_selection(update=False)
+
+        # Route back to current view
+        if self.selected_rule and (self.mode == "Learn" or self.mode == "Practice"):
+            self.show_practice_area(update=False, skip_next_problem=True)
+            if self.current_problem:
+                self.problem_text.value = to_lang_digits(self.current_problem["question"], self.lang)
+        elif self.selected_rule:
+            self.show_mode_selection(update=False)
+        elif self.selected_system:
+            self.show_categories(update=False)
+        else:
+            self.show_system_selection(update=False)
+
         self.page.update()
 
     def show_system_selection(self, update: bool = True):
@@ -573,7 +661,8 @@ class FastMathApp:
                     elapsed = int(time.time() - self.start_time)
                     mins, secs = divmod(elapsed, 60)
                     self.timer_text.value = f"{ui['time']} {mins:02d}:{secs:02d}"
-                    self.timer_text.update()
+                    if self.timer_text.page:
+                        self.timer_text.update()
 
                     # Update Arena Ring (deplete over 30s as a visual goal)
                     if hasattr(self, "arena_timer"):
@@ -581,8 +670,10 @@ class FastMathApp:
                         if hasattr(self, "problem_start_time"):
                             p_elapsed = time.time() - self.problem_start_time
                             self.arena_timer.value = max(0, 1 - (p_elapsed / 30))
-                            self.arena_timer.update()
-                except: pass
+                            if self.arena_timer.page:
+                                self.arena_timer.update()
+                except Exception as e:
+                    print(f"Error in update_timer: {e}")
             await asyncio.sleep(0.1)
 
     def trigger_success_animation(self, combo=1):
@@ -643,7 +734,10 @@ class FastMathApp:
 
             self.page.run_task(remove_star)
 
-    def show_practice_area(self, update: bool = True):
+    def show_practice_area(self, update: bool = True, skip_next_problem: bool = False):
+        if not self.selected_rule:
+            self.show_system_selection()
+            return
         ui = LOCALIZED_UI[self.lang]
         is_learn = (self.mode == "Learn")
 
@@ -685,6 +779,11 @@ class FastMathApp:
             config_panel.visible = True
 
         back_button = ft.TextButton(ui['back_methods'], icon=ft.Icons.ARROW_BACK, on_click=lambda _: self.show_mode_selection())
+
+        self.fallback_note = ft.Text(
+            "Note: with these settings this becomes standard addition" if self.lang == 'en' else "توجه: با این تنظیمات، این مسئله تبدیل به جمع معمولی می‌شود",
+            color=COLOR_ACCENT, size=14, italic=True, visible=False
+        )
 
         # Problem Area Components
         self.arena_timer = ft.ProgressRing(value=1.0, width=200, height=200, stroke_width=10, color=COLOR_PRIMARY, bgcolor=ft.Colors.with_opacity(0.1, COLOR_PRIMARY))
@@ -772,7 +871,10 @@ class FastMathApp:
             border=ft.Border.all(1, ft.Colors.with_opacity(0.1, ft.Colors.WHITE))
         )
 
-        content_list = [ft.Row([back_button], alignment=ft.MainAxisAlignment.START)]
+        content_list = [
+            ft.Row([back_button], alignment=ft.MainAxisAlignment.START),
+            self.fallback_note
+        ]
         if config_panel.visible:
             content_list.append(config_panel)
 
@@ -796,17 +898,24 @@ class FastMathApp:
 
         if update:
             self.page.update()
-        self.page.run_task(self.next_problem)
+        if not skip_next_problem:
+            self.page.run_task(self.next_problem)
 
     async def next_problem(self, e=None):
         self.problem_start_time = time.time()
         if hasattr(self, "arena_timer"):
             self.arena_timer.value = 1.0
             self.arena_timer.color = COLOR_PRIMARY
-            self.arena_timer.update()
+            try:
+                if self.arena_timer.page:
+                    self.arena_timer.update()
+            except: pass
 
         self.problem_text.scale = 0.8
-        self.problem_text.update()
+        try:
+            if self.problem_text.page:
+                self.problem_text.update()
+        except: pass
         try:
             kwargs = {}
             if hasattr(self, 'num_operands_slider'):
@@ -814,7 +923,17 @@ class FastMathApp:
             if hasattr(self, 'num_digits_dropdown'):
                 kwargs['num_digits'] = int(self.num_digits_dropdown.value)
             self.current_problem = self.selected_rule.generate_problem(**kwargs)
-        except:
+            if self.selected_rule.id == 'vedic-complementary-addition':
+                if kwargs.get('num_operands', 2) > 2 or kwargs.get('num_digits', 3) != 3:
+                    self.fallback_note.visible = True
+                else:
+                    self.fallback_note.visible = False
+                try:
+                    if self.fallback_note.page:
+                        self.fallback_note.update()
+                except: pass
+        except Exception as e:
+            print(f"Error generating problem for rule {self.selected_rule.id} with kwargs {kwargs}: {e}")
             self.current_problem = {"question": "Error", "answer": 0}
 
         self.problem_text.value = to_lang_digits(self.current_problem["question"], self.lang)
@@ -832,7 +951,10 @@ class FastMathApp:
             self.page.run_task(self.reveal_steps, steps)
 
         self.page.update()
-        await self.answer_input.focus()
+        try:
+            if self.answer_input.page:
+                await self.answer_input.focus()
+        except: pass
 
     async def reveal_steps(self, steps):
         self.steps_column.controls.clear()
@@ -852,10 +974,20 @@ class FastMathApp:
     async def check_answer(self, e):
         self.feedback_text.opacity = 0
         self.feedback_text.update()
-        if not self.answer_input.value: return
         ui = LOCALIZED_UI[self.lang]
+        if not self.answer_input.value:
+            self.feedback_text.value = "Enter a number" if self.lang == 'en' else "یک عدد وارد کنید"
+            self.feedback_text.color = ft.Colors.ORANGE_400
+            self.feedback_text.opacity = 1
+            self.feedback_text.update()
+            return
         try: user_val = int(self.answer_input.value)
-        except: return
+        except:
+            self.feedback_text.value = "Enter a number" if self.lang == 'en' else "یک عدد وارد کنید"
+            self.feedback_text.color = ft.Colors.ORANGE_400
+            self.feedback_text.opacity = 1
+            self.feedback_text.update()
+            return
 
         self.total += 1
         level, state, mascot = self.get_beast_state()
@@ -950,6 +1082,7 @@ class FastMathApp:
 
         self.score_text.value = f"{ui['score']} {to_lang_digits(self.score, self.lang)}/{to_lang_digits(self.total, self.lang)}"
         self.streak_text.value = f"{ui['streak']} {to_lang_digits(self.streak, self.lang)}"
+        self.save_state()
         self.answer_input.disabled = True
         self.check_button.visible = False
         self.next_button.visible = True
@@ -957,7 +1090,7 @@ class FastMathApp:
         self.page.update()
 
 def main(page: ft.Page):
-    FastMathApp(page)
+    MathBeast(page)
 
 if __name__ == "__main__":
     ft.app(target=main)

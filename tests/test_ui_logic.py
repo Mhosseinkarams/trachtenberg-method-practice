@@ -2,7 +2,7 @@ import pytest
 import asyncio
 from unittest.mock import MagicMock, AsyncMock
 import flet as ft
-from app.main import FastMathApp, LOCALIZED_UI
+from app.main import MathBeast, LOCALIZED_UI
 
 @pytest.mark.asyncio
 async def test_app_initialization():
@@ -12,7 +12,7 @@ async def test_app_initialization():
     page.run_task = MagicMock()
 
     # Initialize App
-    app = FastMathApp(page)
+    app = MathBeast(page)
 
     assert page.title == LOCALIZED_UI['fa']['title']
     assert app.selected_rule is None
@@ -23,7 +23,7 @@ async def test_app_initialization():
 async def test_category_selection():
     page = MagicMock(spec=ft.Page)
     page.controls = []
-    app = FastMathApp(page)
+    app = MathBeast(page)
 
     # Manually trigger show_rule_selector with new category
     app.show_rule_selector("Multiplication")
@@ -37,7 +37,7 @@ async def test_category_selection():
 async def test_rule_selection_shows_modes():
     page = MagicMock(spec=ft.Page)
     page.controls = []
-    app = FastMathApp(page)
+    app = MathBeast(page)
 
     rule = MagicMock()
     rule.get_name.return_value = "Test Rule"
@@ -61,7 +61,7 @@ async def test_rule_selection_shows_modes():
 async def test_start_session_starts_timer():
     page = MagicMock(spec=ft.Page)
     page.controls = []
-    app = FastMathApp(page)
+    app = MathBeast(page)
 
     rule = MagicMock()
     rule.get_name.return_value = "Test Rule"

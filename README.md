@@ -34,6 +34,18 @@ Or run the CLI version:
 python windows-cli-app/main.py
 ```
 
+## Development and Testing
+
+To install development dependencies:
+```bash
+pip install -r requirements-dev.txt
+```
+
+To run the test suite:
+```bash
+python3 -m pytest
+```
+
 ## Building for Specific Platforms
 
 For detailed instructions on how to generate `.exe`, `.apk`, or web output, please refer to the `README.md` file within each respective directory:

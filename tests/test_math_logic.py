@@ -23,6 +23,15 @@ def test_all_rules():
                 steps_fa = rule.get_steps(problem, 'fa')
                 assert isinstance(steps_en, list)
                 assert isinstance(steps_fa, list)
+
+                # Assert that it's not the placeholder
+                placeholder_en = "Apply the rule mentioned in the explanation above"
+                placeholder_fa = "قوانین ذکر شده در بخش تئوری بالا را برای حل مرحله‌به‌مرحله این مسئله به کار ببرید"
+
+                for s in steps_en:
+                    assert placeholder_en not in s, f"Placeholder found in English steps for {rule.id}"
+                for s in steps_fa:
+                    assert placeholder_fa not in s, f"Placeholder found in Persian steps for {rule.id}"
             print("PASSED")
         except Exception as e:
             print(f"FAILED: {e}")

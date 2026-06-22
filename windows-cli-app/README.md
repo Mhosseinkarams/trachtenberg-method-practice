@@ -1,6 +1,6 @@
-# Fast Math Trainer - CLI App
+# MathBeast - CLI App
 
-This is a command-line version of the Fast Math Trainer, written in Python. It uses the shared math logic from the `app/` directory.
+This is a command-line version of the MathBeast, written in Python. It uses the shared math logic from the `app/` directory.
 
 ## How to run
 

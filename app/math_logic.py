@@ -197,18 +197,22 @@ def gen_vedic_cubing(**kwargs):
 
 # Step Functions
 def steps_tracht_11(p, lang):
-    num_str = str(p['num'])
+    num_str = "0" + str(p['num'])
     steps = []
     if lang == 'en':
+        steps.append(f"Problem: 11 × {p['num']}")
         steps.append(f"1. The last digit {num_str[-1]} is the last digit of the answer.")
-        for i in range(len(num_str)-1, 0, -1):
-            steps.append(f"2. Add {num_str[i]} to its neighbor {num_str[i-1]}: {int(num_str[i])+int(num_str[i-1])}")
-        steps.append(f"3. The first digit {num_str[0]} is the first digit of the answer (plus any carry).")
+        for i in range(len(num_str)-1, 1, -1):
+            val = int(num_str[i]) + int(num_str[i-1])
+            steps.append(f"2. Add {num_str[i]} to its neighbor {num_str[i-1]}: {val}")
+        steps.append(f"3. The first digit {num_str[1]} is the first digit of the answer (plus any carry).")
     else:
+        steps.append(f"مسئله: ۱۱ × {to_persian_digits(p['num'])}")
         steps.append(f"۱. آخرین رقم {to_persian_digits(num_str[-1])} آخرین رقم جواب است.")
-        for i in range(len(num_str)-1, 0, -1):
-            steps.append(f"۲. رقم {to_persian_digits(num_str[i])} را با همسایه خود {to_persian_digits(num_str[i-1])} جمع کنید: {to_persian_digits(int(num_str[i])+int(num_str[i-1]))}")
-        steps.append(f"۳. اولین رقم {to_persian_digits(num_str[0])} اولین رقم جواب است (به اضافه هر رقم نقلی).")
+        for i in range(len(num_str)-1, 1, -1):
+            val = int(num_str[i]) + int(num_str[i-1])
+            steps.append(f"۲. رقم {to_persian_digits(num_str[i])} را با همسایه خود {to_persian_digits(num_str[i-1])} جمع کنید: {to_persian_digits(val)}")
+        steps.append(f"۳. اولین رقم {to_persian_digits(num_str[1])} اولین رقم جواب است (به اضافه هر رقم نقلی).")
     return steps
 
 def steps_tracht_mul(p, lang, multiplier):
@@ -218,16 +222,120 @@ def steps_tracht_mul(p, lang, multiplier):
         steps.append(f"Problem: {multiplier} × {p['num']}")
         if multiplier == 12:
             for i in range(len(num_str)-1, 0, -1):
-                steps.append(f"Digit {num_str[i]}: ({num_str[i]} × 2) + neighbor {num_str[i+1] if i+1 < len(num_str) else 0}")
+                neighbor = num_str[i+1] if i+1 < len(num_str) else 0
+                steps.append(f"Digit {num_str[i]}: ({num_str[i]} × 2) + neighbor {neighbor}")
         elif multiplier == 5:
             for i in range(len(num_str)-1, 0, -1):
-                steps.append(f"Digit {num_str[i]}: Half of neighbor {num_str[i+1] if i+1 < len(num_str) else 0} {'+ 5 (because digit is odd)' if int(num_str[i])%2 else ''}")
-    else:
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                steps.append(f"Digit {num_str[i]}: Half of neighbor {neighbor} (is {neighbor//2}) {'+ 5 (because digit is odd)' if int(num_str[i])%2 else ''}")
+        elif multiplier == 6:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                steps.append(f"Digit {num_str[i]}: {num_str[i]} + half of neighbor {neighbor} (is {neighbor//2}) {'+ 5 (because digit is odd)' if int(num_str[i])%2 else ''}")
+        elif multiplier == 7:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                steps.append(f"Digit {num_str[i]}: ({num_str[i]} × 2) + half of neighbor {neighbor} (is {neighbor//2}) {'+ 5 (because digit is odd)' if int(num_str[i])%2 else ''}")
+        elif multiplier == 8:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                if i == len(num_str)-1: # Rightmost
+                    steps.append(f"Rightmost digit {num_str[i]}: (10 - {num_str[i]}) × 2 = {(10-int(num_str[i]))*2}")
+                elif i == 0: # Leftmost (leading zero)
+                    steps.append(f"Leftmost digit: neighbor {neighbor} - 2 = {neighbor - 2}")
+                else: # Middle
+                    steps.append(f"Digit {num_str[i]}: (9 - {num_str[i]}) × 2 + neighbor {neighbor} = {(9-int(num_str[i]))*2 + neighbor}")
+        elif multiplier == 9:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                if i == len(num_str)-1: # Rightmost
+                    steps.append(f"Rightmost digit {num_str[i]}: 10 - {num_str[i]} = {10-int(num_str[i])}")
+                elif i == 0: # Leftmost
+                    steps.append(f"Leftmost digit: neighbor {neighbor} - 1 = {neighbor - 1}")
+                else: # Middle
+                    steps.append(f"Digit {num_str[i]}: (9 - {num_str[i]}) + neighbor {neighbor} = {(9-int(num_str[i])) + neighbor}")
+        elif multiplier == 4:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                if i == len(num_str)-1: # Rightmost
+                    steps.append(f"Rightmost digit {num_str[i]}: (10 - {num_str[i]}) {'+ 5 (because digit is odd)' if int(num_str[i])%2 else ''}")
+                elif i == 0: # Leftmost
+                    steps.append(f"Leftmost digit: (half of neighbor {neighbor}) - 1 = {neighbor//2 - 1}")
+                else: # Middle
+                    steps.append(f"Digit {num_str[i]}: (9 - {num_str[i]}) + half of neighbor {neighbor} (is {neighbor//2}) {'+ 5 (because digit is odd)' if int(num_str[i])%2 else ''}")
+        elif multiplier == 3:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                if i == len(num_str)-1: # Rightmost
+                    steps.append(f"Rightmost digit {num_str[i]}: (10 - {num_str[i]}) × 2 {'+ 5 (because digit is odd)' if int(num_str[i])%2 else ''}")
+                elif i == 0: # Leftmost
+                    steps.append(f"Leftmost digit: (half of neighbor {neighbor}) - 2 = {neighbor//2 - 2}")
+                else: # Middle
+                    steps.append(f"Digit {num_str[i]}: (9 - {num_str[i]}) × 2 + half of neighbor {neighbor} (is {neighbor//2}) {'+ 5 (because digit is odd)' if int(num_str[i])%2 else ''}")
+        elif multiplier == 13:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                steps.append(f"Digit {num_str[i]}: ({num_str[i]} × 3) + neighbor {neighbor}")
+
+    else: # Persian
         steps.append(f"مسئله: {to_persian_digits(multiplier)} × {to_persian_digits(p['num'])}")
         if multiplier == 12:
             for i in range(len(num_str)-1, 0, -1):
                 neighbor = num_str[i+1] if i+1 < len(num_str) else 0
                 steps.append(f"رقم {to_persian_digits(num_str[i])}: ({to_persian_digits(num_str[i])} × ۲) + همسایه {to_persian_digits(neighbor)}")
+        elif multiplier == 5:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                steps.append(f"رقم {to_persian_digits(num_str[i])}: نصف همسایه {to_persian_digits(neighbor)} (می‌شود {to_persian_digits(neighbor//2)}) {'+ ۵ (چون رقم فرد است)' if int(num_str[i])%2 else ''}")
+        elif multiplier == 6:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                steps.append(f"رقم {to_persian_digits(num_str[i])}: {to_persian_digits(num_str[i])} + نصف همسایه {to_persian_digits(neighbor)} {'+ ۵ (چون رقم فرد است)' if int(num_str[i])%2 else ''}")
+        elif multiplier == 7:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                steps.append(f"رقم {to_persian_digits(num_str[i])}: ({to_persian_digits(num_str[i])} × ۲) + نصف همسایه {to_persian_digits(neighbor)} {'+ ۵ (چون رقم فرد است)' if int(num_str[i])%2 else ''}")
+        elif multiplier == 8:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                if i == len(num_str)-1:
+                    steps.append(f"راست‌ترین رقم {to_persian_digits(num_str[i])}: {to_persian_digits((10-int(num_str[i]))*2)} = ۲ × ({to_persian_digits(num_str[i])} - ۱۰)")
+                elif i == 0:
+                    steps.append(f"چپ‌ترین رقم: ۲ - همسایه {to_persian_digits(neighbor)} = {to_persian_digits(neighbor - 2)}")
+                else:
+                    steps.append(f"رقم {to_persian_digits(num_str[i])}: {to_persian_digits((9-int(num_str[i]))*2 + neighbor)} = همسایه {to_persian_digits(neighbor)} + ۲ × ({to_persian_digits(num_str[i])} - ۹)")
+        elif multiplier == 9:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                if i == len(num_str)-1:
+                    steps.append(f"راست‌ترین رقم {to_persian_digits(num_str[i])}: {to_persian_digits(10-int(num_str[i]))} = {to_persian_digits(num_str[i])} - ۱۰")
+                elif i == 0:
+                    steps.append(f"چپ‌ترین رقم: ۱ - همسایه {to_persian_digits(neighbor)} = {to_persian_digits(neighbor - 1)}")
+                else:
+                    steps.append(f"رقم {to_persian_digits(num_str[i])}: {to_persian_digits((9-int(num_str[i])) + neighbor)} = همسایه {to_persian_digits(neighbor)} + ({to_persian_digits(num_str[i])} - ۹)")
+        elif multiplier == 4:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                if i == len(num_str)-1:
+                    steps.append(f"راست‌ترین رقم {to_persian_digits(num_str[i])}: {to_persian_digits(10-int(num_str[i]))} {'+ ۵ (چون رقم فرد است)' if int(num_str[i])%2 else ''} = {to_persian_digits(num_str[i])} - ۱۰")
+                elif i == 0:
+                    steps.append(f"چپ‌ترین رقم: ۱ - (نصف همسایه {to_persian_digits(neighbor)}) = {to_persian_digits(neighbor//2 - 1)}")
+                else:
+                    steps.append(f"رقم {to_persian_digits(num_str[i])}: {to_persian_digits(neighbor//2)} + ({to_persian_digits(num_str[i])} - ۹) {'+ ۵ (چون رقم فرد است)' if int(num_str[i])%2 else ''}")
+        elif multiplier == 3:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                if i == len(num_str)-1:
+                    steps.append(f"راست‌ترین رقم {to_persian_digits(num_str[i])}: ۲ × ({to_persian_digits(num_str[i])} - ۱۰) {'+ ۵ (چون رقم فرد است)' if int(num_str[i])%2 else ''}")
+                elif i == 0:
+                    steps.append(f"چپ‌ترین رقم: ۲ - (نصف همسایه {to_persian_digits(neighbor)}) = {to_persian_digits(neighbor//2 - 2)}")
+                else:
+                    steps.append(f"رقم {to_persian_digits(num_str[i])}: {to_persian_digits(neighbor//2)} + ۲ × ({to_persian_digits(num_str[i])} - ۹) {'+ ۵ (چون رقم فرد است)' if int(num_str[i])%2 else ''}")
+        elif multiplier == 13:
+            for i in range(len(num_str)-1, 0, -1):
+                neighbor = int(num_str[i+1]) if i+1 < len(num_str) else 0
+                steps.append(f"رقم {to_persian_digits(num_str[i])}: ({to_persian_digits(num_str[i])} × ۳) + همسایه {to_persian_digits(neighbor)}")
+
     if not steps or len(steps) == 1:
         return steps_simple_mul(p, lang)
     return steps
@@ -314,6 +422,182 @@ def steps_vedic_base(p, lang):
         steps.append(f"۳. تفریق متقاطع: {to_persian_digits(a)} - {to_persian_digits(d_b)} = {to_persian_digits(a - d_b)} (بخش چپ).")
     return steps
 
+def steps_tracht_general(p, lang):
+    a, b = p['a'], p['b']
+    steps = []
+    if lang == 'en':
+        steps.append(f"Problem: {a} × {b}")
+        steps.append("Use the two-finger method (Outside-Inside rule).")
+        steps.append(f"1. Units: ({a%10} × {b%10}) = { (a%10)*(b%10) }")
+        steps.append(f"2. Tens: ({a//10} × {b%10}) + ({a%10} × {b//10}) = { (a//10)*(b%10) + (a%10)*(b//10) }")
+        steps.append(f"3. Hundreds: ({a//10} × {b//10}) = { (a//10)*(b//10) }")
+    else:
+        steps.append(f"مسئله: {to_persian_digits(a)} × {to_persian_digits(b)}")
+        steps.append("از روش دو انگشتی (قانون بیرون-درون) استفاده کنید.")
+        steps.append(f"۱. یکان‌ها: {to_persian_digits((a%10)*(b%10))} = {to_persian_digits(b%10)} × {to_persian_digits(a%10)}")
+        steps.append(f"۲. دهگان‌ها: {to_persian_digits((a//10)*(b%10) + (a%10)*(b//10))} = ({to_persian_digits(b//10)} × {to_persian_digits(a%10)}) + ({to_persian_digits(b%10)} × {to_persian_digits(a//10)})")
+        steps.append(f"۳. صدگان‌ها: {to_persian_digits((a//10)*(b//10))} = {to_persian_digits(b//10)} × {to_persian_digits(a//10)}")
+    return steps
+
+def steps_tracht_addition(p, lang):
+    steps = []
+    ops = p['operands']
+    if lang == 'en':
+        steps.append(f"Problem: {' + '.join(map(str, ops))}")
+        steps.append("1. Sum each column from right to left (or left to right with the L-R method).")
+        for i in range(len(str(max(ops)))):
+            col_sum = sum((n // 10**i) % 10 for n in ops)
+            steps.append(f"Column {i+1} sum: {col_sum}")
+    else:
+        steps.append(f"مسئله: {' + '.join(map(to_persian_digits, ops))}")
+        steps.append("۱. ستون‌ها را از راست به چپ جمع کنید.")
+        for i in range(len(str(max(ops)))):
+            col_sum = sum((n // 10**i) % 10 for n in ops)
+            steps.append(f"مجموع ستون {to_persian_digits(i+1)}: {to_persian_digits(col_sum)}")
+    return steps
+
+def steps_tracht_division(p, lang):
+    num, divisor = p['num'], p['divisor']
+    steps = []
+    if lang == 'en':
+        steps.append(f"Problem: {num} ÷ {divisor}")
+        steps.append(f"1. How many times does {divisor} go into {num}?")
+        steps.append(f"Result: {num // divisor}")
+    else:
+        steps.append(f"مسئله: {to_persian_digits(num)} ÷ {to_persian_digits(divisor)}")
+        steps.append(f"۱. چند بار عدد {to_persian_digits(divisor)} در {to_persian_digits(num)} قرار می‌گیرد؟")
+        steps.append(f"جواب: {to_persian_digits(num // divisor)}")
+    return steps
+
+def steps_tracht_sqrt(p, lang):
+    num = p['num']
+    steps = []
+    if lang == 'en':
+        steps.append(f"Problem: √{num}")
+        steps.append(f"1. Find a number that, when multiplied by itself, equals {num}.")
+        steps.append(f"Result: {int(num**0.5)}")
+    else:
+        steps.append(f"مسئله: جذر {to_persian_digits(num)}")
+        steps.append(f"۱. عددی را پیدا کنید که در خودش ضرب شده و برابر {to_persian_digits(num)} شود.")
+        steps.append(f"جواب: {to_persian_digits(int(num**0.5))}")
+    return steps
+
+def steps_vedic_squaring_general(p, lang):
+    num = p['num']
+    steps = []
+    d1, d2 = num // 10, num % 10
+    if lang == 'en':
+        steps.append(f"Problem: {num}²")
+        steps.append(f"1. D({d1}) = {d1}² = {d1**2}")
+        steps.append(f"2. D({num}) = 2 × {d1} × {d2} = {2*d1*d2}")
+        steps.append(f"3. D({d2}) = {d2}² = {d2**2}")
+        steps.append(f"Result: {num**2}")
+    else:
+        steps.append(f"مسئله: {to_persian_digits(num)}²")
+        steps.append(f"۱. D({to_persian_digits(d1)}) = {to_persian_digits(d1)}² = {to_persian_digits(d1**2)}")
+        steps.append(f"۲. D({to_persian_digits(num)}) = ۲ × {to_persian_digits(d1)} × {to_persian_digits(d2)} = {to_persian_digits(2*d1*d2)}")
+        steps.append(f"۳. D({to_persian_digits(d2)}) = {to_persian_digits(d2)}² = {to_persian_digits(d2**2)}")
+        steps.append(f"نتیجه: {to_persian_digits(num**2)}")
+    return steps
+
+def steps_vedic_sqrt_perfect(p, lang):
+    num = p['num']
+    root = int(num**0.5)
+    steps = []
+    if lang == 'en':
+        steps.append(f"Problem: √{num}")
+        steps.append(f"1. The last digit of {num} is {num%10}.")
+        steps.append(f"2. The root must end in {(root)%10}.")
+        steps.append(f"3. Find the first part: root starts with {root//10}.")
+        steps.append(f"Result: {root}")
+    else:
+        steps.append(f"مسئله: جذر {to_persian_digits(num)}")
+        steps.append(f"۱. آخرین رقم {to_persian_digits(num)} عدد {to_persian_digits(num%10)} است.")
+        steps.append(f"۲. رقم آخر ریشه باید {to_persian_digits(root%10)} باشد.")
+        steps.append(f"۳. پیدا کردن بخش اول: ریشه با {to_persian_digits(root//10)} شروع می‌شود.")
+        steps.append(f"نتیجه: {to_persian_digits(root)}")
+    return steps
+
+def steps_vedic_complementary_addition(p, lang):
+    a, b = p['a'], p['b']
+    steps = []
+    if lang == 'en':
+        steps.append(f"Problem: {a} + {b}")
+        steps.append(f"1. Notice {a%10} and {b%10} are complementary (sum to 10).")
+        steps.append(f"2. Sum: ({a//10 + b//10}) tens + 1 ten = { (a//10 + b//10 + 1) * 10 }")
+    else:
+        steps.append(f"مسئله: {to_persian_digits(a)} + {to_persian_digits(b)}")
+        steps.append(f"۱. دقت کنید که {to_persian_digits(a%10)} و {to_persian_digits(b%10)} متمم هستند (مجموع ۱۰).")
+        steps.append(f"۲. جمع: ({to_persian_digits(a//10 + b//10)}) دهگان + ۱ دهگان = {to_persian_digits(a+b)}")
+    return steps
+
+def steps_vedic_vertically_crosswise(p, lang):
+    a, b = p['a'], p['b']
+    steps = []
+    if lang == 'en':
+        steps.append(f"Problem: {a} × {b}")
+        steps.append(f"1. Vertically: {a%10} × {b%10} = {(a%10)*(b%10)}")
+        steps.append(f"2. Crosswise: ({a//10} × {b%10}) + ({a%10} × {b//10}) = {(a//10)*(b%10) + (a%10)*(b//10)}")
+        steps.append(f"3. Vertically: {a//10} × {b//10} = {(a//10)*(b//10)}")
+        steps.append(f"Result: {a*b}")
+    else:
+        steps.append(f"مسئله: {to_persian_digits(a)} × {to_persian_digits(b)}")
+        steps.append(f"۱. عمودی: {to_persian_digits(a%10)} × {to_persian_digits(b%10)} = {to_persian_digits((a%10)*(b%10))}")
+        steps.append(f"۲. متقاطع: ({to_persian_digits(a//10)} × {to_persian_digits(b%10)}) + ({to_persian_digits(a%10)} × {to_persian_digits(b//10)}) = {to_persian_digits((a//10)*(b%10) + (a%10)*(b//10))}")
+        steps.append(f"۳. عمودی: {to_persian_digits(a//10)} × {to_persian_digits(b//10)} = {to_persian_digits((a//10)*(b//10))}")
+        steps.append(f"نتیجه: {to_persian_digits(a*b)}")
+    return steps
+
+def steps_vedic_square_near_base(p, lang):
+    num, base = p['num'], p['base']
+    diff = num - base
+    steps = []
+    if lang == 'en':
+        steps.append(f"Problem: {num}² (Base {base})")
+        steps.append(f"1. Deficiency/Excess: {diff}")
+        steps.append(f"2. Left part: {num} + {diff} = {num + diff}")
+        steps.append(f"3. Right part: {diff}² = {diff**2}")
+        steps.append(f"Result: {num**2}")
+    else:
+        steps.append(f"مسئله: {to_persian_digits(num)}² (مبنا {to_persian_digits(base)})")
+        steps.append(f"۱. اختلاف: {to_persian_digits(diff)}")
+        steps.append(f"۲. بخش چپ: {to_persian_digits(num)} + {to_persian_digits(diff)} = {to_persian_digits(num + diff)}")
+        steps.append(f"۳. بخش راست: {to_persian_digits(diff)}² = {to_persian_digits(diff**2)}")
+        steps.append(f"نتیجه: {to_persian_digits(num**2)}")
+    return steps
+
+def steps_vedic_div_9(p, lang):
+    num = p['num']
+    steps = []
+    if lang == 'en':
+        steps.append(f"Problem: {num} ÷ 9")
+        steps.append(f"1. First digit of quotient: {num // 10}")
+        steps.append(f"2. Remainder: {num // 10} + {num % 10} = {(num // 10) + (num % 10)}")
+    else:
+        steps.append(f"مسئله: {to_persian_digits(num)} ÷ ۹")
+        steps.append(f"۱. رقم اول خارج‌قسمت: {to_persian_digits(num // 10)}")
+        steps.append(f"۲. باقی‌مانده: {to_persian_digits(num // 10)} + {to_persian_digits(num % 10)} = {to_persian_digits((num // 10) + (num % 10))}")
+    return steps
+
+def steps_vedic_cubing(p, lang):
+    num = p['num']
+    base = 10
+    diff = num - base
+    steps = []
+    if lang == 'en':
+        steps.append(f"Problem: {num}³")
+        steps.append(f"1. Left: {num} + 2 × {diff} = {num + 2*diff}")
+        steps.append(f"2. Middle: 3 × {diff}² = {3*diff**2}")
+        steps.append(f"3. Right: {diff}³ = {diff**3}")
+        steps.append(f"Result: {num**3}")
+    else:
+        steps.append(f"مسئله: {to_persian_digits(num)}³")
+        steps.append(f"۱. چپ: {to_persian_digits(num)} + (۲ × {to_persian_digits(diff)}) = {to_persian_digits(num + 2*diff)}")
+        steps.append(f"۲. میانی: ۳ × {to_persian_digits(diff)}² = {to_persian_digits(3*diff**2)}")
+        steps.append(f"۳. راست: {to_persian_digits(diff)}³ = {to_persian_digits(diff**3)}")
+        steps.append(f"نتیجه: {to_persian_digits(num**3)}")
+    return steps
+
 rules = [
     Rule(
         'tracht-11',
@@ -361,7 +645,7 @@ rules = [
             'fa': 'قانون تراختنبرگ برای عدد ۶:\nبه هر رقم، نصف همسایه سمت راست آن را اضافه کنید. اگر خودِ رقم فرد است، ۵ واحد به حاصل اضافه کنید.\nمثال: ۶ × ۴۲۲ (یک صفر فرضی در ابتدا در نظر بگیرید: ۰۴۲۲)\n- ۲ زوج است، همسایه ۰: ۲ + ۰ = ۲\n- ۲ زوج است، همسایه ۲: ۲ + (۲/۲) = ۳\n- ۴ زوج است، همسایه ۲: ۴ + (۲/۲) = ۵\n- ۰ زوج است، همسایه ۴: ۰ + (۴/۲) = ۲\nجواب: ۲۵۳۲.'
         },
         {'en': '6 × 422 = 2532', 'fa': '۶ × ۴۲۲ = ۲۵۳۲'},
-        gen_tracht_6, steps_simple_mul
+        gen_tracht_6, lambda p, l: steps_tracht_mul(p, l, 6)
     ),
     Rule(
         'tracht-7',
@@ -373,7 +657,7 @@ rules = [
             'fa': 'قانون تراختنبرگ برای عدد ۷:\nهر رقم را دو برابر کرده و نصف همسایه سمت راستش را به آن اضافه کنید. اگر خودِ رقم فرد است، ۵ واحد به حاصل اضافه کنید.\nمثال: ۷ × ۲۴۲ (۰۲۴۲):\n- ۲ زوج است، همسایه ۰: (۲×۲) + ۰ = ۴\n- ۴ زوج است، همسایه ۲: (۴×۲) + ۱ = ۹\n- ۲ زوج است، همسایه ۴: (۲×۲) + ۲ = ۶\n- ۰ زوج است، همسایه ۲: (۰×۲) + ۱ = ۱\nجواب: ۱۶۹۴.'
         },
         {'en': '7 × 242 = 1694', 'fa': '۷ × ۲۴۲ = ۱۶۹۴'},
-        gen_tracht_7, steps_simple_mul
+        gen_tracht_7, lambda p, l: steps_tracht_mul(p, l, 7)
     ),
     Rule(
         'tracht-8',
@@ -385,7 +669,7 @@ rules = [
             'fa': 'قانون تراختنبرگ برای عدد ۸:\n۱. راست‌ترین رقم: از ۱۰ کم کرده و دو برابر کنید.\n۲. ارقام میانی: از ۹ کم کرده، دو برابر کنید و با همسایه سمت راست جمع کنید.\n۳. چپ‌ترین رقم (صفر فرضی): از همسایه سمت راستش ۲ واحد کم کنید.\nمثال: ۸ × ۴۳۲ (۰۴۳۲):\n- ۲: ۱۶ = ۲ × (۱۰-۲). ۶ را نوشته، ۱ را نگه دارید.\n- ۳: ۱۵ = ۱ + ۲ + ۲ × (۹-۳). ۵ را نوشته، ۱ را نگه دارید.\n- ۴: ۱۴ = ۱ + ۳ + ۲ × (۹-۴). ۴ را نوشته، ۱ را نگه دارید.\n- ۰: ۳ = ۱ + (۴-۲).\nجواب: ۳۴۵۶.'
         },
         {'en': '8 × 432 = 3456', 'fa': '۸ × ۴۳۲ = ۳۴۵۶'},
-        gen_tracht_8, steps_simple_mul
+        gen_tracht_8, lambda p, l: steps_tracht_mul(p, l, 8)
     ),
     Rule(
         'tracht-9',
@@ -397,7 +681,7 @@ rules = [
             'fa': 'قانون تراختنبرگ برای عدد ۹:\n۱. راست‌ترین رقم: از ۱۰ کم کنید.\n۲. ارقام میانی: از ۹ کم کرده و با همسایه سمت راست جمع کنید.\n۳. چپ‌ترین رقم (صفر فرضی): از همسایه سمت راستش ۱ واحد کم کنید.\nمثال: ۹ × ۴۳۲ (۰۴۳۲):\n- ۲: ۸ = ۱۰ - ۲\n- ۳: ۸ = ۲ + (۹ - ۳)\n- ۴: ۸ = ۳ + (۹ - ۴)\n- ۰: ۳ = ۴ - ۱\nجواب: ۳۸۸۸.'
         },
         {'en': '9 × 432 = 3888', 'fa': '۹ × ۴۳۲ = ۳۸۸۸'},
-        gen_tracht_9, steps_simple_mul
+        gen_tracht_9, lambda p, l: steps_tracht_mul(p, l, 9)
     ),
     Rule(
         'tracht-4',
@@ -409,7 +693,7 @@ rules = [
             'fa': 'قانون تراختنبرگ برای عدد ۴:\n۱. راست‌ترین رقم: آن را از ۱۰ کم کنید. اگر رقم فرد است، ۵ واحد اضافه کنید.\n۲. ارقام میانی: رقم را از ۹ کم کنید، با نصف همسایه جمع کنید و اگر خود رقم فرد است، ۵ واحد اضافه کنید.\n۳. چپ‌ترین رقم (صفر فرضی): نصف همسایه سمت راست را منهای ۱ کنید.\nمثال: ۴ × ۴۲۶ (۰۴۲۶):\n- ۶: ۴ = ۱۰ - ۶\n- ۲: ۱۰ = ۳ + (۹ - ۲). ۰ را نوشته، ۱ را نگه دارید.\n- ۴: ۷ = ۱ + ۱ + (۹ - ۴)\n- ۰: ۱ = ۲ - ۱\nجواب: ۱۷۰۴.'
         },
         {'en': '4 × 426 = 1704', 'fa': '۴ × ۴۲۶ = ۱۷۰۴'},
-        gen_tracht_4, steps_simple_mul
+        gen_tracht_4, lambda p, l: steps_tracht_mul(p, l, 4)
     ),
     Rule(
         'tracht-3',
@@ -421,7 +705,7 @@ rules = [
             'fa': 'قانون تراختنبرگ برای عدد ۳:\n۱. راست‌ترین رقم: از ۱۰ کم کرده، دو برابر کنید و اگر رقم فرد است، ۵ واحد اضافه کنید.\n۲. ارقام میانی: از ۹ کم کرده، دو برابر کنید، با نصف همسایه جمع کنید و اگر خود رقم فرد است، ۵ واحد اضافه کنید.\n۳. چپ‌ترین رقم (صفر فرضی): نصف همسایه سمت راست را منهای ۲ کنید.\nمثال: ۳ × ۴۳۲ (۰۴۳۲):\n- ۲: ۱۶ = ۲ × (۱۰-۲). ۶ را نوشته، ۱ را نگه دارید.\n- ۳: ۱۹ = ۱ + ۵ + ۱ + ۲ × (۹-۳). ۹ را نوشته، ۱ را نگه دارید.\n- ۴: ۱۲ = ۱ + ۱ + ۲ × (۹-۴). ۲ را نوشته، ۱ را نگه دارید.\n- ۰: ۱ = ۱ + ۲ - ۲\nجواب: ۱۲۹۶.'
         },
         {'en': '3 × 432 = 1296', 'fa': '۳ × ۴۳۲ = ۱۲۹۶'},
-        gen_tracht_3, steps_simple_mul
+        gen_tracht_3, lambda p, l: steps_tracht_mul(p, l, 3)
     ),
     Rule(
         'tracht-13',
@@ -433,7 +717,7 @@ rules = [
             'fa': 'برای ضرب در ۱۳: هر رقم را سه برابر کرده و با همسایه‌اش جمع کنید.'
         },
         {'en': '13 x 12 = 156', 'fa': '۱۳ × ۱۲ = ۱۵۶'},
-        gen_tracht_13, steps_simple_mul
+        gen_tracht_13, lambda p, l: steps_tracht_mul(p, l, 13)
     ),
     Rule(
         'tracht-general',
@@ -445,7 +729,7 @@ rules = [
             'fa': 'ضرب مستقیم بدون جدول. از قانون "بیرون-درون" استفاده کنید.'
         },
         {'en': '23 x 12 = 276', 'fa': '۲۳ × ۱۲ = ۲۷۶'},
-        gen_tracht_general, steps_simple_mul
+        gen_tracht_general, steps_tracht_general
     ),
     Rule(
         'tracht-addition',
@@ -457,7 +741,7 @@ rules = [
             'fa': 'ستون‌ها را از چپ به راست جمع کنید، سپس رقم‌های نقلی را تنظیم کنید.'
         },
         {'en': '456 + 123 = 579', 'fa': '۴۵۶ + ۱۲۳ = ۵۷۹'},
-        gen_tracht_addition, steps_simple_mul
+        gen_tracht_addition, steps_tracht_addition
     ),
     Rule(
         'tracht-division',
@@ -469,7 +753,7 @@ rules = [
             'fa': 'با استفاده از رقم اول تقسیم کنید و سپس حاصل‌ضرب‌های متقاطع را کم کنید.'
         },
         {'en': '156 ÷ 12 = 13', 'fa': '۱۵۶ ÷ ۱۲ = ۱۳'},
-        gen_tracht_division, steps_simple_mul
+        gen_tracht_division, steps_tracht_division
     ),
     Rule(
         'tracht-sqrt',
@@ -481,7 +765,7 @@ rules = [
             'fa': 'ارقام را با استفاده از روش سیستماتیک "محاسبه معکوس" استخراج کنید.'
         },
         {'en': '√625 = 25', 'fa': 'جذر ۶۲۵ = ۲۵'},
-        gen_tracht_sqrt, steps_simple_mul
+        gen_tracht_sqrt, steps_tracht_sqrt
     ),
     Rule(
         'vedic-square-5',
@@ -541,7 +825,7 @@ rules = [
             'fa': 'مربع عمومی (روش دوبلکس وِدیک):\nبرای مربع کردن هر عدد، از مقدار "دوبلکس" (D) برای هر بخش استفاده می‌کنیم.\n- برای ۱ رقم (a): D = a²\n- برای ۲ رقم (ab): D = ۲×a×b\n- برای ۳ رقم (abc): D = (۲×a×c) + b²\nمثال: ۲۳ به توان ۲. D(2)=۴، D(23)=۱۲، D(3)=۹. ترکیب با ارقام نقلی: ۹ | ۱۲ | ۴ که می‌شود ۵۲۹.'
         },
         {'en': '23² = 529', 'fa': '۲۳² = ۵۲۹'},
-        gen_vedic_squaring_general, steps_simple_mul
+        gen_vedic_squaring_general, steps_vedic_squaring_general
     ),
     Rule(
         'vedic-sqrt-perfect',
@@ -553,7 +837,7 @@ rules = [
             'fa': 'جذر اعداد کامل (روش وِدیک):\n۱. به رقم آخر نگاه کنید تا دو رقم احتمالی برای پایان ریشه پیدا کنید (مثلاً اگر به ۶ ختم شود، ریشه به ۴ یا ۶ ختم می‌شود).\n۲. دو رقم آخر را نادیده بگیرید و بزرگترین مربعی که از باقی‌مانده کوچکتر است را برای پیدا کردن رقم اول بیابید.\n۳. امتحان کنید کدام یک از دو حالت درست است.\nمثال: جذر ۱۲۲۵. به ۵ ختم می‌شود پس رقم آخر ۵ است. زیر ۱۲، مربعِ ۳ قرار دارد. پس رقم اول ۳ است. جواب: ۳۵.'
         },
         {'en': 'sqrt(1225) = 35', 'fa': 'جذر ۱۲۲۵ = ۳۵'},
-        gen_vedic_sqrt_perfect, steps_simple_mul
+        gen_vedic_sqrt_perfect, steps_vedic_sqrt_perfect
     ),
     Rule(
         'vedic-complementary-addition',
@@ -565,7 +849,7 @@ rules = [
             'fa': 'جمع متمم (تکمیل کردن کل):\nبه جای جمع معمولی، به دنبال جفت‌اعدادی بگردید که حاصل‌جمع‌شان مضربی از ۱۰ یا ۱۰۰ می‌شود. این کار محاسبات ذهنی را بسیار ساده می‌کند.\nمثال: ۴۸ + ۳۲. اعداد ۸ و ۲ متمم هم هستند. پس ۸۰ = ۱۰ + ۷۰ = (۲+۸) + (۳۰+۴۰).'
         },
         {'en': '48 + 32 = 80', 'fa': '۴۸ + ۳۲ = ۸۰'},
-        gen_vedic_complementary_addition, steps_simple_mul
+        gen_vedic_complementary_addition, steps_vedic_complementary_addition
     ),
     Rule(
         'vedic-subtraction-base',
@@ -589,7 +873,7 @@ rules = [
             'fa': 'عمودی و متقاطع (روش وِدیک):\n۱. یکان‌ها را در هم ضرب کنید.\n۲. به صورت ضربدری (متقاطع) ضرب کرده و نتایج را جمع کنید.\n۳. دهگان‌ها را در هم ضرب کنید.\nمثال: ۲۳ × ۱۲. یکان: ۶ = ۲×۳. دهگان: ۷ = (۱×۳) + (۲×۲). صدگان: ۲ = ۱×۲. جواب: ۲۷۶.'
         },
         {'en': '23 × 12 = 276', 'fa': '۲۳ × ۱۲ = ۲۷۶'},
-        gen_vedic_vertically_crosswise, steps_simple_mul
+        gen_vedic_vertically_crosswise, steps_vedic_vertically_crosswise
     ),
     Rule(
         'vedic-square-near-base',
@@ -601,7 +885,7 @@ rules = [
             'fa': 'مربع نزدیک به مبنا (روش وِدیک):\n۱. بخش چپ: عدد را با اختلافش از مبنا جمع کنید.\n۲. بخش راست: مجذور اختلاف را قرار دهید.\nمثال: ۱۳ به توان ۲. مبنا ۱۰ است و اختلاف ۳ واحد است. بخش چپ: ۱۶ = ۳ + ۱۳. بخش راست: ۹ = ۳ به توان ۲. جواب: ۱۶۹.'
         },
         {'en': '13² = 169', 'fa': '۱۳² = ۱۶۹'},
-        gen_vedic_square_near_base, steps_simple_mul
+        gen_vedic_square_near_base, steps_vedic_square_near_base
     ),
     Rule(
         'vedic-div-9',
@@ -613,7 +897,7 @@ rules = [
             'fa': 'تقسیم بر ۹ (روش وِدیک):\n۱. اولین رقم، اولین رقمِ خارج‌قسمت است.\n۲. آن را با رقم بعدی جمع کنید تا رقم بعدی (یا باقی‌مانده) به دست آید.\n۳. جمع نهایی همان باقی‌مانده است.\nمثال: ۲۳ تقسیم بر ۹. رقم اول ۲ است. باقی‌مانده: ۵ = ۳ + ۲. جواب: ۲ با باقی‌مانده ۵.'
         },
         {'en': '23 ÷ 9 = 2 R 5', 'fa': '۲۳ ÷ ۹ = ۲ باقی‌مانده ۵'},
-        gen_vedic_div_9, steps_simple_mul
+        gen_vedic_div_9, steps_vedic_div_9
     ),
     Rule(
         'vedic-series-9',
@@ -649,7 +933,7 @@ rules = [
             'fa': 'مکعب نزدیک به مبنا (روش وِدیک):\n۱. بخش چپ: عدد + (۲ × اختلاف).\n۲. بخش میانی: ۳ × (مجذور اختلاف).\n۳. بخش راست: مکعب اختلاف.\nمثال: ۱۲ به توان ۳. اختلاف ۲ است. بخش چپ: ۱۶ = ۲×۲ + ۱۲. بخش میانی: ۱۲ = ۴ × ۳. بخش راست: ۸ = ۲ به توان ۳. ترکیب با ارقام نقلی: ۸ | ۱۲ | ۱۶ که می‌شود ۱۷۲۸.'
         },
         {'en': '12³ = 1728', 'fa': '۱۲³ = ۱۷۲۸'},
-        gen_vedic_cubing, steps_simple_mul
+        gen_vedic_cubing, steps_vedic_cubing
     )
 ]
 

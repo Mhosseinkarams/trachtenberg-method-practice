@@ -1,6 +1,6 @@
-# Fast Math Trainer - Web App
+# MathBeast - Web App
 
-This is the web version of the Fast Math Trainer, written in Python using Flet.
+This is the web version of the MathBeast, written in Python using Flet.
 
 ## How to get web output
 
